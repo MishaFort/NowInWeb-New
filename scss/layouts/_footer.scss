@@ -1,0 +1,109 @@
+.footer {
+  padding: 40px 0;
+  /*  background-image: url(../images/entidades-background-noise-min.png);
+  background-size: auto; */
+
+  background-image: url(/images/carnival.jpg);
+  background-repeat: no-repeat;
+  background-size: auto 100%;
+  background-position: center;
+
+  @media screen and (min-width: $bp-tablet) {
+    padding-bottom: 40px;
+  }
+
+  &__container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 48px;
+
+    @media screen and (min-width: $bp-tablet) {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 0 80px;
+    }
+  }
+
+  &__menu {
+    padding: 0 56px;
+    text-align: center;
+
+    @media screen and (min-width: $bp-tablet) {
+      text-align: start;
+    }
+  }
+
+  &__menu-title {
+    margin-bottom: 32px;
+    font-size: 18px;
+    letter-spacing: -0.01em;
+
+    @media screen and (min-width: $bp-tablet) {
+      margin-bottom: 36px;
+    }
+  }
+
+  &__link-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    @media screen and (min-width: $bp-tablet) {
+      gap: 18px;
+    }
+  }
+
+  &__link {
+    color: var(--color-copyright);
+    font-size: 14px;
+    letter-spacing: -0.02em;
+  }
+
+  &__logo-and-socials {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+
+    @media screen and (min-width: $bp-tablet) {
+      align-items: flex-start;
+    }
+  }
+
+  &__copyright {
+    color: var(--color-copyright);
+    font-size: 14px;
+    text-align: center;
+
+    @media screen and (min-width: $bp-tablet) {
+      text-align: start;
+    }
+  }
+
+  &__socials {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0;
+    margin: 0;
+    height: fit-content;
+    list-style: none;
+
+    & li {
+      height: 34px;
+    }
+  }
+
+  &__socials-icon {
+    display: block;
+    width: 34px;
+    height: 34px;
+    fill: var(--color-primary-light);
+
+    &:hover {
+      fill: var(--color-brand);
+    }
+  }
+}

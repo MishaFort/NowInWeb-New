@@ -1,0 +1,14 @@
+.services-section {
+  padding-bottom: 1.5rem;
+
+  &__list {
+    display: flex;
+    gap: 1.875rem;
+  }
+
+  &__item {
+    @media screen and (min-width: $bp-tablet) {
+      flex-basis: calc((100% - 30px) / 4);
+    }
+  }
+}

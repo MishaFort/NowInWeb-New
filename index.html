@@ -7,37 +7,38 @@
     <title>NOW IN WEB</title>
     <link rel="stylesheet" href="./css/main.min.css" />
 
-    <!-- <link rel="icon" href="images/logo-mini-only-fv.svg" type="image/svg+xml" /> -->
+    <link rel="icon" href="images/logo.svg" type="image/svg+xml" />
   </head>
 
   <body>
     <!--                    ХЕДЕР                      -->
     <header class="header">
       <div class="container">
-        <div class="header__container">
-          <nav class="header__nav">
-            <a href="/">
-              <img
-                src="images/logo-fv.svg"
-                alt="Logo 'FINANCIERA EN VENTA'"
-                width="208"
-                height="66"
-              />
-            </a>
-            <ul class="header__menu">
-              <li><a class="link" href="#">Inicio</a></li>
-              <li>
-                <a class="link" href="#entidades-section">Listados</a>
-              </li>
-              <li>
-                <a class="link" href="#quienes-section">Nosotros</a>
-              </li>
-              <li>
-                <a class="link" href="#contact-section">Contacto</a>
-              </li>
-            </ul>
-          </nav>
-        </div>
+        <nav class="header__nav">
+          <a href="/">
+            <img
+              src="images/logo.svg"
+              alt="Logo 'Now in Web'"
+              width="40"
+              height="40"
+            />
+          </a>
+          <ul class="header__menu">
+            <li><a class="link" href="#">Home</a></li>
+            <li>
+              <a class="link" href="#services-section">Services</a>
+            </li>
+            <li>
+              <a class="link" href="#portfolio-section">Our work</a>
+            </li>
+            <li>
+              <a class="link" href="#contact-section">Contact us</a>
+            </li>
+            <li>
+              <a class="link" href="#footer">About us</a>
+            </li>
+          </ul>
+        </nav>
       </div>
     </header>
 
@@ -49,30 +50,36 @@
           <div class="hero-section__container">
             <div class="hero-section__text-part">
               <h1 class="hero-section__title">
-                We create your own history in each pixel
+                We create your<br />
+                own history in each pixel
               </h1>
-
               <p class="hero-section__text">
                 We believe real design begins with you. <br />
                 Together, we create stories that live in every pixel — with
                 meaning, clarity, and soul.
               </p>
-
-              <a href="#" class="button button__hero"> Begin your story </a>
-              <a href="#" class="button button__hero"> See our work </a>
+              <div class="hero-section__buttons">
+                <a href="#" class="button"> Begin your story </a>
+                <a href="#" class="button"> See our work </a>
+              </div>
             </div>
             <div>
               <img
                 class="hero-section__image"
-                srcset="
-                  images/hero-section.avif    1x,
-                  images/hero-section@2x.avif 2x
-                "
-                src="images/hero-section.avif"
-                alt="'Now in Web' logo"
+                src="images/hero-logo-large.png"
+                alt="Logo 'Now in Web'"
+                width="649"
+                height="436"
               />
 
-              <p>Your brand is bold...</p>
+              <p class="hero-section__running-stroke">Your brand is bold...</p>
+            </div>
+          </div>
+          <div class="hero-section__social-container">
+            <div class="hero-section__social">
+              <svg class="hero-section__social-icon" width="24" height="24">
+                <use xlink:href="images/icons.svg#icon-whatsapp"></use>
+              </svg>
             </div>
           </div>
         </div>
@@ -80,106 +87,123 @@
       <!--                   Section 2                     -->
       <section class="services-section" id="services-section">
         <div class="container">
-          <h2 class="section-title"><span>Our</span>services</h2>
-
+          <h2 class="section-title section-title--centered">
+            <span class="text-brand">Our</span> services
+          </h2>
           <ul class="services-section__list">
-            <li>
+            <li class="services-section__item services-card__border">
               <article class="services-card">
                 <img
-                  class="hero-section__image"
+                  width="172px"
+                  height="172px"
                   srcset="
-                    images/hero-section.avif    1x,
-                    images/hero-section@2x.avif 2x
+                    images/services-graphic.png    1x,
+                    images/services-graphic@2x.png 2x
                   "
-                  src="images/hero-section.avif"
-                  alt="Code icon"
+                  src="images/services-graphic.png"
+                  alt="Graphic icon"
                 />
-                <h3 class="entidades-card__title text-uppercase">
-                  Main Graphic Design
-                </h3>
-                <p class="entidades-card__main-text">
-                  Visuals that speak louder than words. From logos to identity —
-                  built to impress.
-                </p>
-                <button class="button" type="button">
+                <div
+                  class="services-card__text-container services-card__text-container--resticted"
+                >
+                  <h3 class="services-card__title">Main Graphic Design</h3>
+                  <p class="services-card__main-text">
+                    Visuals that speak louder than words. From logos to identity
+                    — built to impress.
+                  </p>
+                </div>
+                <button class="button button--arrow" type="button">
                   <span>Begin your story here</span>
-                  <svg class="button__icon" width="24" height="24">
+                  <svg class="button__icon" width="28" height="28">
                     <use href="images/icons.svg#icon-arrow"></use>
                   </svg>
                 </button>
               </article>
             </li>
-            <li>
+            <li class="services-section__item services-card__border">
               <article class="services-card">
                 <img
-                  class="hero-section__image"
+                  width="172px"
+                  height="172px"
                   srcset="
-                    images/hero-section.avif    1x,
-                    images/hero-section@2x.avif 2x
+                    images/services-web-design.png    1x,
+                    images/services-web-design@2x.png 2x
                   "
-                  src="images/hero-section.avif"
-                  alt="Code icon"
+                  src="images/services-web-design.png"
+                  alt="Web design icon"
                 />
-                <h3 class="entidades-card__title text-uppercase">Web Design</h3>
-                <p class="entidades-card__main-text">
-                  Websites that don’t just exist — they wow. Sharp structure,
-                  bold visuals, clear intent.
-                </p>
-                <button class="button" type="button">
+                <div class="services-card__text-container">
+                  <h3 class="services-card__title">
+                    Web<br />
+                    Design
+                  </h3>
+                  <p class="services-card__main-text">
+                    Websites that don’t just exist — they wow. <br />
+                    Sharp structure, bold visuals, clear intent.
+                  </p>
+                </div>
+                <button class="button button--arrow" type="button">
                   <span>Begin your story here</span>
-                  <svg class="button__icon" width="24" height="24">
+                  <svg class="button__icon" width="28" height="28">
                     <use href="images/icons.svg#icon-arrow"></use>
                   </svg>
                 </button>
               </article>
             </li>
-            <li>
+            <li class="services-section__item services-card__border">
               <article class="services-card">
                 <img
-                  class="hero-section__image"
+                  width="172px"
+                  height="172px"
                   srcset="
-                    images/hero-section.avif    1x,
-                    images/hero-section@2x.avif 2x
+                    images/services-social.png    1x,
+                    images/services-social@2x.png 2x
                   "
-                  src="images/hero-section.avif"
-                  alt="Code icon"
+                  src="images/services-social.png"
+                  alt="Social icon"
                 />
-                <h3 class="entidades-card__title text-uppercase">
-                  Social Media Design
-                </h3>
-                <p class="entidades-card__main-text">
-                  Content that stops the scroll. <br />
-                  Bold posts, sharp stories, magnetic ads.
-                </p>
-                <button class="button" type="button">
+                <div class="services-card__text-container">
+                  <h3 class="services-card__title">
+                    Social Media <br />Design
+                  </h3>
+                  <p class="services-card__main-text">
+                    Content that stops the scroll. <br />
+                    Bold posts, sharp stories, magnetic ads.
+                  </p>
+                </div>
+                <button class="button button--arrow" type="button">
                   <span>Begin your story here</span>
-                  <svg class="button__icon" width="24" height="24">
+                  <svg class="button__icon" width="28" height="28">
                     <use href="images/icons.svg#icon-arrow"></use>
                   </svg>
                 </button>
               </article>
             </li>
-            <li>
+            <li class="services-section__item services-card__border">
               <article class="services-card">
                 <img
-                  class="hero-section__image"
+                  width="172px"
+                  height="172px"
                   srcset="
-                    images/hero-section.avif    1x,
-                    images/hero-section@2x.avif 2x
+                    images/services-ux.png    1x,
+                    images/services-ux@2x.png 2x
                   "
-                  src="images/hero-section.avif"
-                  alt="Code icon"
+                  src="images/services-ux.png"
+                  alt="UX/UI icon"
                 />
-                <h3 class="entidades-card__title text-uppercase">
-                  UX/UI Design
-                </h3>
-                <p class="entidades-card__main-text">
-                  Interfaces that feel natural and work smart. Every click has a
-                  reason — and a result.
-                </p>
-                <button class="button" type="button">
+                <div class="services-card__text-container">
+                  <h3 class="services-card__title">
+                    UX/UI<br />
+                    Design
+                  </h3>
+                  <p class="services-card__main-text">
+                    Interfaces that feel natural and work smart. <br />
+                    Every click has a reason — and a result.
+                  </p>
+                </div>
+                <button class="button button--arrow" type="button">
                   <span>Begin your story here</span>
-                  <svg class="button__icon" width="24" height="24">
+                  <svg class="button__icon" width="28" height="28">
                     <use href="images/icons.svg#icon-arrow"></use>
                   </svg>
                 </button>
@@ -288,12 +312,12 @@
 
             <div class="contact-section__input-part">
               <!--               main form input                      -->
-              <!-- <div
+              <div
                 id="thank-you-message"
                 class="contact-section__thank-you-message"
               >
-                ¡Gracias por ponerse en contacto con nosotros!
-              </div> -->
+                Thank you for contacting us!
+              </div>
               <form
                 action="send_email.php"
                 method="POST"
@@ -360,149 +384,83 @@
                 </div>
               </form>
             </div>
-
-            <address class="contact-section__address">
-              <ul>
-                <li class="contact-section__address-item">
-                  <a
-                    class="contact-section__address-link"
-                    href="tel:+52 55 1234 5678"
-                  >
-                    <svg width="24" height="24">
-                      <use href="images/icons.svg#icon-phone"></use>
-                    </svg>
-                    +52 55 1234 5678
-                  </a>
-                </li>
-                <li class="contact-section__address-item">
-                  <a
-                    class="contact-section__address-link"
-                    href="mailto:info@financieraenventa.com"
-                  >
-                    <svg width="24" height="24">
-                      <use href="images/icons.svg#icon-email"></use>
-                    </svg>
-                    info@financieraenventa.com
-                  </a>
-                </li>
-                <li class="contact-section__address-item">
-                  <a
-                    class="contact-section__address-link"
-                    href="https://maps.app.goo.gl/xW46JQ28YfeH6qPy6"
-                    target="_blank"
-                  >
-                    <svg
-                      class="contact-section__address-link-placemark-icon"
-                      width="24"
-                      height="24"
-                    >
-                      <use href="images/icons.svg#icon-placemark"></use>
-                    </svg>
-                    Ciudad de México, México
-                  </a>
-                </li>
-              </ul>
-            </address>
           </div>
         </div>
       </section>
     </main>
 
     <!--                       ФУТЕР                         -->
-    <footer class="footer">
+    <footer class="footer" id="footer">
       <div class="container">
         <div class="footer__container">
-          <div class="footer__menu">
-            <h2 class="footer__menu-title">Enlaces</h2>
-            <nav>
-              <ul class="footer__link-list">
-                <li><a class="footer__link link" href="#">Inicio</a></li>
-                <li>
-                  <a class="footer__link link" href="#entidades-section">
-                    Listados
-                  </a>
-                </li>
-                <li>
-                  <a class="footer__link link" href="#quienes-section">
-                    Nosotros
-                  </a>
-                </li>
-                <li>
-                  <a class="footer__link link" href="#contact-section">
-                    Contacto
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </div>
-
           <div class="footer__logo-and-socials">
-            <a href="/">
-              <img
-                class="header__logo"
-                src="images/logo-fv.svg"
-                alt="Logo 'FINANCIERA EN VENTA'"
-                width="208"
-                height="66"
-            /></a>
-            <p class="footer__copyright">
-              &copy <span id="year"></span> Plataforma FinancieraEnVenta. Todos
-              los derechos reservados.
-            </p>
-            <ul class="footer__socials">
-              <li>
-                <a
-                  href="https://www.facebook.com"
-                  aria-label="Facebook page"
-                  target="_blank"
-                >
-                  <svg class="footer__socials-icon" width="34" height="34">
-                    <use href="images/icons.svg#icon-facebook"></use>
-                  </svg>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://www.twitter.com"
-                  aria-label="Twitter page"
-                  target="_blank"
-                >
-                  <svg class="footer__socials-icon" width="34" height="34">
-                    <use href="images/icons.svg#icon-twitter"></use>
-                  </svg>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://www.linedin.com"
-                  target="_blank"
-                  aria-label="LinkedIn page"
-                >
-                  <svg class="footer__socials-icon" width="34" height="34">
-                    <use href="images/icons.svg#icon-linkedin"></use>
-                  </svg>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://www.instagram.com"
-                  target="_blank"
-                  aria-label="Instagram page"
-                >
-                  <svg class="footer__socials-icon" width="34" height="34">
-                    <use href="images/icons.svg#icon-instagram"></use>
-                  </svg>
-                </a>
-              </li>
-            </ul>
+            <nav class="footer__nav">
+              <a href="/">
+                <img
+                  src="images/logo-fv.svg"
+                  alt="Logo 'FINANCIERA EN VENTA'"
+                  width="208"
+                  height="66"
+                />
+              </a>
+            </nav>
+
+            <div class="footer__socials">
+              <p>Follow Us On Social Media</p>
+              <address>
+                <ul class="footer__socials">
+                  <li>
+                    <a
+                      href="https://www.instagram.com"
+                      target="_blank"
+                      aria-label="Instagram page"
+                    >
+                      <svg class="footer__socials-icon" width="34" height="34">
+                        <use href="images/icons.svg#icon-instagram"></use>
+                      </svg>
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://www.facebook.com"
+                      aria-label="Facebook page"
+                      target="_blank"
+                    >
+                      <svg class="footer__socials-icon" width="34" height="34">
+                        <use href="images/icons.svg#icon-facebook"></use>
+                      </svg>
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://www.twitter.com"
+                      aria-label="Twitter page"
+                      target="_blank"
+                    >
+                      <svg class="footer__socials-icon" width="34" height="34">
+                        <use href="images/icons.svg#icon-twitter"></use>
+                      </svg>
+                    </a>
+                  </li>
+                </ul>
+              </address>
+            </div>
           </div>
+          <img
+            class="footer__logo-image"
+            srcset="images/hero-section.avif 1x, images/hero-section@2x.avif 2x"
+            src="images/hero-section.avif"
+            alt="Logo image"
+          />
+          <p class="footer__address-copyright">
+            &copy; <span id="year"></span> NowinWEB. All Rights Reserved.
+          </p>
         </div>
       </div>
     </footer>
 
     <script src="./js/hidden-header.js"></script>
     <script src="./js/mobile-menu.js"></script>
-    <script src="./js/text-aligment.js"></script>
 
     <script src="https://unpkg.com/just-validate@latest/dist/just-validate.production.min.js"></script>
     <script src="./js/contact-form-validator.js"></script>

@@ -1,0 +1,18 @@
+.text-uppercase {
+  text-transform: uppercase;
+}
+
+.section-title {
+  margin-bottom: 24px;
+  font-family: 'Europe C', sans-serif;
+  font-size: 48px;
+  line-height: 1.5;
+
+  &--centered {
+    text-align: center;
+  }
+}
+
+.text-brand {
+  color: var(--color-brand);
+}

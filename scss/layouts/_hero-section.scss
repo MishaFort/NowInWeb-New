@@ -1,0 +1,130 @@
+.hero-section {
+  position: relative;
+
+  @media screen and (min-width: $bp-tablet) {
+    padding: 138px 0 55px;
+    height: 807px;
+    background-image: url(/images/hero-background-image.jpg);
+    background-repeat: no-repeat;
+    background-size: auto 100%;
+    background-position: center;
+  }
+
+  /* &::before {
+    content: ''; 
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 505px;
+    width: 100%;
+    background-image: url('../images/your-background.avif');
+    background-repeat: no-repeat;
+    background-size: auto 100%;
+    background-position: center;
+    z-index: -1;
+
+    @media screen and (min-device-pixel-ratio: 2),
+      (min-resolution: 192dpi),
+      (min-resolution: 2dppx) {
+      background-image: url('../images/hero-section-background-mobile@2x.avif');
+    }
+
+    @media screen and (min-width: $bp-tablet) {
+      background: none;
+    }
+  } */
+
+  &__container {
+    @media screen and (min-width: $bp-tablet) {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+  }
+
+  &__text-part {
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+    max-width: 532px;
+
+    /* @media screen and (min-width: $bp-tablet) {
+    } */
+  }
+
+  &__title,
+  &__text {
+    max-width: 460px;
+  }
+
+  &__title {
+    font-family: 'Europe C', sans-serif;
+    font-size: 60px;
+    line-height: 1.1; //?
+
+    /* @media screen and (min-width: $bp-tablet) {
+    } */
+  }
+
+  &__text {
+    line-height: 1.4;
+  }
+
+  &__buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  &__image {
+    margin-bottom: 32px;
+  }
+
+  &__running-stroke {
+    font-size: 36px;
+    line-height: 1.1;
+  }
+
+  &__social-container {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 14px;
+  }
+
+  &__social {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 64px;
+    height: 64px;
+    padding: 20px;
+    border-radius: 50%;
+
+    background: linear-gradient(
+      180deg,
+      rgba(58, 0, 128, 0.9) 0%,
+      rgba(26, 26, 26, 0.1) 100%
+    );
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    transition: background 0.4s ease;
+
+    &:hover {
+      background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.95) 0%,
+        rgba(240, 240, 240, 0.9) 100%
+      );
+
+      .hero-section__social-icon {
+        fill: var(--color-brand);
+      }
+    }
+  }
+
+  &__social-icon {
+    fill: var(--color-primary-light);
+    transition: fill 0.3s ease;
+  }
+}

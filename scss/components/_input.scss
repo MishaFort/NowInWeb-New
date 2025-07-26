@@ -1,0 +1,49 @@
+.input {
+  margin-bottom: 28px;
+
+  &__label {
+    margin-bottom: 20px;
+    font-weight: 700;
+    line-height: 1.6;
+  }
+
+  &__control {
+    margin-top: 12px;
+    padding: 10px 32px;
+    width: 100%;
+    max-width: 100%;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1.6;
+    border: 2px solid #000;
+    border-radius: 70px;
+
+    &:focus-within {
+      box-shadow: 0 0 0 0.8px black;
+    }
+
+    &:focus,
+    &:not(:placeholder-shown) {
+      outline: none;
+    }
+
+    &:-webkit-autofill,
+    &:-webkit-autofill:hover,
+    &:-webkit-autofill:focus,
+    &:-webkit-autofill:active {
+      outline: none;
+      -webkit-text-fill-color: inherit;
+      -webkit-box-shadow: 0 0 0 1000px rgb(255, 255, 255) inset;
+    }
+
+    &--mensaje {
+      border-radius: 30px;
+    }
+
+    &--success {
+      background-color: var(--color-brand);
+      transition: background-color 0.3s ease;
+    }
+  }
+}

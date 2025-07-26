@@ -1,0 +1,31 @@
+.link {
+  padding: 12px 16px;
+  color: var(--color-primary-light);
+  font-size: 16px;
+  line-height: 1.3;
+  text-decoration: none;
+  border: none;
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0);
+  border-radius: 14px;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.05),
+      rgba(255, 255, 255, 0.01)
+    );
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px); // для Safari
+    border: 1px solid rgba(97, 97, 105, 0.8);
+    box-shadow: -11.15px -10.39px 48px -12px rgba(0, 0, 0, 0.15),
+      -1.86px -1.73px 12px -8px rgba(0, 0, 0, 0.15),
+      inset 2.15px 2px 9.24px rgba(255, 255, 255, 0.126),
+      inset 1.22px 1.13px 4.62px rgba(255, 255, 255, 0.126);
+  }
+
+  &:visited {
+    color: var(--color-primary-light);
+  }
+}

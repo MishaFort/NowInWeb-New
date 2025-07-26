@@ -1,0 +1,51 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  padding: 20px 0;
+  background: rgba(255, 255, 255, 0.05); //більше контрасності кольору для шапки
+  backdrop-filter: blur(2px); //більше/менше розмиття
+  -webkit-backdrop-filter: blur(2px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: -11.15px -10.39px 48px -12px rgba(0, 0, 0, 0.15),
+    -1.86px -1.73px 12px -8px rgba(0, 0, 0, 0.15);
+  transition: top 0.4s ease-in-out;
+
+  /* &__burger {
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    fill: var(--color-primary-dark);
+    background-color: transparent;
+    border: none;
+
+    @media screen and (min-width: $bp-tablet) {
+      display: none;
+    }
+
+    & svg {
+      transform: scaleX(-1);
+    }
+  } */
+
+  &__nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    /* height: 45px; */
+  }
+
+  &__menu {
+    display: none;
+
+    @media screen and (min-width: $bp-tablet) {
+      display: flex;
+      flex-grow: 1;
+      justify-content: flex-end;
+      gap: 0.25rem;
+    }
+  }
+}

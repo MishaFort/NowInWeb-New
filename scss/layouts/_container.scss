@@ -1,0 +1,10 @@
+.container {
+  width: 100%;
+  max-width: 1328px;
+  margin: 0 auto;
+  padding: 0 20px;
+
+  @media screen and (min-width: $bp-tablet) {
+    padding: 0 24px;
+  }
+}

@@ -1,0 +1,9 @@
+.just-validate-error-label {
+  padding-top: 3px;
+  padding-left: 32px;
+  font-size: 14px;
+
+  @media screen and (min-width: $bp-tablet) {
+    font-size: 16px;
+  }
+}
