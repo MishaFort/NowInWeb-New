@@ -9,12 +9,11 @@
     /*  margin-top: 24px; */
     /* margin: 0 -96px; */
 
-    margin: 0 calc(-96px - (650px - 100dvh));
+    margin: 0 max(-220px, calc(-96px - max(0px, calc(650px - 100vh))));
 
-    /*697-8*/
-    /*  @media screen and (min-height: 698px) {
-      margin: 0 calc(-96px - (670px - 100dvh));
-    } */
+    @supports (height: 100dvh) {
+      margin: 0 max(-220px, calc(-96px - max(0px, calc(650px - 100dvh))));
+    }
   }
 
   &__br {
