@@ -13,29 +13,61 @@
     -1.86px -1.73px 12px -8px rgba(0, 0, 0, 0.15);
   transition: top 0.4s ease-in-out;
 
-  /* &__burger {
-    padding: 0;
-    width: 24px;
-    height: 24px;
-    fill: var(--color-primary-dark);
-    background-color: transparent;
-    border: none;
-
-    @media screen and (min-width: $bp-tablet) {
-      display: none;
-    }
-
-    & svg {
-      transform: scaleX(-1);
-    }
-  } */
-
   &__nav {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 2rem;
     /* height: 45px; */
+  }
+
+  &__logo {
+    display: inline-flex;
+    line-height: 0;
+    color: var(--color-primary-light);
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: var(--color-brand);
+    }
+  }
+
+  &__icon-logo {
+    fill: currentColor;
+  }
+
+  &__burger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 12px 16px;
+    width: 56px;
+    height: 48px;
+    /*  fill: var(--color-primary-light); */
+
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.05),
+      rgba(255, 255, 255, 0.01)
+    );
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px); // для Safari
+    border: 1px solid rgba(97, 97, 105, 0.8);
+    border-radius: 14px;
+    box-shadow: -11.15px -10.39px 48px -12px rgba(0, 0, 0, 0.15),
+      -1.86px -1.73px 12px -8px rgba(0, 0, 0, 0.15),
+      inset 2.15px 2px 9.24px rgba(255, 255, 255, 0.126),
+      inset 1.22px 1.13px 4.62px rgba(255, 255, 255, 0.126);
+
+    & svg {
+      display: block;
+      fill: var(--color-primary-light);
+    }
+
+    @media screen and (min-width: $bp-tablet) {
+      display: none;
+    }
   }
 
   &__menu {

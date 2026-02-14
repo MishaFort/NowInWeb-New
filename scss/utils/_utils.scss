@@ -10,3 +10,13 @@
 .fake-line {
   opacity: 0;
 }
+
+.is-scroll-disabled {
+  position: fixed;
+  overflow: hidden;
+  width: 100%;
+  left: 0;
+  right: 0;
+  top: var(--lock-top, 0px);
+  touch-action: none;
+}

@@ -1,9 +1,15 @@
 :root {
   --color-primary-dark: #000003;
   --color-primary-light: #ffffff;
-  --color-brand: #7200ff;
+  --color-brand: #6a22ea;
+  --color-background-light: #3a0080;
+  --header-h: 88px;
+  --base-pt: 44px;
+  --breath-dur: 900ms;
+  --breath-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 $bp-mobile: 480px;
 $bp-tablet: 768px;
-$bp-desktop: 1280px;
+$bp-laptop: 1140px;
+$bp-desktop: 1440px;

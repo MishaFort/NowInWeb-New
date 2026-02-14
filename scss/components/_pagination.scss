@@ -1,0 +1,73 @@
+.pagination {
+  --bullet: 12px;
+  --gap: 16px;
+  --pad: 12px; // +12px зліва і справа
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media (min-width: 1280px) {
+    --gap: 24px;
+  }
+
+  &__viewport {
+    --pad: 12px; /* можна 14-16 якщо хочеш ще */
+
+    /* ширина на 3 пулі + 2 gap + ПАДІНГИ */
+    width: calc(var(--bullet) * 3 + var(--gap) * 2 + var(--pad) * 2);
+
+    padding-inline: var(--pad);
+
+    overflow-x: hidden;
+    overflow-y: visible;
+    padding-block: 12px;
+
+    box-sizing: border-box; /* <-- ключ! */
+  }
+
+  &__track {
+    display: flex;
+    align-items: center;
+    gap: var(--gap);
+    flex-wrap: nowrap;
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+  }
+
+  &__button {
+    display: inline-block;
+    flex: 0 0 var(--bullet);
+    min-width: var(--bullet);
+
+    width: var(--bullet);
+    height: var(--bullet);
+    border-radius: 50%;
+    background: #999;
+    opacity: 0.5;
+
+    transition: transform 0.25s ease, opacity 0.25s ease,
+      background-color 0.25s ease;
+    cursor: pointer;
+
+    &:hover {
+      transform: scale(1.33);
+    }
+
+    &--active {
+      background: #7b61ff;
+      opacity: 1;
+      transform: scale(1.33);
+      pointer-events: none;
+      cursor: default;
+    }
+  }
+}
+
+/* на всяк: щоб не тягнуло стилі swiper-pagination */
+.portfolio-section__collage-nav .pagination {
+  position: static;
+  transform: none;
+  margin: 0;
+}

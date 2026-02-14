@@ -1,130 +1,232 @@
 .hero-section {
   position: relative;
+  display: flex;
+  align-items: center;
+
+  background-image: url('/images/hero-background-image.avif');
+  background-repeat: no-repeat;
+  background-size: auto 72%;
+  background-position: calc(
+      -192px + ((100vw - 375px) / 2) + ((100vh - 667px) * -0.39)
+    )
+    110px;
+
+  @supports (height: 100dvh) {
+    background-position: calc(
+        -192px + ((100vw - 375px) / 2) + ((100dvh - 667px) * -0.39)
+      )
+      110px;
+  }
+
+  @media (-webkit-min-device-pixel-ratio: 2),
+    (min-resolution: 192dpi),
+    (min-resolution: 2dppx) {
+    background-image: url('/images/hero-background-image@2x.avif');
+  }
 
   @media screen and (min-width: $bp-tablet) {
-    padding: 138px 0 55px;
-    height: 807px;
-    background-image: url(/images/hero-background-image.jpg);
-    background-repeat: no-repeat;
-    background-size: auto 100%;
-    background-position: center;
+    background-size: auto 90.6%;
+    background-position: calc(
+        -358px + ((100vw - 768px) / 2) + ((100vh - 920px) * -0.39)
+      )
+      132px;
+
+    @supports (height: 100dvh) {
+      background-position: calc(
+          -358px + ((100vw - 768px) / 2) + ((100dvh - 920px) * -0.39)
+        )
+        132px;
+    }
   }
 
-  /* &::before {
-    content: ''; 
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 505px;
-    width: 100%;
-    background-image: url('../images/your-background.avif');
-    background-repeat: no-repeat;
+  @media screen and (min-width: $bp-desktop) {
     background-size: auto 100%;
-    background-position: center;
-    z-index: -1;
-
-    @media screen and (min-device-pixel-ratio: 2),
-      (min-resolution: 192dpi),
-      (min-resolution: 2dppx) {
-      background-image: url('../images/hero-section-background-mobile@2x.avif');
-    }
-
-    @media screen and (min-width: $bp-tablet) {
-      background: none;
-    }
-  } */
+  }
 
   &__container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+
     @media screen and (min-width: $bp-tablet) {
-      display: flex;
-      justify-content: space-between;
-      gap: 1rem;
+      gap: 72px;
+    }
+
+    @media screen and (min-width: $bp-laptop) {
+      flex-direction: row;
+      /*   justify-content: space-between; */
+      justify-content: center;
+    }
+
+    @media screen and (min-width: $bp-desktop) {
+      gap: 100px;
     }
   }
 
-  &__text-part {
+  &__left-part {
     display: flex;
     flex-direction: column;
-    gap: 60px;
-    max-width: 532px;
+    align-items: center;
+    gap: 16px;
 
-    /* @media screen and (min-width: $bp-tablet) {
-    } */
+    @media screen and (min-width: $bp-laptop) {
+      align-items: flex-start;
+      gap: 45px;
+      /* max-width: 432px; */
+      max-width: 392px;
+    }
+
+    @media screen and (min-width: $bp-desktop) {
+      gap: 60px;
+      max-width: 100%;
+    }
   }
 
   &__title,
   &__text {
-    max-width: 460px;
+    text-align: center;
+
+    @media screen and (min-width: $bp-tablet) {
+      max-width: 480px;
+    }
+
+    /* @media screen and (min-width: $bp-laptop) {
+      max-width: 520px;
+    } */
   }
 
   &__title {
     font-family: 'Europe C', sans-serif;
-    font-size: 60px;
-    line-height: 1.1; //?
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 1;
 
-    /* @media screen and (min-width: $bp-tablet) {
-    } */
+    @media screen and (min-width: $bp-tablet) {
+      font-size: 48px;
+    }
+
+    @media screen and (min-width: $bp-laptop) {
+      text-align: start;
+      font-size: 45px;
+    }
+
+    @media screen and (min-width: $bp-desktop) {
+      font-size: 60px;
+    }
   }
 
   &__text {
+    max-width: 350px;
+    font-size: 14px;
     line-height: 1.4;
+
+    @media screen and (min-width: $bp-tablet) {
+      max-width: 480px;
+      font-size: 20px;
+      text-align: start;
+    }
+
+    @media screen and (min-width: $bp-laptop) {
+      max-width: 100%;
+      font-size: 18px;
+    }
+
+    @media screen and (min-width: $bp-desktop) {
+      font-size: 20px;
+    }
   }
 
   &__buttons {
     display: flex;
     justify-content: space-between;
-    gap: 1rem;
+    gap: 1.8rem;
+
+    @media screen and (min-width: $bp-tablet) {
+      gap: 1.5rem;
+    }
+
+    @media screen and (min-width: $bp-laptop) {
+      /* justify-content: space-between; */
+      width: 100%;
+      /* padding-inline: 12px; */
+    }
   }
 
   &__image {
-    margin-bottom: 32px;
-  }
+    display: inline-block;
 
-  &__running-stroke {
-    font-size: 36px;
-    line-height: 1.1;
-  }
+    &--mobile {
+      @media (min-width: $bp-tablet) {
+        display: none;
+      }
+    }
 
-  &__social-container {
-    display: flex;
-    justify-content: flex-end;
-    padding-top: 14px;
-  }
+    &--tablet {
+      display: none;
 
-  &__social {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+      @media (min-width: $bp-tablet) {
+        display: block;
+      }
 
-    width: 64px;
-    height: 64px;
-    padding: 20px;
-    border-radius: 50%;
+      @media (min-width: $bp-laptop) {
+        display: none;
+      }
+    }
 
-    background: linear-gradient(
-      180deg,
-      rgba(58, 0, 128, 0.9) 0%,
-      rgba(26, 26, 26, 0.1) 100%
-    );
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-    cursor: pointer;
-    transition: background 0.4s ease;
+    &--laptop {
+      display: none;
 
-    &:hover {
-      background: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.95) 0%,
-        rgba(240, 240, 240, 0.9) 100%
-      );
+      @media (min-width: $bp-laptop) {
+        display: block;
+      }
 
-      .hero-section__social-icon {
-        fill: var(--color-brand);
+      @media (min-width: $bp-desktop) {
+        display: none;
+      }
+    }
+
+    &--desktop {
+      display: none;
+
+      @media (min-width: $bp-desktop) {
+        display: block;
       }
     }
   }
 
-  &__social-icon {
-    fill: var(--color-primary-light);
-    transition: fill 0.3s ease;
+  &__running-stroke-wrapper {
+    min-height: 64px;
+
+    @media (min-width: $bp-tablet) {
+      min-height: 100%;
+    }
+  }
+
+  &__running-stroke {
+    padding-top: 12px;
+    max-width: 180px;
+    height: 100%;
+
+    font-family: 'Europe C', sans-serif;
+    font-size: 22px;
+    line-height: 1.1;
+    text-align: center;
+
+    @media (min-width: $bp-tablet) {
+      max-width: 100%;
+      font-size: 36px;
+    }
+
+    @media (min-width: $bp-laptop) {
+      padding-top: 24px;
+      padding-left: 36px;
+      font-size: 26px;
+      text-align: start;
+    }
+
+    @media (min-width: $bp-desktop) {
+      font-size: 36px;
+    }
   }
 }

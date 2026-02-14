@@ -1,27 +1,159 @@
 .button {
-  min-width: 240px;
+  position: relative;
+  min-width: 143px;
   padding: 1.2rem;
   color: var(--color-primary-light);
   background: rgba(255, 255, 255, 0.068);
   backdrop-filter: blur(15.16px);
   -webkit-backdrop-filter: blur(15.16px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 14px;
-  box-shadow: -11.15px -10.39px 48px -12px rgba(0, 0, 0, 0.15),
+  border-radius: 8px;
+  box-shadow:
+    -11.15px -10.39px 48px -12px rgba(0, 0, 0, 0.15),
     -1.86px -1.73px 12px -8px rgba(0, 0, 0, 0.15),
     inset 2.15px 2px 9.24px rgb(255, 255, 255, 0.126),
     inset 1.22px 1.13px 4.62px rgb(255, 255, 255, 0.126);
+
   font-family: 'Kreadon', sans-serif;
-  font-size: 24px;
-  line-height: 1.2;
+  font-size: 16px;
+  line-height: 1.1;
   text-align: center;
   cursor: pointer;
   text-decoration: none;
   transition: border-color 0.3s ease;
 
+  @media screen and (min-width: $bp-tablet) {
+    min-width: 240px;
+    border-radius: 14px;
+    font-size: 24px;
+    line-height: 1.2;
+  }
+
+  &--hero {
+    padding: 12px 14px;
+    transition: transform 0.3s ease;
+
+    @media screen and (min-width: $bp-tablet) {
+      padding: 1.2rem 2rem;
+    }
+
+    @media screen and (min-width: $bp-laptop) {
+      min-width: 184px;
+      padding: 16px 24px;
+      font-size: 18px;
+    }
+
+    @media screen and (min-width: $bp-desktop) {
+      min-width: 240px;
+      padding: 20px 28px;
+      font-size: 24px;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 10px;
+      background: repeating-linear-gradient(
+        130deg,
+        var(--color-brand) 0%,
+        rgb(189, 59, 185) 20%,
+        rgb(176, 151, 207) 40%,
+        rgb(189, 59, 185) 60%,
+        var(--color-brand) 80%,
+        rgb(189, 59, 185) 100%
+      );
+      background-size: 200% 200%;
+      background-position: 200% 50%;
+      z-index: -2;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      animation: borderFlow 3.5s linear infinite;
+
+      @media screen and (min-width: $bp-tablet) {
+        border-radius: 16px;
+      }
+    }
+
+    &:hover {
+      transform: scale(1.01);
+    }
+
+    &:hover::before {
+      opacity: 1;
+    }
+  }
+
+  @keyframes borderFlow {
+    0% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 200% 50%;
+    }
+  }
+
+  &--arrow {
+    display: flex;
+    justify-content: flex-end;
+    gap: 4px;
+    min-width: 160px;
+    padding: 14px 12px;
+    font-size: 12px;
+    line-height: 1.75;
+    /* line-height: 1; */
+    /* background-color: rgba(0, 0, 0, 0.45); */
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: box-shadow 0.1s ease;
+
+    @media screen and (min-width: $bp-tablet) {
+      gap: 6px;
+      min-width: 210px;
+      padding: 18px 14px;
+      font-size: 16px;
+    }
+
+    @media screen and (min-width: $bp-laptop) {
+      gap: 4px;
+      min-width: 160px;
+      padding: 14px 12px;
+      font-size: 12px;
+    }
+
+    @media screen and (min-width: $bp-desktop) {
+      gap: 6px;
+      min-width: 210px;
+      padding: 18px 14px;
+      font-size: 16px;
+    }
+
+    &:hover {
+      box-shadow: 0 4px 6px 1px rgba(187, 170, 209, 0.8);
+      border-color: var(--color-primary-light);
+    }
+  }
+
   &__icon {
+    align-self: center;
+    width: 22px;
+    height: 22px;
     fill: var(--color-primary-light);
     transition: transform 0.3s ease;
+
+    @media screen and (min-width: $bp-tablet) {
+      width: 28px;
+      height: 28px;
+    }
+
+    @media screen and (min-width: $bp-laptop) {
+      width: 22px;
+      height: 22px;
+    }
+
+    @media screen and (min-width: $bp-desktop) {
+      width: 28px;
+      height: 28px;
+    }
   }
 
   &:hover {
@@ -32,24 +164,13 @@
     }
   }
 
-  &--arrow {
-    display: flex;
-    justify-content: flex-end;
-    gap: 4px;
-    min-width: 236px;
-    padding: 18px;
-    font-size: 18px;
-    line-height: 1.55;
-
-    /* background-color: rgba(0, 0, 0, 0.45); */
-    background-color: rgba(0, 0, 0, 0.5);
-    transition: box-shadow 0.1s ease;
-
-    &:hover {
-      /* box-shadow: 0 4px 6px 1px rgba(114, 0, 255, 0.8); */
-      box-shadow: 0 4px 6px 1px rgba(187, 170, 209, 0.8);
-      border-color: var(--color-primary-light);
-    }
+  &--centered {
+    justify-content: center;
+    align-items: center;
+    margin-top: 12px;
+    padding-left: 1.4rem;
+    font-size: 20px;
+    line-height: 1.4;
   }
 }
 

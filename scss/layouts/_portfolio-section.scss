@@ -1,0 +1,38 @@
+.portfolio-section {
+  background: linear-gradient(
+    180deg,
+    var(--color-background-light) 0%,
+    var(--color-primary-dark) 63.91%
+  );
+
+  &__image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 30px;
+    overflow: hidden;
+  }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+    /* object-fit: cover; */
+    object-fit: fill;
+  }
+
+  &__collage-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    padding-top: 32px;
+    padding-block: 12px;
+  }
+}
+
+.swiper {
+  width: 100%;
+  max-width: 1018px;
+  aspect-ratio: 1018 / 422;
+  margin: 0 auto;
+}

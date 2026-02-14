@@ -5,14 +5,22 @@
 @import './base';
 
 @import './components/buttons';
+@import './components/carousel-button';
+@import './components/changing-word';
 @import './components/contact-validation';
+@import './components/floating-button';
 @import './components/input';
 @import './components/links';
+@import './components/pagination';
 @import './components/services-card';
+@import './components/side-nav';
 
 @import './layouts/contact-section';
 @import './layouts/container';
 @import './layouts/footer';
 @import './layouts/header';
 @import './layouts/hero-section';
+@import './layouts/mobile-menu';
+@import './layouts/portfolio-section';
+@import './layouts/section';
 @import './layouts/services-section';

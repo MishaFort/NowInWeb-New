@@ -1,0 +1,107 @@
+/* ===== 1) Базова секція ===== */
+.section {
+  display: flex;
+  align-items: center;
+  padding-top: calc(var(--base-pt) + var(--pad-comp, 0px));
+
+  /* каскад висот для різних браузерів */
+  min-height: 100vh;
+  height: 100vh;
+  height: 100svh;
+  height: 100dvh;
+
+  overflow: hidden;
+  /* overflow-x: hidden;
+  overflow-y: visible; */
+
+  &__title {
+    margin: 0 auto 8px;
+    /* max-width: 1080px; */
+    font-family: 'Europe C', sans-serif;
+    font-size: 32px;
+    line-height: 1.5;
+
+    @media screen and (min-width: $bp-tablet) {
+      font-size: 40px;
+    }
+
+    @media screen and (min-width: $bp-laptop) {
+      margin-bottom: 24px;
+      font-size: 38px;
+    }
+
+    @media screen and (min-width: $bp-desktop) {
+      font-size: 48px;
+    }
+
+    &--centered {
+      text-align: center;
+    }
+  }
+}
+
+/* ===== 2) Зовнішній шар: підгонка під в’юпорт (fit-scale) ===== */
+.section .section__scaling {
+  transform-origin: center center;
+  transform: scale(var(--fit-scale, 1));
+  /* без transition тут — щоб не фризити при перерахунку fit */
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+/* ===== 3) Внутрішній шар: «дихання» (0.92 ↔ 1) ===== */
+/* дефолт: усі секції деактивні (0.92); активна плавно до 1 */
+.section .section__breath {
+  --scale: 0.92; /* базова зменшена */
+  transform-origin: center center;
+  transform: translateZ(0) scale(var(--scale, 0.92));
+  transition: transform var(--breath-dur, 900ms)
+    var(--breath-ease, cubic-bezier(0.22, 0.61, 0.36, 1));
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+.section.is-active .section__breath {
+  --scale: 1;
+}
+/* .is-leaving не обов’язковий: повернення до 0.92 забезпечує базове значення */
+
+/* ===== 4) Заморозка перед футером ===== */
+/* Коли ми на футері — передостанню секцію фіксуємо без анімації і без scale */
+.at-footer .section:last-of-type .section__breath {
+  transition: none !important;
+  transform: none !important; /* еквівалент scale(1) */
+  --scale: 1 !important; /* на випадок, якщо inline-вар змінювався */
+}
+
+/* Технічна заборона «дихання» під час переходу ↔ футер (з боку JS) */
+.section.no-breath-temp .section__breath,
+.section.no-breath-temp.is-active .section__breath,
+.section.no-breath-temp.is-leaving .section__breath {
+  animation: none !important;
+  transition: none !important;
+  transform: none !important; /* залишаємо лише зовнішній fit-scale */
+  --scale: 1 !important;
+}
+
+/* ===== 5) Одноразове дихання на старті (опціонально) ===== */
+.breath-once .section__breath {
+  animation: breathIn var(--breath-dur, 900ms)
+    var(--breath-ease, cubic-bezier(0.22, 0.61, 0.36, 1)) 1 both;
+}
+@keyframes breathIn {
+  from {
+    transform: translateZ(0) scale(0.92);
+  }
+  to {
+    transform: translateZ(0) scale(1);
+  }
+}
+
+/* ===== 6) Повага до reduce-motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  .section .section__breath {
+    transition: none !important;
+    animation: none !important;
+  }
+}

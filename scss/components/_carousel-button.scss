@@ -1,0 +1,33 @@
+.carousel-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  fill: #999999;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: fill 0.2s, scale 0.2s;
+
+  &:hover {
+    fill: #7b61ff;
+    scale: 1.1;
+  }
+
+  &.next {
+    transform: rotate(180deg);
+  }
+
+  &:disabled {
+    /* cursor: default; */
+    fill: #999999; // як у звичайному стані
+  }
+
+  &:disabled:hover {
+    fill: #999999; // щоб hover не міняв колір
+    /* scale: 1; */ // і не збільшував
+  }
+}

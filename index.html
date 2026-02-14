@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -7,29 +7,144 @@
     <title>NOW IN WEB</title>
     <link rel="stylesheet" href="./css/main.min.css" />
 
-    <link rel="icon" href="images/logo.svg" type="image/svg+xml" />
+    <link rel="icon" href="images/favicon.svg" type="image/svg+xml" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+    />
   </head>
 
   <body>
+    <!--                    Floating button                      -->
+    <div class="floating-button">
+      <a
+        class="floating-button__link"
+        href="https://wa.me/380937079500"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="WhatsApp"
+      >
+        <svg
+          class="floating-button__icon floating-button__icon--whatsapp"
+          width="42"
+          height="42"
+        >
+          <use xlink:href="images/icons.svg#icon-whatsapp"></use>
+        </svg>
+      </a>
+
+      <a
+        class="floating-button__link"
+        href="https://t.me/NowInWEB"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Telegram"
+      >
+        <img
+          class="floating-button__icon"
+          width="35"
+          height="35"
+          src="./images/telegram-icon.svg"
+          alt="Telegram icon"
+        />
+      </a>
+    </div>
     <!--                    ХЕДЕР                      -->
     <header class="header">
       <div class="container">
         <nav class="header__nav">
-          <a href="/">
-            <img
-              src="images/logo.svg"
-              alt="Logo 'Now in Web'"
+          <a class="header__logo" href="/">
+            <svg
+              class="header__icon-logo"
               width="40"
               height="40"
-            />
+              aria-label="Now in Web logo"
+            >
+              <use xlink:href="images/icons.svg#icon-logo"></use>
+            </svg>
           </a>
+
+          <button
+            class="header__burger menu-btn-open"
+            type="button"
+            aria-label="Open navigation menu"
+          >
+            <svg width="24" height="24">
+              <use href="./images/icons.svg#icon-menu"></use>
+            </svg>
+          </button>
+
+          <nav class="mobile-menu" aria-label="Mobile menu">
+            <button class="mobile-menu__btn-close menu-btn-close" type="button">
+              <p class="visually-hidden">Close burger menu</p>
+              <svg width="28" height="28">
+                <use href="./images/icons.svg#icon-close"></use>
+              </svg>
+            </button>
+            <a class="header__logo" href="/">
+              <svg
+                class="header__icon-logo"
+                width="40"
+                height="40"
+                aria-label="Now in Web logo"
+              >
+                <use xlink:href="images/icons.svg#icon-logo"></use>
+              </svg>
+            </a>
+            <ul class="mobile-menu__list">
+              <li>
+                <a
+                  class="link link--active mobile-menu-link"
+                  href="#hero-section"
+                  >Home</a
+                >
+              </li>
+              <li>
+                <a
+                  class="link link--active mobile-menu-link"
+                  href="#services-section"
+                >
+                  Services
+                </a>
+              </li>
+              <li>
+                <a
+                  class="link link--active mobile-menu-link"
+                  href="#portfolio-section"
+                >
+                  Our works
+                </a>
+              </li>
+              <li>
+                <a
+                  class="link link--active mobile-menu-link"
+                  href="#contact-section"
+                >
+                  Contact us
+                </a>
+              </li>
+              <li>
+                <a class="link link--active mobile-menu-link" href="#footer">
+                  About us
+                </a>
+              </li>
+            </ul>
+            <img
+              class="mobile-menu__logo-text"
+              width="294"
+              height="95"
+              src="./images/now-in-web-text-white.svg"
+              alt="Now in Web logo"
+            />
+          </nav>
+
           <ul class="header__menu">
-            <li><a class="link" href="#">Home</a></li>
+            <li><a class="link" href="#hero-section">Home</a></li>
             <li>
               <a class="link" href="#services-section">Services</a>
             </li>
             <li>
-              <a class="link" href="#portfolio-section">Our work</a>
+              <a class="link" href="#portfolio-section">Our works</a>
             </li>
             <li>
               <a class="link" href="#contact-section">Contact us</a>
@@ -43,423 +158,731 @@
     </header>
 
     <!--                    МЕЙН                       -->
-    <main>
-      <!--                   Section 1                       -->
-      <section class="hero-section">
-        <div class="container">
-          <div class="hero-section__container">
-            <div class="hero-section__text-part">
-              <h1 class="hero-section__title">
-                We create your<br />
-                own history in each pixel
-              </h1>
-              <p class="hero-section__text">
-                We believe real design begins with you. <br />
-                Together, we create stories that live in every pixel — with
-                meaning, clarity, and soul.
-              </p>
-              <div class="hero-section__buttons">
-                <a href="#" class="button"> Begin your story </a>
-                <a href="#" class="button"> See our work </a>
+    <div id="page">
+      <main>
+        <!--                   Section 1                       -->
+        <section class="hero-section section" id="hero-section">
+          <div class="container section__scaling">
+            <div class="hero-section__container">
+              <div class="hero-section__left-part">
+                <h1 class="hero-section__title">
+                  We <span class="text-brand">create</span> your<br />
+                  own history
+                  <span class="text-brand"><br />in each pixel</span>
+                </h1>
+                <img
+                  class="hero-section__image hero-section__image--mobile"
+                  width="204"
+                  height="138"
+                  srcset="
+                    images/hero-logo-mobile.png    1x,
+                    images/hero-logo-mobile@2x.png 2x
+                  "
+                  src="images/hero-logo-mobile.png"
+                  alt="Logo 'Now in Web'"
+                />
+                <img
+                  class="hero-section__image hero-section__image--tablet"
+                  width="348"
+                  height="232"
+                  srcset="
+                    images/hero-logo-tablet.png    1x,
+                    images/hero-logo-tablet@2x.png 2x
+                  "
+                  src="images/hero-logo-tablet.png"
+                  alt="Logo 'Now in Web'"
+                />
+
+                <p class="hero-section__text">
+                  We believe real design begins with you. <br />
+                  Together, we create stories that live in every pixel — with
+                  meaning, clarity, and soul.
+                </p>
+
+                <div class="hero-section__buttons">
+                  <a href="#contact-section" class="button button--hero">
+                    Begin your story
+                  </a>
+                  <a href="#portfolio-section" class="button button--hero">
+                    See our work
+                  </a>
+                </div>
+              </div>
+
+              <div class="hero-section__right-part">
+                <img
+                  class="hero-section__image hero-section__image--laptop"
+                  width="485"
+                  height="326"
+                  srcset="
+                    images/hero-logo-laptop.png    1x,
+                    images/hero-logo-laptop@2x.png 2x
+                  "
+                  src="images/hero-logo-laptop.png"
+                  alt="Logo 'Now in Web'"
+                />
+                <img
+                  class="hero-section__image hero-section__image--desktop"
+                  width="649"
+                  height="440"
+                  srcset="
+                    images/hero-logo-desktop.png    1x,
+                    images/hero-logo-desktop@2x.png 2x
+                  "
+                  src="images/hero-logo-desktop.png"
+                  alt="Logo 'Now in Web'"
+                />
+                <div class="hero-section__running-stroke-wrapper">
+                  <p class="hero-section__running-stroke">
+                    <span class="static-text"></span>
+                    <span class="changing-word"></span>
+                  </p>
+                </div>
               </div>
             </div>
-            <div>
-              <img
-                class="hero-section__image"
-                src="images/hero-logo-large.png"
-                alt="Logo 'Now in Web'"
-                width="649"
-                height="436"
-              />
-
-              <p class="hero-section__running-stroke">Your brand is bold...</p>
-            </div>
           </div>
-          <div class="hero-section__social-container">
-            <div class="hero-section__social">
-              <svg class="hero-section__social-icon" width="24" height="24">
-                <use xlink:href="images/icons.svg#icon-whatsapp"></use>
-              </svg>
-            </div>
-          </div>
-        </div>
-      </section>
-      <!--                   Section 2                     -->
-      <section class="services-section" id="services-section">
-        <div class="container">
-          <h2 class="section-title section-title--centered">
-            <span class="text-brand">Our</span> services
-          </h2>
-          <ul class="services-section__list">
-            <li class="services-section__item services-card__border">
-              <article class="services-card">
-                <img
-                  width="172px"
-                  height="172px"
-                  srcset="
-                    images/services-graphic.png    1x,
-                    images/services-graphic@2x.png 2x
-                  "
-                  src="images/services-graphic.png"
-                  alt="Graphic icon"
-                />
-                <div
-                  class="services-card__text-container services-card__text-container--resticted"
+        </section>
+        <!--                   Section 2                     -->
+        <section class="services-section section" id="services-section">
+          <div class="container section__scaling">
+            <h2 class="section__title section__title--centered">
+              <span class="text-brand">Our</span> services
+            </h2>
+            <div class="swiper-container">
+              <ul class="services-section__list swiper-wrapper">
+                <li
+                  class="services-section__item services-card__border swiper-slide"
                 >
-                  <h3 class="services-card__title">Main Graphic Design</h3>
-                  <p class="services-card__main-text">
-                    Visuals that speak louder than words. From logos to identity
-                    — built to impress.
-                  </p>
-                </div>
-                <button class="button button--arrow" type="button">
-                  <span>Begin your story here</span>
-                  <svg class="button__icon" width="28" height="28">
-                    <use href="images/icons.svg#icon-arrow"></use>
-                  </svg>
-                </button>
-              </article>
-            </li>
-            <li class="services-section__item services-card__border">
-              <article class="services-card">
-                <img
-                  width="172px"
-                  height="172px"
-                  srcset="
-                    images/services-web-design.png    1x,
-                    images/services-web-design@2x.png 2x
-                  "
-                  src="images/services-web-design.png"
-                  alt="Web design icon"
-                />
-                <div class="services-card__text-container">
-                  <h3 class="services-card__title">
-                    Web<br />
-                    Design
-                  </h3>
-                  <p class="services-card__main-text">
-                    Websites that don’t just exist — they wow. <br />
-                    Sharp structure, bold visuals, clear intent.
-                  </p>
-                </div>
-                <button class="button button--arrow" type="button">
-                  <span>Begin your story here</span>
-                  <svg class="button__icon" width="28" height="28">
-                    <use href="images/icons.svg#icon-arrow"></use>
-                  </svg>
-                </button>
-              </article>
-            </li>
-            <li class="services-section__item services-card__border">
-              <article class="services-card">
-                <img
-                  width="172px"
-                  height="172px"
-                  srcset="
-                    images/services-social.png    1x,
-                    images/services-social@2x.png 2x
-                  "
-                  src="images/services-social.png"
-                  alt="Social icon"
-                />
-                <div class="services-card__text-container">
-                  <h3 class="services-card__title">
-                    Social Media <br />Design
-                  </h3>
-                  <p class="services-card__main-text">
-                    Content that stops the scroll. <br />
-                    Bold posts, sharp stories, magnetic ads.
-                  </p>
-                </div>
-                <button class="button button--arrow" type="button">
-                  <span>Begin your story here</span>
-                  <svg class="button__icon" width="28" height="28">
-                    <use href="images/icons.svg#icon-arrow"></use>
-                  </svg>
-                </button>
-              </article>
-            </li>
-            <li class="services-section__item services-card__border">
-              <article class="services-card">
-                <img
-                  width="172px"
-                  height="172px"
-                  srcset="
-                    images/services-ux.png    1x,
-                    images/services-ux@2x.png 2x
-                  "
-                  src="images/services-ux.png"
-                  alt="UX/UI icon"
-                />
-                <div class="services-card__text-container">
-                  <h3 class="services-card__title">
-                    UX/UI<br />
-                    Design
-                  </h3>
-                  <p class="services-card__main-text">
-                    Interfaces that feel natural and work smart. <br />
-                    Every click has a reason — and a result.
-                  </p>
-                </div>
-                <button class="button button--arrow" type="button">
-                  <span>Begin your story here</span>
-                  <svg class="button__icon" width="28" height="28">
-                    <use href="images/icons.svg#icon-arrow"></use>
-                  </svg>
-                </button>
-              </article>
-            </li>
-          </ul>
-        </div>
-      </section>
+                  <article class="services-card">
+                    <img
+                      class="services-card__image"
+                      width="172"
+                      height="172"
+                      srcset="
+                        images/services-graphic.png    1x,
+                        images/services-graphic@2x.png 2x
+                      "
+                      src="images/services-graphic.png"
+                      alt="Graphic icon"
+                    />
+                    <div
+                      class="services-card__text-container services-card__text-container--restricted"
+                    >
+                      <h3 class="services-card__title">Main Graphic Design</h3>
+                      <p class="services-card__main-text">
+                        From symbol to brand story: logo and brand book that
+                        define your uniqueness.
+                      </p>
+                    </div>
+                    <button class="button button--arrow" type="button">
+                      <span>Begin your story here</span>
+                      <svg class="button__icon" width="28" height="28">
+                        <use href="images/icons.svg#icon-arrow"></use>
+                      </svg>
+                    </button>
+                  </article>
+                </li>
+                <li
+                  class="services-section__item services-card__border swiper-slide"
+                >
+                  <article class="services-card">
+                    <img
+                      class="services-card__image"
+                      width="172"
+                      height="172"
+                      srcset="
+                        images/services-web-design.png    1x,
+                        images/services-web-design@2x.png 2x
+                      "
+                      src="images/services-web-design.png"
+                      alt="Web design icon"
+                    />
+                    <div class="services-card__text-container">
+                      <h3 class="services-card__title">
+                        Web<br />
+                        Design
+                      </h3>
+                      <p class="services-card__main-text">
+                        Websites that don’t just exist — they wow. <br />
+                        Sharp structure, bold visuals, clear intent.
+                      </p>
+                    </div>
+                    <button class="button button--arrow" type="button">
+                      <span>Begin your story here</span>
+                      <svg class="button__icon" width="28" height="28">
+                        <use href="images/icons.svg#icon-arrow"></use>
+                      </svg>
+                    </button>
+                  </article>
+                </li>
+                <li
+                  class="services-section__item services-card__border swiper-slide"
+                >
+                  <article class="services-card">
+                    <img
+                      class="services-card__image"
+                      width="172"
+                      height="172"
+                      srcset="
+                        images/services-social.png    1x,
+                        images/services-social@2x.png 2x
+                      "
+                      src="images/services-social.png"
+                      alt="Social icon"
+                    />
+                    <div class="services-card__text-container">
+                      <h3 class="services-card__title">
+                        Social Media <br />Design
+                      </h3>
+                      <p class="services-card__main-text">
+                        Content that stops the scroll. <br />
+                        Bold posts, sharp stories, magnetic ads.
+                      </p>
+                    </div>
+                    <button class="button button--arrow" type="button">
+                      <span>Begin your story here</span>
+                      <svg class="button__icon" width="28" height="28">
+                        <use href="images/icons.svg#icon-arrow"></use>
+                      </svg>
+                    </button>
+                  </article>
+                </li>
+                <li
+                  class="services-section__item services-card__border swiper-slide"
+                >
+                  <article class="services-card">
+                    <img
+                      class="services-card__image"
+                      width="172"
+                      height="172"
+                      srcset="
+                        images/services-ux.png    1x,
+                        images/services-ux@2x.png 2x
+                      "
+                      src="images/services-ux.png"
+                      alt="UX/UI icon"
+                    />
+                    <div class="services-card__text-container">
+                      <h3 class="services-card__title">
+                        UX/UI<br />
+                        Design
+                      </h3>
+                      <p class="services-card__main-text">
+                        Interfaces that feel natural and work smart. <br />
+                        Every click has a reason — and a result.
+                      </p>
+                    </div>
+                    <button class="button button--arrow" type="button">
+                      <span>Begin your story here</span>
+                      <svg class="button__icon" width="28" height="28">
+                        <use href="images/icons.svg#icon-arrow"></use>
+                      </svg>
+                    </button>
+                  </article>
+                </li>
+                <li
+                  class="services-section__item services-card__border swiper-slide"
+                >
+                  <article class="services-card">
+                    <img
+                      class="services-card__image"
+                      width="172"
+                      height="172"
+                      srcset="
+                        images/services-coding-programing.png    1x,
+                        images/services-coding-programing@2x.png 2x
+                      "
+                      src="images/services-coding-programing.png"
+                      alt="UX/UI icon"
+                    />
+                    <div
+                      class="services-card__text-container services-card__text-container--restricted"
+                    >
+                      <h3 class="services-card__title">Coding & Programming</h3>
+                      <p class="services-card__main-text">
+                        We turn design into living code – from pixel to line,
+                        from idea to a functional website.
+                      </p>
+                    </div>
+                    <button class="button button--arrow" type="button">
+                      <span>Begin your story here</span>
+                      <svg class="button__icon" width="28" height="28">
+                        <use href="images/icons.svg#icon-arrow"></use>
+                      </svg>
+                    </button>
+                  </article>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
 
-      <!--                   Section 3                     -->
-      <section class="portfolio-section" id="portfolio-section">
-        <div class="container">
-          <div class="portfolio-section__title">
-            <h2 class="section-title">Our <span>Works</span></h2>
-            <p class="portfolio-section__title-text">
-              Dive into the stories we’ve shaped — pixel by pixel.<br />
-              Each project is a unique journey where bold ideas met thoughtful
-              design.<br />
-              Let the visuals tell you what words can’t.
+        <!--                   Section 3                     -->
+        <section class="portfolio-section section" id="portfolio-section">
+          <div class="container section__scaling">
+            <h2 class="section__title section__title--centered">
+              Our <span class="text-brand">Works</span>
+            </h2>
+            <div class="swiper">
+              <ul class="swiper-wrapper">
+                <li class="swiper-slide">
+                  <div class="portfolio-section__image-wrapper">
+                    <img
+                      class="portfolio-section__image"
+                      width="1018"
+                      height="422"
+                      src="./images/portfolio-ex-1.avif"
+                      alt="Work example"
+                    />
+                  </div>
+                </li>
+                <li class="swiper-slide">
+                  <div class="portfolio-section__image-wrapper">
+                    <img
+                      class="portfolio-section__image"
+                      width="1018"
+                      height="422"
+                      src="./images/portfolio-ex-2.avif"
+                      alt="Work example"
+                    />
+                  </div>
+                </li>
+                <li class="swiper-slide">
+                  <div class="portfolio-section__image-wrapper">
+                    <img
+                      class="portfolio-section__image"
+                      width="1018"
+                      height="422"
+                      src="./images/portfolio-ex-3.avif"
+                      alt="Work example"
+                    />
+                  </div>
+                </li>
+                <li class="swiper-slide">
+                  <div class="portfolio-section__image-wrapper">
+                    <img
+                      class="portfolio-section__image"
+                      width="1018"
+                      height="422"
+                      src="./images/portfolio-ex-4.avif"
+                      alt="Work example"
+                    />
+                  </div>
+                </li>
+                <li class="swiper-slide">
+                  <div class="portfolio-section__image-wrapper">
+                    <img
+                      class="portfolio-section__image"
+                      width="1018"
+                      height="422"
+                      src="./images/portfolio-ex-5.avif"
+                      alt="Work example"
+                    />
+                  </div>
+                </li>
+                <li class="swiper-slide">
+                  <div class="portfolio-section__image-wrapper">
+                    <img
+                      class="portfolio-section__image"
+                      width="1018"
+                      height="422"
+                      src="./images/portfolio-ex-6.avif"
+                      alt="Work example"
+                    />
+                  </div>
+                </li>
+                <li class="swiper-slide">
+                  <div class="portfolio-section__image-wrapper">
+                    <img
+                      class="portfolio-section__image"
+                      width="1018"
+                      height="422"
+                      src="./images/portfolio-ex-7.avif"
+                      alt="Work example"
+                    />
+                  </div>
+                </li>
+                <li class="swiper-slide">
+                  <div class="portfolio-section__image-wrapper">
+                    <img
+                      class="portfolio-section__image"
+                      width="1018"
+                      height="422"
+                      src="./images/portfolio-ex-8.avif"
+                      alt="Work example"
+                    />
+                  </div>
+                </li>
+                <li class="swiper-slide">
+                  <div class="portfolio-section__image-wrapper">
+                    <img
+                      class="portfolio-section__image"
+                      width="1018"
+                      height="422"
+                      src="./images/portfolio-ex-9.avif"
+                      alt="Work example"
+                    />
+                  </div>
+                </li>
+                <li class="swiper-slide">
+                  <div class="portfolio-section__image-wrapper">
+                    <img
+                      class="portfolio-section__image"
+                      width="1018"
+                      height="422"
+                      src="./images/portfolio-ex-10.avif"
+                      alt="Work example"
+                    />
+                  </div>
+                </li>
+                <li class="swiper-slide">
+                  <div class="portfolio-section__image-wrapper">
+                    <img
+                      class="portfolio-section__image"
+                      width="1018"
+                      height="422"
+                      src="./images/portfolio-ex-11.avif"
+                      alt="Work example"
+                    />
+                  </div>
+                </li>
+                <li class="swiper-slide">
+                  <div class="portfolio-section__image-wrapper">
+                    <img
+                      class="portfolio-section__image"
+                      width="1018"
+                      height="422"
+                      src="./images/portfolio-ex-12.avif"
+                      alt="Work example"
+                    />
+                  </div>
+                </li>
+                <li class="swiper-slide">
+                  <div class="portfolio-section__image-wrapper">
+                    <img
+                      class="portfolio-section__image"
+                      width="1018"
+                      height="422"
+                      src="./images/portfolio-ex-13.avif"
+                      alt="Work example"
+                    />
+                  </div>
+                </li>
+                <li class="swiper-slide">
+                  <div class="portfolio-section__image-wrapper">
+                    <img
+                      class="portfolio-section__image"
+                      width="1018"
+                      height="422"
+                      src="./images/portfolio-ex-14.avif"
+                      alt="Work example"
+                    />
+                  </div>
+                </li>
+                <li class="swiper-slide">
+                  <div class="portfolio-section__image-wrapper">
+                    <img
+                      class="portfolio-section__image"
+                      width="1018"
+                      height="422"
+                      src="./images/portfolio-ex-15.avif"
+                      alt="Work example"
+                    />
+                  </div>
+                </li>
+                <li class="swiper-slide">
+                  <div class="portfolio-section__image-wrapper">
+                    <img
+                      class="portfolio-section__image"
+                      width="1018"
+                      height="422"
+                      src="./images/portfolio-ex-16.avif"
+                      alt="Work example"
+                    />
+                  </div>
+                </li>
+                <li class="swiper-slide">
+                  <div class="portfolio-section__image-wrapper">
+                    <img
+                      class="portfolio-section__image"
+                      width="1018"
+                      height="422"
+                      src="./images/portfolio-ex-17.avif"
+                      alt="Work example"
+                    />
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            <div class="portfolio-section__collage-nav">
+              <button
+                class="portfolio-section__button carousel-button prev"
+                type="button"
+              >
+                <svg width="24" height="24">
+                  <use href="./images/icons.svg#icon-arrow-carousel"></use>
+                </svg>
+              </button>
+
+              <div class="pagination"></div>
+
+              <button
+                class="portfolio-section__button carousel-button next"
+                type="button"
+              >
+                <svg width="24" height="24">
+                  <use href="./images/icons.svg#icon-arrow-carousel"></use>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!--                   Section 4                     -->
+        <section class="contact-section section" id="contact-section">
+          <div class="container section__scaling">
+            <div class="contact-section__container">
+              <h2 class="section__title section__title--centered">
+                Tell us <span class="text-brand">your story</span> —
+                <br class="contact-section__br" />we’ll shape it in pixels
+              </h2>
+              <div class="contact-section__input-part__border">
+                <div class="contact-section__input-part">
+                  <!--               main form input                      -->
+                  <div
+                    id="thank-you-message"
+                    class="contact-section__thank-you-message"
+                  >
+                    Thank you! <br />
+                    We’ll get in touch soon to begin your story.
+                  </div>
+                  <form
+                    action="send_email.php"
+                    method="POST"
+                    name="contact-form"
+                    autocomplete="on"
+                    id="contact-section-form"
+                    style="position: relative"
+                  >
+                    <div id="preloader" class="contact-section__preloader">
+                      <div class="contact-section__preloader-image"></div>
+                    </div>
+                    <div class="contact-section__contact-info-container">
+                      <div class="input">
+                        <label class="input__label" for="user-name-contact">
+                          Name
+                        </label>
+                        <input
+                          class="input__control"
+                          type="text"
+                          name="user-name-contact"
+                          id="user-name-contact"
+                          placeholder="Name"
+                          required
+                        />
+                      </div>
+
+                      <div class="input">
+                        <label class="input__label" for="user-email-contact">
+                          Email
+                        </label>
+                        <input
+                          class="input__control"
+                          type="email"
+                          name="user-email-contact"
+                          id="user-email-contact"
+                          placeholder="Email"
+                          required
+                        />
+                      </div>
+
+                      <div class="input">
+                        <label class="input__label" for="user-tel-contact">
+                          Telephone
+                        </label>
+                        <input
+                          class="input__control"
+                          type="tel"
+                          name="user-tel-contact"
+                          id="user-tel-contact"
+                          placeholder="Telephone"
+                        />
+                      </div>
+
+                      <div class="input">
+                        <label class="input__label" for="user-message-contact">
+                          Message
+                        </label>
+                        <textarea
+                          class="input__control input__control--message"
+                          name="user-message-contact"
+                          id="user-message-contact"
+                          rows="4"
+                          placeholder="Message"
+                        ></textarea>
+                      </div>
+                    </div>
+
+                    <div class="contact-section__button-wrapper">
+                      <button
+                        class="button button--arrow button--centered"
+                        id="button-final-contact"
+                        type="submit"
+                        name="submitContact"
+                      >
+                        <span>Send Message</span>
+                        <svg class="button__icon" width="28" height="28">
+                          <use href="images/icons.svg#icon-arrow"></use>
+                        </svg>
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!--                       ФУТЕР                         -->
+      <footer class="footer section" id="footer">
+        <div class="container section__scaling">
+          <h2
+            class="section__title section__title--centered footer__main-title"
+          >
+            <span class="text-brand">About</span> us
+          </h2>
+
+          <div class="footer__about-us">
+            <div class="footer__about-container">
+              <img
+                class="footer__makeup"
+                width="150"
+                height="150"
+                srcset="
+                  images/footer-Kate-makeup.avif    1x,
+                  images/footer-Kate-makeup@2x.avif 2x
+                "
+                src="images/footer-Kate-makeup.avif"
+                alt="Kate-photo"
+              />
+              <p class="footer__about-maintext footer__about-maintext--left">
+                <span class="text-brand text-bold footer__nickname">
+                  Kate Fort</span
+                >, founder of "Now in WEB" and chief creative designer.
+                <br class="footer__br" />"I turn your desires into reality, and
+                every design into a unique story that reflects your brand and
+                values." <br class="footer__br" />My motto: "My work is my
+                pleasure."<br />
+                <span class="text-brand text-extrabold-italic">
+                  Let’s create your story in each pixel – Now in WEB.
+                </span>
+              </p>
+            </div>
+            <div class="footer__about-container">
+              <p class="footer__about-maintext footer__about-maintext--right">
+                <span class="text-brand text-bold footer__nickname">
+                  Misha Fort</span
+                >, promising front-end developer.<br class="footer__br" />"I
+                turn ideas into clean, functional code and build digital
+                experiences where logic meets creativity."<br
+                  class="footer__br"
+                />
+                My motto: “Coding is where clarity meets creation.”
+                <br />
+                <span class="text-brand text-extrabold-italic">
+                  Let’s build the future behind every pixel — Now in WEB.
+                </span>
+              </p>
+              <img
+                class="footer__makeup"
+                width="150"
+                height="150"
+                src="images/makeup-rofl-3.jpg"
+                alt="Misha-photo"
+              />
+            </div>
+            <p class="footer__about-maintext footer__about-maintext--under">
+              Our mission is to
+              <span class="text-brand text-bold">create and improve</span> a
+              creative, accessible, and attractive future for both small and
+              medium-sized businesses. We are a young and creative team that
+              keeps up with the times and offers you the latest trends in
+              graphic design.
             </p>
           </div>
-
-          <div class="portfolio-section__collage-wrapper">
-            <div
-              class="portfolio-section__collage-box portfolio-section__collage-box--1"
-            >
-              1
-            </div>
-            <div
-              class="portfolio-section__collage-box portfolio-section__collage-box--2"
-            >
-              2
-            </div>
-            <div
-              class="portfolio-section__collage-box portfolio-section__collage-box--3"
-            >
-              3
-            </div>
-            <div
-              class="portfolio-section__collage-box portfolio-section__collage-box--4"
-            >
-              4
-            </div>
-            <div
-              class="portfolio-section__collage-box portfolio-section__collage-box--5"
-            >
-              5
-            </div>
-          </div>
-          <!-- .wrapper {
-  display: grid;
-  width: 100%;
-  height: 100vh; /* або 100% від батька */
-  grid-template-columns: 66% 33% 1fr;  /* 3 колонки */
-  grid-template-rows: 66% 33%;        /* 2 рядки */
-  gap: 0; /* якщо треба відступи — постав тут */
-}
-
-.box1 {
-  grid-column: 1 / 2;
-  grid-row: 1 / 2;
-  background: lightblue;
-}
-
-.box2 {
-  grid-column: 2 / 4;
-  grid-row: 1 / 2;
-  background: lightcoral;
-}
-
-.box3 {
-  grid-column: 1 / 2;
-  grid-row: 2 / 3;
-  background: lightgreen;
-}
-
-.box4 {
-  grid-column: 2 / 3;
-  grid-row: 2 / 3;
-  background: lightgoldenrodyellow;
-}
-
-.box5 {
-  grid-column: 3 / 4;
-  grid-row: 1 / 3;
-  background: lightsalmon;
-}
- -->
-        </div>
-      </section>
-
-      <!--                   Section 4                     -->
-      <section class="contact-section" id="contact-section">
-        <div class="container">
-          <div class="contact-section__container">
-            <div class="contact-section__title-part">
-              <h2 class="section-title">
-                Tell us <span>your story</span> — we’ll shape it in pixels
-              </h2>
-              <p class="contact-section__text-under-title">
-                Have a project in mind? Need a logo, website, or full visual
-                identity? Leave your details — and let’s start creating
-                something bold together.
-              </p>
-            </div>
-
-            <div class="contact-section__input-part">
-              <!--               main form input                      -->
-              <div
-                id="thank-you-message"
-                class="contact-section__thank-you-message"
-              >
-                Thank you for contacting us!
-              </div>
-              <form
-                action="send_email.php"
-                method="POST"
-                name="contact-form"
-                autocomplete="on"
-                id="contact-section-form"
-                style="position: relative"
-              >
-                <div id="preloader" class="contact-section__preloader">
-                  <div class="contact-section__preloader-image"></div>
-                </div>
-                <div class="contact-section__contact-info-container">
-                  <div class="input">
-                    <label class="input__label" for="user-name-contact">
-                      Name
-                    </label>
-                    <input
-                      class="input__control"
-                      type="text"
-                      name="user-name-contact"
-                      id="user-name-contact"
-                      required
-                    />
-                  </div>
-
-                  <div class="input">
-                    <label class="input__label" for="user-email-contact">
-                      Email*
-                    </label>
-                    <input
-                      class="input__control"
-                      type="email"
-                      name="user-email-contact"
-                      id="user-email-contact"
-                      required
-                    />
-                  </div>
-
-                  <div class="input">
-                    <label class="input__label" for="user-message-contact">
-                      Message*
-                    </label>
-                    <textarea
-                      class="input__control input__control--mensaje"
-                      name="user-message-contact"
-                      id="user-message-contact"
-                      rows="4"
-                    ></textarea>
-                  </div>
-                </div>
-
-                <div class="contact-section__button-wrapper">
-                  <button
-                    class="button button__contact"
-                    id="button-final-contact"
-                    type="submit"
-                    name="submitContact"
-                  >
-                    <span>Send Message</span>
-                    <svg class="button__icon" width="24" height="24">
-                      <use href="images/icons.svg#icon-arrow"></use>
-                    </svg>
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <!--                       ФУТЕР                         -->
-    <footer class="footer" id="footer">
-      <div class="container">
-        <div class="footer__container">
-          <div class="footer__logo-and-socials">
-            <nav class="footer__nav">
-              <a href="/">
+          <div class="footer__socials">
+            <nav class="footer__logo-image-container">
+              <a href="#hero-section">
                 <img
-                  src="images/logo-fv.svg"
-                  alt="Logo 'FINANCIERA EN VENTA'"
-                  width="208"
-                  height="66"
+                  class="footer__logo-image"
+                  width="589"
+                  height="200"
+                  srcset="
+                    images/footer-logo-large.png    1x,
+                    images/footer-logo-large@2x.png 2x
+                  "
+                  src="images/footer-logo-large.png"
+                  alt="Logo image"
                 />
               </a>
             </nav>
 
-            <div class="footer__socials">
-              <p>Follow Us On Social Media</p>
+            <div class="footer__socials-container">
+              <p class="footer__social-text">Follow Us On Social Media</p>
               <address>
-                <ul class="footer__socials">
+                <ul class="footer__social-list">
                   <li>
                     <a
-                      href="https://www.instagram.com"
+                      class="footer__social"
+                      href="https://www.instagram.com/nowinweb"
                       target="_blank"
+                      rel="noopener noreferrer"
                       aria-label="Instagram page"
                     >
-                      <svg class="footer__socials-icon" width="34" height="34">
-                        <use href="images/icons.svg#icon-instagram"></use>
+                      <svg class="footer__social-icon" width="24" height="24">
+                        <use xlink:href="images/icons.svg#icon-instagram"></use>
                       </svg>
                     </a>
                   </li>
                   <li>
                     <a
-                      href="https://www.facebook.com"
+                      class="footer__social"
+                      href="https://www.facebook.com/nowinweb"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       aria-label="Facebook page"
-                      target="_blank"
                     >
-                      <svg class="footer__socials-icon" width="34" height="34">
-                        <use href="images/icons.svg#icon-facebook"></use>
+                      <svg class="footer__social-icon" width="24" height="24">
+                        <use xlink:href="images/icons.svg#icon-facebook"></use>
                       </svg>
                     </a>
                   </li>
                   <li>
                     <a
-                      href="https://www.twitter.com"
-                      aria-label="Twitter page"
+                      class="footer__social"
+                      href="https://www.tiktok.com/@nowinweb"
                       target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="Tiktok page"
                     >
-                      <svg class="footer__socials-icon" width="34" height="34">
-                        <use href="images/icons.svg#icon-twitter"></use>
+                      <svg class="footer__social-icon" width="24" height="24">
+                        <use xlink:href="images/icons.svg#icon-tiktok"></use>
                       </svg>
                     </a>
                   </li>
                 </ul>
               </address>
             </div>
+            <p class="footer__copyright">
+              &copy; <span id="year"></span> NowinWEB. All Rights Reserved.
+            </p>
           </div>
-          <img
-            class="footer__logo-image"
-            srcset="images/hero-section.avif 1x, images/hero-section@2x.avif 2x"
-            src="images/hero-section.avif"
-            alt="Logo image"
-          />
-          <p class="footer__address-copyright">
-            &copy; <span id="year"></span> NowinWEB. All Rights Reserved.
-          </p>
         </div>
-      </div>
-    </footer>
+      </footer>
+    </div>
 
-    <script src="./js/hidden-header.js"></script>
     <script src="./js/mobile-menu.js"></script>
 
     <script src="https://unpkg.com/just-validate@latest/dist/just-validate.production.min.js"></script>
@@ -468,5 +891,21 @@
     <script>
       document.getElementById('year').textContent = new Date().getFullYear();
     </script>
+
+    <script src="js/changing-word.js"></script>
+    <script src="js/services-buttons.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="./js/services-slider.js"></script>
+    <script src="./js/portfolio-slider.js"></script>
+
+    <script src="js/full-page-scroll.js"></script>
+
+    <script>
+      console.log(window.innerHeight);
+      console.log(window.outerHeight);
+    </script>
+
+    <script src="js/breathing-on-start.js"></script>
   </body>
 </html>

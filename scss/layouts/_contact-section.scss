@@ -1,71 +1,94 @@
 .contact-section {
-  padding: 16px 0;
-  background-color: #f3f3f3;
+  /* padding: 30px 0 164px; */
 
   &__container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* justify-content: center; */
+    /*  margin-top: 24px; */
+    /* margin: 0 -96px; */
+
+    margin: 0 calc(-96px - (650px - 100dvh));
+
+    /*697-8*/
+    /*  @media screen and (min-height: 698px) {
+      margin: 0 calc(-96px - (670px - 100dvh));
+    } */
+  }
+
+  &__br {
+    @media screen and (min-width: $bp-laptop) {
+      display: none;
+    }
+  }
+
+  ////////////////////////////////////////////////////////
+  &__input-part__border {
+    /* margin-top: clamp(0px, 3vw, 24px); */
     position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    gap: 42px;
-    border-radius: 28px;
+    width: 100%;
+    max-width: 700px;
+    border-radius: 20px;
+    padding: 1px;
+    background:
+      linear-gradient(180deg, rgba(106, 34, 234, 1), rgba(114, 0, 255, 0.2)),
+      var(--color-primary-dark);
 
-    @media screen and (min-width: $bp-desktop) {
-      flex-direction: row;
-      align-items: flex-start;
-      margin: 0 -64px;
-      padding: 66px 80px;
-      background-color: var(--color-primary-light);
+    transition: box-shadow 0.2s ease-in-out;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+
+    &:hover {
+      box-shadow: 0 12px 24px 1px #7200ff;
     }
-  }
-
-  &__title-part {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 44px;
-    text-align: center;
-
-    @media screen and (min-width: $bp-desktop) {
-      align-items: flex-start;
-      text-align: start;
-    }
-  }
-
-  &__text-under-title {
-    color: var(--color-secondary-dark);
-    max-width: 500px;
   }
 
   &__input-part {
-    margin: 0 auto;
-    padding: 36px 18px 28px;
-    width: 100%;
-    max-width: 420px;
-    background-color: #cccccc;
-    border-radius: 30px;
+    padding: 18px 72px;
+    position: relative;
+    overflow: hidden;
+  }
 
-    @media screen and (min-width: $bp-tablet) {
-      padding: 48px 62px 27px;
-      width: 100%;
-      max-width: 627px;
-    }
+  .contact-section {
+    &__thank-you-message {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 32px;
+      text-align: center;
+      font-size: 1.5rem;
+      border-radius: 19px;
+      z-index: 2;
 
-    @media screen and (min-width: $bp-desktop) {
-      margin: 0;
+      opacity: 0;
+      transform: translateY(30px);
+      pointer-events: none;
+
+      &--visible {
+        pointer-events: auto;
+        animation: contact-thankyou-slide-up 1s ease-out forwards;
+      }
     }
   }
 
-  &__thank-you-message {
-    display: none;
-    font-size: 1.5rem;
-    background-color: #f9f9f9;
-    border: 2px solid #a9a9a9;
-    padding: 15px;
-    text-align: center;
-    margin: 80px 0 101px;
-    border-radius: 8px;
+  @keyframes contact-thankyou-slide-up {
+    0% {
+      opacity: 0;
+      transform: translateY(30px); // нижче
+    }
+    60% {
+      opacity: 1;
+      transform: translateY(-8px); // трохи вище фінальної позиції
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0); // повертаємось на місце
+    }
   }
 
   &__preloader {
@@ -75,7 +98,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: #ffffffa6;
+    background: #5f5761a6;
     z-index: 1;
   }
 
@@ -85,7 +108,7 @@
     left: 50%;
     width: 64px;
     height: 64px;
-    background-image: url(./images/preloader.gif);
+    background-image: url('./images/preloader.gif');
     transform: translate(-50%, -50%);
     z-index: 999;
   }
@@ -133,5 +156,24 @@
     &-placemark-icon {
       margin-bottom: 6px;
     }
+  }
+}
+
+.contact-section__input-part__border .contact-section__input-part {
+  background:
+    linear-gradient(180deg, rgba(48, 42, 93, 0) 0%, rgba(48, 42, 93, 1) 100%),
+    linear-gradient(180deg, rgba(32, 32, 32, 0.2) 0%, rgba(32, 32, 32, 0) 100%),
+    var(--color-primary-dark);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 19px;
+
+  transition: background 0.2s ease;
+
+  &:hover {
+    background:
+      linear-gradient(180deg, rgba(48, 42, 93, 0.2), rgba(48, 42, 93, 0)),
+      linear-gradient(180deg, rgba(32, 32, 32, 0.2), rgba(32, 32, 32, 0)),
+      var(--color-primary-dark);
   }
 }

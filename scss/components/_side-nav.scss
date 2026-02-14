@@ -1,0 +1,87 @@
+/* Вертикальний індикатор праворуч */
+.side-nav {
+  /* display: none; */
+  position: fixed;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  z-index: 1000;
+  pointer-events: none; /* щоб не заважати ховерам елементів під ним */
+
+  @media screen and (min-width: $bp-tablet) {
+    display: block;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    pointer-events: auto; /* кліки всередині — ок */
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__btn {
+    box-sizing: border-box;
+    /* Скидання нативних стилів кнопки */
+    appearance: none;
+    -webkit-appearance: none;
+    padding: 0;
+    margin: 0;
+    /* border-width: 1px; */ /* ми керуємо бордером самі */
+    border-width: 0px;
+    line-height: 0; /* щоб текст/шрифт не впливав */
+    font-size: 0; /* на всякий */
+    background-clip: padding-box;
+
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.35);
+    border-style: solid;
+    border-color: rgba(255, 255, 255, 0.6);
+    display: block;
+    cursor: pointer;
+    opacity: 0.85;
+    transition:
+      transform 180ms ease,
+      background 180ms ease,
+      opacity 180ms ease;
+    outline: none;
+
+    /* Страховка від будь-яких розтягів */
+    aspect-ratio: 1 / 1;
+
+    @media screen and (min-width: $bp-tablet) {
+      width: 12px;
+      height: 12px;
+    }
+
+    @media screen and (min-width: $bp-laptop) {
+      width: 16px;
+      height: 16px;
+    }
+
+    @media screen and (min-width: $bp-desktop) {
+      width: 22px;
+      height: 22px;
+    }
+  }
+}
+
+.side-nav__btn:hover,
+.side-nav__btn:focus-visible {
+  transform: scale(1.15);
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+/* Активна секція */
+.side-nav__btn.is-active {
+  background: var(--color-brand, #7200ff);
+  border-color: var(--color-brand, #7200ff);
+  transform: scale(1.25);
+  opacity: 1;
+}
