@@ -158,43 +158,6 @@
   let startY = null;
   let formInteractionLock = false;
 
-  const KEYBOARD_DELTA = 120;
-  let baseViewportH = window.visualViewport?.height || window.innerHeight;
-  let keyboardOpen = false;
-
-  function isFormFieldFocused() {
-    const el = document.activeElement;
-    return (
-      !!el && el.matches('input, textarea, select, [contenteditable="true"]')
-    );
-  }
-
-  function refreshKeyboardState() {
-    const h = window.visualViewport?.height || window.innerHeight;
-    const delta = baseViewportH - h;
-    keyboardOpen = isFormFieldFocused() && delta > KEYBOARD_DELTA;
-
-    // Оновлюємо базу тільки коли клавіатура закрита
-    if (!keyboardOpen && h > baseViewportH - 2) {
-      baseViewportH = h;
-    }
-  }
-
-  function shouldPauseFullpage() {
-    return keyboardOpen || isFormFieldFocused();
-  }
-
-  const INITIAL_INNER_H = window.innerHeight;
-  function isTextInputFocused() {
-    const el = document.activeElement;
-    return (
-      !!el && el.matches('input, textarea, select, [contenteditable="true"]')
-    );
-  }
-  function isLikelyKeyboardResize() {
-    return window.innerHeight < INITIAL_INNER_H - 120;
-  }
-
   function isFormFieldFocused() {
     const el = document.activeElement;
     return (
@@ -624,36 +587,6 @@
     if (e.persisted) bootToHashIfAny();
   });
 
-  window.addEventListener('focusin', refreshKeyboardState, true);
-  window.addEventListener(
-    'focusout',
-    () => {
-      setTimeout(() => {
-        const wasOpen = keyboardOpen;
-        refreshKeyboardState();
-
-        // Після закриття клавіатури повертаємо чітко на активну секцію
-        if (wasOpen && !keyboardOpen) {
-          init();
-          window.scrollTo({ top: stops[current], behavior: 'auto' });
-          updateActiveSection();
-        }
-      }, 60);
-    },
-    true,
-  );
-
-  window.visualViewport?.addEventListener('resize', () => {
-    const wasOpen = keyboardOpen;
-    refreshKeyboardState();
-
-    if (wasOpen && !keyboardOpen) {
-      init();
-      window.scrollTo({ top: stops[current], behavior: 'auto' });
-      updateActiveSection();
-    }
-  });
-
   window.addEventListener(
     'focusin',
     e => {
@@ -662,6 +595,7 @@
       )
         return;
       formInteractionLock = true;
+      lockedSectionIndex = current; // фіксуємо секцію ДО відкриття клавіатури
       clearTimeout(resizeTimer);
       clearTimeout(scrollTmr);
     },
@@ -675,12 +609,20 @@
       clearTimeout(scrollTmr);
 
       setTimeout(() => {
-        formInteractionLock = isFormFieldFocused();
-        if (!formInteractionLock) {
-          init();
-          window.scrollTo({ top: stops[current], behavior: 'auto' });
-          updateActiveSection();
-        }
+        if (isFormFieldFocused()) return; // фокус ще всередині форми
+        formInteractionLock = false;
+
+        // Оновлюємо тільки stops, але НЕ current через init()
+        stops = computeStops();
+
+        const idx = lockedSectionIndex ?? current;
+        current = Math.max(0, Math.min(idx, stops.length - 1));
+
+        window.scrollTo({ top: stops[current], behavior: 'auto' });
+        setActive(current);
+        updateActiveSection();
+
+        lockedSectionIndex = null;
       }, 180);
     },
     true,
