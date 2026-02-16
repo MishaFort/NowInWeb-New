@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Можеш лишити тільки name/email, або додати й tel — не завадить
   ['#user-name-contact', '#user-email-contact', '#user-tel-contact'].forEach(
-    autofillHackWhileFocused
+    autofillHackWhileFocused,
   );
 
   // 3) Сабміт через fetch із прелоадером
@@ -116,14 +116,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const thankYouEl = document.getElementById('thank-you-message');
         setTimeout(() => {
           thankYouEl.classList.add(
-            'contact-section__thank-you-message--visible'
+            'contact-section__thank-you-message--visible',
           );
         }, 200);
       })
       .catch(error => {
         console.error('Error:', error);
         alert(
-          'An error occurred while sending your message. Please try again later.'
+          'An error occurred while sending your message. Please try again later.',
         );
         document.getElementById('preloader').style.display = 'none';
       });

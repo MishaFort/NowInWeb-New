@@ -24,6 +24,9 @@
   let lastHash = location.hash || '';
   let fitScaleLocked = false;
   let lockedSectionIndex = null;
+  let keyboardWasOpen = false;
+  let baselineViewportH = window.visualViewport?.height || window.innerHeight;
+  const KEYBOARD_DELTA = 120;
 
   // ---------- НАЛАШТУВАННЯ ----------
   const TOP_GAP = 24;
@@ -168,6 +171,29 @@
 
   function shouldPauseFullpage() {
     return formInteractionLock || isFormFieldFocused();
+  }
+
+  function blurFocusedFormField() {
+    const el = document.activeElement;
+    if (el && el.matches('input, textarea, select, [contenteditable="true"]')) {
+      el.blur();
+    }
+  }
+
+  function onViewportResizeForKeyboard() {
+    const h = window.visualViewport?.height || window.innerHeight;
+    const delta = baselineViewportH - h;
+    const keyboardOpenNow = delta > KEYBOARD_DELTA;
+
+    // клавіатура щойно закрилась -> знімаємо фокус
+    if (keyboardWasOpen && !keyboardOpenNow) {
+      blurFocusedFormField();
+    }
+
+    keyboardWasOpen = keyboardOpenNow;
+
+    // оновлюємо базу тільки коли клавіатура точно закрита
+    if (!keyboardOpenNow) baselineViewportH = h;
   }
 
   // ---------- ДОПОМОЖНІ ----------
@@ -628,6 +654,12 @@
     },
     true,
   );
+
+  window.visualViewport?.addEventListener(
+    'resize',
+    onViewportResizeForKeyboard,
+  );
+  window.addEventListener('resize', onViewportResizeForKeyboard);
 
   document.querySelectorAll('img').forEach(img => {
     if (!img.complete) {
