@@ -47,8 +47,8 @@
 
   &__input-part {
     padding-inline: clamp(
-      24px,
-      calc(24px + (100vw - 375px) * (48 / 300)),
+      48px,
+      calc(48px + (100vw - 375px) * (72 - 48 / 300)),
       72px
     );
     padding-block: 18px;
