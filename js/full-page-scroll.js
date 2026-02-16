@@ -22,12 +22,6 @@
   let suppressUrlSync = !!INITIAL_HASH; // поки true — updateActiveSection не міняє URL
   let isResizing = false;
   let lastHash = location.hash || '';
-  let scaleBasis = {
-    width: window.innerWidth,
-    screenWidth: window.screen?.width ?? 0,
-    screenHeight: window.screen?.height ?? 0,
-    orientation: window.screen?.orientation?.type || '',
-  };
 
   // ---------- НАЛАШТУВАННЯ ----------
   const TOP_GAP = 24;
@@ -124,29 +118,6 @@
 
   function clamp(n, min, max) {
     return Math.max(min, Math.min(max, n));
-  }
-
-  function getScaleBasisSnapshot() {
-    return {
-      width: window.innerWidth,
-      screenWidth: window.screen?.width ?? 0,
-      screenHeight: window.screen?.height ?? 0,
-      orientation: window.screen?.orientation?.type || '',
-    };
-  }
-
-  function shouldRecalculateScale() {
-    const next = getScaleBasisSnapshot();
-    return (
-      next.width !== scaleBasis.width ||
-      next.screenWidth !== scaleBasis.screenWidth ||
-      next.screenHeight !== scaleBasis.screenHeight ||
-      next.orientation !== scaleBasis.orientation
-    );
-  }
-
-  function commitScaleBasis() {
-    scaleBasis = getScaleBasisSnapshot();
   }
 
   //хелпер для оновлення URL за індексом секції
@@ -344,7 +315,6 @@
       }
       sec.style.setProperty('--pad-comp', `${padComp.toFixed(2)}px`);
     });
-    commitScaleBasis();
   }
 
   function ensureScalingWrappers() {
@@ -550,15 +520,9 @@
     clearTimeout(resizeTimer);
 
     resizeTimer = setTimeout(() => {
-      if (!shouldRecalculateScale()) {
-        isResizing = false;
-        return;
-      }
-
       const prevY = stops[current] || 0;
 
       initServicesSwiper();
-      applyFitScales();
       init();
 
       buildSideNav();
@@ -573,7 +537,6 @@
   });
 
   window.addEventListener('load', () => {
-    applyFitScales();
     init();
     updateActiveSection();
   });
@@ -588,7 +551,6 @@
       img.addEventListener(
         'load',
         () => {
-          applyFitScales();
           init();
           updateActiveSection();
         },
@@ -596,20 +558,4 @@
       );
     }
   });
-
-  if ('ResizeObserver' in window) {
-    let roTmr = null;
-    const ro = new ResizeObserver(() => {
-      clearTimeout(roTmr);
-      roTmr = setTimeout(() => {
-        if (!shouldRecalculateScale()) return;
-        isResizing = true;
-        applyFitScales();
-        init();
-        updateActiveSection();
-        isResizing = false;
-      }, 80);
-    });
-    sections.forEach(s => ro.observe(s));
-  }
 })();
