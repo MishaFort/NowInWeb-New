@@ -71,7 +71,8 @@ ul {
 }
 
 section {
-  height: 100vh;
+  height: var(--app-h);
+  min-height: var(--app-h);
   width: 100%;
 
   @media screen and (min-width: $bp-tablet) {

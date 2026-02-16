@@ -29,6 +29,11 @@
   const BOTTOM_GAP = 16;
   const MIN_WHEEL = 15; // мінімальний нормалізований імпульс для одного кроку
 
+  document.documentElement.style.setProperty(
+    '--app-h',
+    `${window.innerHeight}px`,
+  );
+
   // ---------- УТИЛІТИ ----------
   function readCssTimeVar(varName, fallbackMs) {
     const raw = getComputedStyle(document.documentElement)
@@ -287,6 +292,7 @@
   }
 
   function applyFitScales() {
+    console.count('[fps] applyFitScales');
     sections.forEach(sec => {
       //  тільки services: до 1140 — не скейлимо
       if (sec.id === 'services-section' && window.innerWidth < 1140) {
@@ -522,26 +528,7 @@
     { passive: true },
   );
 
-  window.addEventListener('resize', () => {
-    isResizing = true;
-    clearTimeout(resizeTimer);
-
-    resizeTimer = setTimeout(() => {
-      const prevY = stops[current] || 0;
-
-      initServicesSwiper();
-      init();
-
-      buildSideNav();
-      setActiveSidebar(current);
-      setActiveHeader(current);
-
-      current = getClosestIndex(prevY);
-      window.scrollTo({ top: stops[current], behavior: 'auto' });
-      updateActiveSection();
-      isResizing = false;
-    }, 120);
-  });
+  window.addEventListener('resize', () => {});
 
   window.addEventListener('load', () => {
     init();

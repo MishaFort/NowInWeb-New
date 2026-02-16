@@ -24,7 +24,8 @@
     background-color: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(15.16px);
     -webkit-backdrop-filter: blur(15.16px);
-    box-shadow: -11.15px -10.39px 48px -12px rgba(0, 0, 0, 0.15),
+    box-shadow:
+      -11.15px -10.39px 48px -12px rgba(0, 0, 0, 0.15),
       -1.86px -1.73px 12px -8px rgba(0, 0, 0, 0.15),
       inset 2.15px 2px 9.24px 0 rgba(255, 255, 255, 0.126),
       inset 1.22px 1.13px 4.62px 0 rgba(255, 255, 255, 0.126);
@@ -45,17 +46,14 @@
       caret-color: transparent;
       outline: none;
       -webkit-text-fill-color: white;
-      -webkit-box-shadow: 0 0 0 1000px #000000 inset, 0 6px 12px 1px #7200ff;
+      -webkit-box-shadow:
+        0 0 0 1000px #000000 inset,
+        0 6px 12px 1px #7200ff;
     }
 
     &--message {
       vertical-align: top;
       resize: none;
     }
-
-    /* &--success {
-      background-color: #143b0d;
-      transition: background-color 0.3s ease;
-    } */
   }
 }
