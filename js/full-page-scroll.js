@@ -22,6 +22,7 @@
   let suppressUrlSync = !!INITIAL_HASH; // поки true — updateActiveSection не міняє URL
   let isResizing = false;
   let lastHash = location.hash || '';
+  let fitScaleLocked = false;
 
   // ---------- НАЛАШТУВАННЯ ----------
   const TOP_GAP = 24;
@@ -317,6 +318,12 @@
     });
   }
 
+  function applyFitScalesOnce() {
+    if (fitScaleLocked) return;
+    applyFitScales();
+    fitScaleLocked = true;
+  }
+
   function ensureScalingWrappers() {
     sections.forEach(sec => {
       // 1) зовнішня обгортка під fit‑scale
@@ -479,7 +486,7 @@
   } catch {}
 
   ensureScalingWrappers();
-  applyFitScales();
+  applyFitScalesOnce();
   init();
   buildSideNav();
   setActiveSidebar(current);
