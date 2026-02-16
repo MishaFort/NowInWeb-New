@@ -157,6 +157,32 @@
   let scrollTmr = null;
   let startY = null;
 
+  const KEYBOARD_DELTA = 120;
+  let baseViewportH = window.visualViewport?.height || window.innerHeight;
+  let keyboardOpen = false;
+
+  function isFormFieldFocused() {
+    const el = document.activeElement;
+    return (
+      !!el && el.matches('input, textarea, select, [contenteditable="true"]')
+    );
+  }
+
+  function refreshKeyboardState() {
+    const h = window.visualViewport?.height || window.innerHeight;
+    const delta = baseViewportH - h;
+    keyboardOpen = isFormFieldFocused() && delta > KEYBOARD_DELTA;
+
+    // Оновлюємо базу тільки коли клавіатура закрита
+    if (!keyboardOpen && h > baseViewportH - 2) {
+      baseViewportH = h;
+    }
+  }
+
+  function shouldPauseFullpage() {
+    return keyboardOpen || isFormFieldFocused();
+  }
+
   const INITIAL_INNER_H = window.innerHeight;
   function isTextInputFocused() {
     const el = document.activeElement;
@@ -388,6 +414,7 @@
 
   // ---------- ОБРОБКА ВВОДУ ----------
   function onWheel(e) {
+    if (shouldPauseFullpage()) return;
     if (isTextInputFocused()) return;
     if (e.ctrlKey || e.metaKey) return;
     if (locked) {
@@ -408,6 +435,7 @@
   }
 
   function onKey(e) {
+    if (shouldPauseFullpage()) return;
     if (isTextInputFocused()) return;
     const keys = [
       'ArrowDown',
@@ -467,9 +495,10 @@
     window.addEventListener(
       'touchmove',
       e => {
-        if (isTextInputFocused()) return;
+        if (shouldPauseFullpage()) return;
         if (startY == null) return;
         if (locked) return;
+
         const dy = startY - e.touches[0].clientY;
         if (Math.abs(dy) < 50) return;
 
@@ -533,7 +562,7 @@
   window.addEventListener(
     'scroll',
     () => {
-      if (locked) return;
+      if (locked || shouldPauseFullpage()) return;
       clearTimeout(scrollTmr);
       scrollTmr = setTimeout(() => {
         updateActiveSection();
@@ -543,6 +572,7 @@
   );
 
   window.addEventListener('resize', () => {
+    if (shouldPauseFullpage()) return;
     // Ігноруємо resize від мобільної клавіатури/фокуса інпутів
     if (isTextInputFocused() || isLikelyKeyboardResize()) return;
 
@@ -550,6 +580,12 @@
     clearTimeout(resizeTimer);
 
     resizeTimer = setTimeout(() => {
+      if (shouldPauseFullpage()) {
+        // <- і тут, на початку setTimeout
+        isResizing = false;
+        return;
+      }
+
       const prevY = stops[current] || 0;
 
       initServicesSwiper();
@@ -574,6 +610,36 @@
   window.addEventListener('pageshow', e => {
     // при поверненні з кешу історії переконаємось, що хеш відпрацьовано
     if (e.persisted) bootToHashIfAny();
+  });
+
+  window.addEventListener('focusin', refreshKeyboardState, true);
+  window.addEventListener(
+    'focusout',
+    () => {
+      setTimeout(() => {
+        const wasOpen = keyboardOpen;
+        refreshKeyboardState();
+
+        // Після закриття клавіатури повертаємо чітко на активну секцію
+        if (wasOpen && !keyboardOpen) {
+          init();
+          window.scrollTo({ top: stops[current], behavior: 'auto' });
+          updateActiveSection();
+        }
+      }, 60);
+    },
+    true,
+  );
+
+  window.visualViewport?.addEventListener('resize', () => {
+    const wasOpen = keyboardOpen;
+    refreshKeyboardState();
+
+    if (wasOpen && !keyboardOpen) {
+      init();
+      window.scrollTo({ top: stops[current], behavior: 'auto' });
+      updateActiveSection();
+    }
   });
 
   document.querySelectorAll('img').forEach(img => {
