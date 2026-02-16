@@ -23,6 +23,7 @@
   let isResizing = false;
   let lastHash = location.hash || '';
   let fitScaleLocked = false;
+  let lockedSectionIndex = null;
 
   // ---------- НАЛАШТУВАННЯ ----------
   const TOP_GAP = 24;
@@ -156,7 +157,7 @@
   let resizeTimer = null;
   let scrollTmr = null;
   let startY = null;
-  let formInteractionLock = false;
+  let formInteractionLock = null;
 
   function isFormFieldFocused() {
     const el = document.activeElement;
@@ -305,7 +306,6 @@
   }
 
   function applyFitScales() {
-    console.count('[fps] applyFitScales');
     sections.forEach(sec => {
       //  тільки services: до 1140 — не скейлимо
       if (sec.id === 'services-section' && window.innerWidth < 1140) {
@@ -527,6 +527,7 @@
 
   // Головне: усі зміни хешу веде наш скролер (без нативного стрибка)
   window.addEventListener('hashchange', () => {
+    if (shouldPauseFullpage()) return;
     const id = location.hash;
     if (!id || id.length <= 1) return;
     // утримаємо позицію (на випадок якщо браузер таки смикнеться)
@@ -594,8 +595,9 @@
         !e.target.matches('input, textarea, select, [contenteditable="true"]')
       )
         return;
+
       formInteractionLock = true;
-      lockedSectionIndex = current; // фіксуємо секцію ДО відкриття клавіатури
+      lockedSectionIndex = current;
       clearTimeout(resizeTimer);
       clearTimeout(scrollTmr);
     },
@@ -609,21 +611,20 @@
       clearTimeout(scrollTmr);
 
       setTimeout(() => {
-        if (isFormFieldFocused()) return; // фокус ще всередині форми
-        formInteractionLock = false;
+        if (isFormFieldFocused()) return;
 
-        // Оновлюємо тільки stops, але НЕ current через init()
+        // Тримаємо lock до завершення snap
         stops = computeStops();
-
         const idx = lockedSectionIndex ?? current;
         current = Math.max(0, Math.min(idx, stops.length - 1));
 
         window.scrollTo({ top: stops[current], behavior: 'auto' });
         setActive(current);
-        updateActiveSection();
+        replaceUrlForIndex(current);
 
         lockedSectionIndex = null;
-      }, 180);
+        formInteractionLock = false;
+      }, 220);
     },
     true,
   );
