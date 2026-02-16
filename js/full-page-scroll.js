@@ -169,6 +169,13 @@
     );
   }
 
+  function blurFocusedFormField() {
+    const el = document.activeElement;
+    if (el && el.matches('input, textarea, select, [contenteditable="true"]')) {
+      el.blur();
+    }
+  }
+
   function shouldPauseFullpage() {
     return formInteractionLock || isFormFieldFocused();
   }
@@ -437,8 +444,15 @@
   }
 
   function onKey(e) {
+    if (e.key === 'Escape') {
+      blurFocusedFormField();
+      formInteractionLock = false;
+      lockedSectionIndex = null;
+      return;
+    }
+
     if (shouldPauseFullpage()) return;
-    /* if (isTextInputFocused()) return; */
+
     const keys = [
       'ArrowDown',
       'PageDown',
@@ -512,6 +526,22 @@
         startY = null;
       },
       { passive: true },
+    );
+
+    document.addEventListener(
+      'pointerdown',
+      e => {
+        if (!isFormFieldFocused()) return;
+        const field = e.target.closest(
+          'input, textarea, select, [contenteditable="true"]',
+        );
+        if (field) return;
+
+        blurFocusedFormField();
+        formInteractionLock = false;
+        lockedSectionIndex = null;
+      },
+      true,
     );
   }
 
@@ -638,6 +668,9 @@
 
       setTimeout(() => {
         if (isFormFieldFocused()) return;
+
+        formInteractionLock = false;
+        lockedSectionIndex = null;
 
         // Тримаємо lock до завершення snap
         stops = computeStops();
