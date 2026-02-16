@@ -157,6 +157,17 @@
   let scrollTmr = null;
   let startY = null;
 
+  const INITIAL_INNER_H = window.innerHeight;
+  function isTextInputFocused() {
+    const el = document.activeElement;
+    return (
+      !!el && el.matches('input, textarea, select, [contenteditable="true"]')
+    );
+  }
+  function isLikelyKeyboardResize() {
+    return window.innerHeight < INITIAL_INNER_H - 120;
+  }
+
   // ---------- ДОПОМОЖНІ ----------
   function computeStops() {
     return sections.map(s => Math.max(0, Math.round(s.offsetTop)));
@@ -377,6 +388,7 @@
 
   // ---------- ОБРОБКА ВВОДУ ----------
   function onWheel(e) {
+    if (isTextInputFocused()) return;
     if (e.ctrlKey || e.metaKey) return;
     if (locked) {
       e.preventDefault();
@@ -396,6 +408,7 @@
   }
 
   function onKey(e) {
+    if (isTextInputFocused()) return;
     const keys = [
       'ArrowDown',
       'PageDown',
@@ -454,6 +467,7 @@
     window.addEventListener(
       'touchmove',
       e => {
+        if (isTextInputFocused()) return;
         if (startY == null) return;
         if (locked) return;
         const dy = startY - e.touches[0].clientY;
@@ -528,7 +542,29 @@
     { passive: true },
   );
 
-  window.addEventListener('resize', () => {});
+  window.addEventListener('resize', () => {
+    // Ігноруємо resize від мобільної клавіатури/фокуса інпутів
+    if (isTextInputFocused() || isLikelyKeyboardResize()) return;
+
+    isResizing = true;
+    clearTimeout(resizeTimer);
+
+    resizeTimer = setTimeout(() => {
+      const prevY = stops[current] || 0;
+
+      initServicesSwiper();
+      init();
+
+      buildSideNav();
+      setActiveSidebar(current);
+      setActiveHeader(current);
+
+      current = getClosestIndex(prevY);
+      window.scrollTo({ top: stops[current], behavior: 'auto' });
+      updateActiveSection();
+      isResizing = false;
+    }, 120);
+  });
 
   window.addEventListener('load', () => {
     init();
