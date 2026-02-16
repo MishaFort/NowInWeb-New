@@ -152,7 +152,7 @@
   let resizeTimer = null;
   let scrollTmr = null;
   let startY = null;
-  let formInteractionLock = null;
+  let formInteractionLock = false;
 
   const IS_TELEGRAM_WEBVIEW =
     /Telegram/i.test(navigator.userAgent) || !!window.Telegram?.WebApp;
@@ -175,13 +175,6 @@
 
   function shouldPauseFullpage() {
     return formInteractionLock || isFormFieldFocused();
-  }
-
-  function blurFocusedFormField() {
-    const el = document.activeElement;
-    if (el && el.matches('input, textarea, select, [contenteditable="true"]')) {
-      el.blur();
-    }
   }
 
   function onViewportResizeForKeyboard() {
@@ -630,13 +623,7 @@
     () => {
       if (locked) return;
 
-      if (shouldPauseFullpage()) {
-        // тримаємо поточну секцію, поки інпут активний
-        if (Math.abs(window.scrollY - (stops[current] || 0)) > 12) {
-          window.scrollTo({ top: stops[current] || 0, behavior: 'auto' });
-        }
-        return;
-      }
+      if (shouldPauseFullpage()) return;
 
       clearTimeout(scrollTmr);
       scrollTmr = setTimeout(() => {
@@ -709,24 +696,27 @@
       clearTimeout(resizeTimer);
       clearTimeout(scrollTmr);
 
-      setTimeout(() => {
-        if (isFormFieldFocused()) return;
+      setTimeout(
+        () => {
+          if (isFormFieldFocused()) return;
 
-        formInteractionLock = false;
-        lockedSectionIndex = null;
+          keyboardSession = false;
+          formInteractionLock = false;
 
-        // Тримаємо lock до завершення snap
-        stops = computeStops();
-        const idx = lockedSectionIndex ?? current;
-        current = Math.max(0, Math.min(idx, stops.length - 1));
+          if (!IS_TELEGRAM_WEBVIEW) {
+            stops = computeStops();
+            const idx = lockedSectionIndex ?? current;
+            current = Math.max(0, Math.min(idx, stops.length - 1));
 
-        window.scrollTo({ top: stops[current], behavior: 'auto' });
-        setActive(current);
-        replaceUrlForIndex(current);
+            window.scrollTo({ top: stops[current], behavior: 'auto' });
+            setActive(current);
+            replaceUrlForIndex(current);
+          }
 
-        lockedSectionIndex = null;
-        formInteractionLock = false;
-      }, 220);
+          lockedSectionIndex = null;
+        },
+        IS_TELEGRAM_WEBVIEW ? 320 : 220,
+      );
     },
     true,
   );
