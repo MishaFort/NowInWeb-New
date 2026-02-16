@@ -156,6 +156,7 @@
   let resizeTimer = null;
   let scrollTmr = null;
   let startY = null;
+  let formInteractionLock = false;
 
   const KEYBOARD_DELTA = 120;
   let baseViewportH = window.visualViewport?.height || window.innerHeight;
@@ -192,6 +193,17 @@
   }
   function isLikelyKeyboardResize() {
     return window.innerHeight < INITIAL_INNER_H - 120;
+  }
+
+  function isFormFieldFocused() {
+    const el = document.activeElement;
+    return (
+      !!el && el.matches('input, textarea, select, [contenteditable="true"]')
+    );
+  }
+
+  function shouldPauseFullpage() {
+    return formInteractionLock || isFormFieldFocused();
   }
 
   // ---------- ДОПОМОЖНІ ----------
@@ -294,6 +306,7 @@
   }
 
   function updateActiveSection() {
+    if (shouldPauseFullpage()) return;
     if (locked) return;
 
     let activeIdx = 0,
@@ -415,7 +428,7 @@
   // ---------- ОБРОБКА ВВОДУ ----------
   function onWheel(e) {
     if (shouldPauseFullpage()) return;
-    if (isTextInputFocused()) return;
+    /*  if (isTextInputFocused()) return; */
     if (e.ctrlKey || e.metaKey) return;
     if (locked) {
       e.preventDefault();
@@ -436,7 +449,7 @@
 
   function onKey(e) {
     if (shouldPauseFullpage()) return;
-    if (isTextInputFocused()) return;
+    /* if (isTextInputFocused()) return; */
     const keys = [
       'ArrowDown',
       'PageDown',
@@ -574,14 +587,13 @@
   window.addEventListener('resize', () => {
     if (shouldPauseFullpage()) return;
     // Ігноруємо resize від мобільної клавіатури/фокуса інпутів
-    if (isTextInputFocused() || isLikelyKeyboardResize()) return;
+    /* if (isTextInputFocused() || isLikelyKeyboardResize()) return; */
 
     isResizing = true;
     clearTimeout(resizeTimer);
 
     resizeTimer = setTimeout(() => {
       if (shouldPauseFullpage()) {
-        // <- і тут, на початку setTimeout
         isResizing = false;
         return;
       }
@@ -641,6 +653,38 @@
       updateActiveSection();
     }
   });
+
+  window.addEventListener(
+    'focusin',
+    e => {
+      if (
+        !e.target.matches('input, textarea, select, [contenteditable="true"]')
+      )
+        return;
+      formInteractionLock = true;
+      clearTimeout(resizeTimer);
+      clearTimeout(scrollTmr);
+    },
+    true,
+  );
+
+  window.addEventListener(
+    'focusout',
+    () => {
+      clearTimeout(resizeTimer);
+      clearTimeout(scrollTmr);
+
+      setTimeout(() => {
+        formInteractionLock = isFormFieldFocused();
+        if (!formInteractionLock) {
+          init();
+          window.scrollTo({ top: stops[current], behavior: 'auto' });
+          updateActiveSection();
+        }
+      }, 180);
+    },
+    true,
+  );
 
   document.querySelectorAll('img').forEach(img => {
     if (!img.complete) {
