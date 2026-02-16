@@ -400,7 +400,14 @@
   }
 
   async function lockAndGo(nextIndex) {
-    if (nextIndex < 0 || nextIndex >= stops.length || locked) return;
+    if (
+      nextIndex < 0 ||
+      nextIndex >= stops.length ||
+      locked ||
+      shouldPauseFullpage()
+    )
+      return;
+
     locked = true;
 
     current = nextIndex;
@@ -509,7 +516,11 @@
     window.addEventListener(
       'touchmove',
       e => {
-        if (shouldPauseFullpage()) return;
+        if (shouldPauseFullpage()) {
+          startY = null;
+          return;
+        }
+
         if (startY == null) return;
         if (locked) return;
 
@@ -605,7 +616,16 @@
   window.addEventListener(
     'scroll',
     () => {
-      if (locked || shouldPauseFullpage()) return;
+      if (locked) return;
+
+      if (shouldPauseFullpage()) {
+        // тримаємо поточну секцію, поки інпут активний
+        if (Math.abs(window.scrollY - (stops[current] || 0)) > 12) {
+          window.scrollTo({ top: stops[current] || 0, behavior: 'auto' });
+        }
+        return;
+      }
+
       clearTimeout(scrollTmr);
       scrollTmr = setTimeout(() => {
         updateActiveSection();
