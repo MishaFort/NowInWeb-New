@@ -924,6 +924,18 @@
     <script src="./js/services-slider.js"></script>
     <script src="./js/portfolio-slider.js"></script>
 
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+      if (window.Telegram?.WebApp) {
+        const wa = window.Telegram.WebApp;
+        wa.ready();
+        wa.expand();
+        if (typeof wa.disableVerticalSwipes === 'function') {
+          wa.disableVerticalSwipes();
+        }
+      }
+    </script>
+
     <script src="js/full-page-scroll.js"></script>
 
     <script>

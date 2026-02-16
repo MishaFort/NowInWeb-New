@@ -46,7 +46,13 @@
   }
 
   &__input-part {
-    padding: 18px 72px;
+    padding-inline: clamp(
+      24px,
+      calc(24px + (100vw - 375px) * (48 / 300)),
+      72px
+    );
+    padding-block: 18px;
+
     position: relative;
     overflow: hidden;
   }

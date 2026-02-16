@@ -544,6 +544,8 @@
 
         // Тап по полю форми: тримаємо lock + клавіатуру
         if (field) {
+          if (IS_TELEGRAM_WEBVIEW) startY = null;
+
           formInteractionLock = true;
           keyboardSession = true;
           lockedSectionIndex = current;
@@ -634,6 +636,7 @@
   );
 
   window.addEventListener('resize', () => {
+    if (IS_TELEGRAM_WEBVIEW) return;
     if (formInteractionLock || keyboardSession || isFormFieldFocused()) return;
     if (shouldPauseFullpage()) return;
     // Ігноруємо resize від мобільної клавіатури/фокуса інпутів
@@ -683,6 +686,7 @@
         return;
 
       formInteractionLock = true;
+      keyboardSession = true;
       lockedSectionIndex = current;
       clearTimeout(resizeTimer);
       clearTimeout(scrollTmr);
