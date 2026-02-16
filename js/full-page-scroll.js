@@ -508,6 +508,10 @@
     window.addEventListener(
       'touchstart',
       e => {
+        if (shouldPauseFullpage()) {
+          startY = null;
+          return;
+        }
         startY = e.touches[0].clientY;
       },
       { passive: true },
@@ -540,11 +544,12 @@
     document.addEventListener(
       'pointerdown',
       e => {
+        const formEl = document.getElementById('contact-section-form');
         const field = e.target.closest(
           'input, textarea, select, [contenteditable="true"]',
         );
 
-        // Тап по інпуту: одразу ставимо lock (важливо для Telegram WebView)
+        // Тап по полю форми: тримаємо lock + клавіатуру
         if (field) {
           formInteractionLock = true;
           keyboardSession = true;
@@ -554,7 +559,14 @@
           return;
         }
 
-        // Тап поза інпутом: якщо фокус був у полі — знімаємо його
+        // Якщо фокус у полі і тап всередині форми (між інпутами) — НЕ blur
+        if (isFormFieldFocused() && formEl && formEl.contains(e.target)) {
+          formInteractionLock = true;
+          keyboardSession = true;
+          return;
+        }
+
+        // Blur тільки при тапі поза формою
         if (isFormFieldFocused()) {
           blurFocusedFormField();
           formInteractionLock = false;
