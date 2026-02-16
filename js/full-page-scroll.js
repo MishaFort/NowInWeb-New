@@ -1,12 +1,4 @@
 (() => {
-  // ---------- АНТИДЖАМП: блокуємо нативний стрибок за хешем ДО ініціалізації ----------
-  /*  if (location.hash) {
-    try {
-      document.documentElement.style.scrollBehavior = 'auto';
-    } catch {}
-    window.scrollTo(0, 0);
-  } */
-
   if ('scrollRestoration' in history) {
     history.scrollRestoration = 'manual';
   }
@@ -162,6 +154,11 @@
   let startY = null;
   let formInteractionLock = null;
 
+  const IS_TELEGRAM_WEBVIEW =
+    /Telegram/i.test(navigator.userAgent) || !!window.Telegram?.WebApp;
+
+  let keyboardSession = false;
+
   function isFormFieldFocused() {
     const el = document.activeElement;
     return (
@@ -188,6 +185,7 @@
   }
 
   function onViewportResizeForKeyboard() {
+    if (IS_TELEGRAM_WEBVIEW) return;
     const h = window.visualViewport?.height || window.innerHeight;
     const delta = baselineViewportH - h;
     const keyboardOpenNow = delta > KEYBOARD_DELTA;
@@ -531,15 +529,27 @@
     document.addEventListener(
       'pointerdown',
       e => {
-        if (!isFormFieldFocused()) return;
         const field = e.target.closest(
           'input, textarea, select, [contenteditable="true"]',
         );
-        if (field) return;
 
-        blurFocusedFormField();
-        formInteractionLock = false;
-        lockedSectionIndex = null;
+        // Тап по інпуту: одразу ставимо lock (важливо для Telegram WebView)
+        if (field) {
+          formInteractionLock = true;
+          keyboardSession = true;
+          lockedSectionIndex = current;
+          clearTimeout(resizeTimer);
+          clearTimeout(scrollTmr);
+          return;
+        }
+
+        // Тап поза інпутом: якщо фокус був у полі — знімаємо його
+        if (isFormFieldFocused()) {
+          blurFocusedFormField();
+          formInteractionLock = false;
+          keyboardSession = false;
+          lockedSectionIndex = null;
+        }
       },
       true,
     );
@@ -605,6 +615,7 @@
   );
 
   window.addEventListener('resize', () => {
+    if (formInteractionLock || keyboardSession || isFormFieldFocused()) return;
     if (shouldPauseFullpage()) return;
     // Ігноруємо resize від мобільної клавіатури/фокуса інпутів
     /* if (isTextInputFocused() || isLikelyKeyboardResize()) return; */
