@@ -12,6 +12,27 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
     />
+
+    <style>
+      html.fp-preboot body {
+        opacity: 0;
+      }
+    </style>
+    <script>
+      if (location.hash && location.hash !== '#hero-section') {
+        document.documentElement.classList.add('fp-preboot');
+      }
+
+      window.addEventListener(
+        'load',
+        () => {
+          requestAnimationFrame(() => {
+            document.documentElement.classList.remove('fp-preboot');
+          });
+        },
+        { once: true },
+      );
+    </script>
   </head>
 
   <body>

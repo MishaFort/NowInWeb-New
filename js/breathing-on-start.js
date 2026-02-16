@@ -1,7 +1,27 @@
 (function () {
+  const STORAGE_KEY = 'niw_breath_once_done';
+  const CLASS_NAME = 'breath-once';
+  const DURATION_MS = 1000;
+
+  function alreadyDone() {
+    if (window.__niwBreathOnceDone) return true;
+    try {
+      return sessionStorage.getItem(STORAGE_KEY) === '1';
+    } catch {
+      return false;
+    }
+  }
+
+  function markDone() {
+    window.__niwBreathOnceDone = true;
+    try {
+      sessionStorage.setItem(STORAGE_KEY, '1');
+    } catch {}
+  }
+
   function getClosestIndex(stops, y) {
-    let idx = 0,
-      best = Infinity;
+    let idx = 0;
+    let best = Infinity;
     for (let i = 0; i < stops.length; i++) {
       const d = Math.abs(stops[i] - y);
       if (d < best) {
@@ -21,27 +41,27 @@
   }
 
   function runBreathOnce() {
+    if (alreadyDone()) return;
+
     const sections = Array.from(document.querySelectorAll('.section'));
     if (!sections.length) return;
 
     const stops = computeStops(sections);
     const idx = getClosestIndex(stops, window.scrollY);
-
     const target = getTargetEl(sections[idx]);
-    // скинь попередню, якщо раптом лишилась
-    target.classList.remove('breath-once');
 
-    // невелика пауза — дає браузеру зафіксувати початковий стан
+    target.classList.remove(CLASS_NAME);
+
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        target.classList.add('breath-once');
-        // опційно прибираємо клас після завершення
-        setTimeout(() => target.classList.remove('breath-once'), 1000);
+        if (alreadyDone()) return;
+        target.classList.add(CLASS_NAME);
+        markDone();
+        setTimeout(() => target.classList.remove(CLASS_NAME), DURATION_MS);
       });
     });
   }
 
-  // Пускаємо ефект тоді, коли відомі шрифти/зображення (щоб --fit-scale був коректний)
   if (document.readyState === 'complete') {
     runBreathOnce();
   } else {

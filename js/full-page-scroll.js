@@ -22,6 +22,12 @@
   let suppressUrlSync = !!INITIAL_HASH; // поки true — updateActiveSection не міняє URL
   let isResizing = false;
   let lastHash = location.hash || '';
+  let scaleBasis = {
+    width: window.innerWidth,
+    screenWidth: window.screen?.width ?? 0,
+    screenHeight: window.screen?.height ?? 0,
+    orientation: window.screen?.orientation?.type || '',
+  };
 
   // ---------- НАЛАШТУВАННЯ ----------
   const TOP_GAP = 24;
@@ -75,27 +81,35 @@
 
   //стартовий перехід на хеш
   function bootToHashIfAny() {
-    const id = INITIAL_HASH; // ← ВАЖЛИВО: беремо саме стартовий хеш
+    const id = INITIAL_HASH;
     if (!id || id.length <= 1) {
-      suppressUrlSync = false; // нічого їхати — одразу дозволяємо синхронізацію
+      suppressUrlSync = false;
+      document.documentElement.classList.remove('fp-preboot');
       return;
     }
 
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        if (typeof window.fullpage?.goToId === 'function') {
-          window.fullpage.goToId(id);
-        } else {
-          const target = document.querySelector(id);
-          if (target)
-            target.scrollIntoView({ behavior: 'auto', block: 'start' });
-        }
-        // Дати скролеру час доїхати і вже потім дозволити auto‑sync URL
-        setTimeout(() => {
-          suppressUrlSync = false;
-        }, BREATH_DUR_MS + 50);
-      });
-    });
+    const target = document.querySelector(id);
+    if (!target) {
+      suppressUrlSync = false;
+      document.documentElement.classList.remove('fp-preboot');
+      return;
+    }
+
+    const sec = target.closest('.section') || target;
+    const idx = sections.indexOf(sec);
+    if (idx < 0) {
+      suppressUrlSync = false;
+      document.documentElement.classList.remove('fp-preboot');
+      return;
+    }
+
+    init();
+    current = idx;
+    setActive(idx);
+    window.scrollTo({ top: stops[idx], behavior: 'auto' });
+    updateActiveSection();
+
+    suppressUrlSync = false;
   }
 
   // Нормалізація колеса миші: pixel/line/page -> px
@@ -110,6 +124,29 @@
 
   function clamp(n, min, max) {
     return Math.max(min, Math.min(max, n));
+  }
+
+  function getScaleBasisSnapshot() {
+    return {
+      width: window.innerWidth,
+      screenWidth: window.screen?.width ?? 0,
+      screenHeight: window.screen?.height ?? 0,
+      orientation: window.screen?.orientation?.type || '',
+    };
+  }
+
+  function shouldRecalculateScale() {
+    const next = getScaleBasisSnapshot();
+    return (
+      next.width !== scaleBasis.width ||
+      next.screenWidth !== scaleBasis.screenWidth ||
+      next.screenHeight !== scaleBasis.screenHeight ||
+      next.orientation !== scaleBasis.orientation
+    );
+  }
+
+  function commitScaleBasis() {
+    scaleBasis = getScaleBasisSnapshot();
   }
 
   //хелпер для оновлення URL за індексом секції
@@ -307,6 +344,7 @@
       }
       sec.style.setProperty('--pad-comp', `${padComp.toFixed(2)}px`);
     });
+    commitScaleBasis();
   }
 
   function ensureScalingWrappers() {
@@ -477,6 +515,7 @@
   setActiveSidebar(current);
   setActiveHeader(current);
   updateActiveSection();
+  bootToHashIfAny();
 
   // ---------- ЛІСТЕНЕРИ ----------
   window.addEventListener('wheel', onWheel, { passive: false });
@@ -510,8 +549,12 @@
     isResizing = true;
     clearTimeout(resizeTimer);
 
-    clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
+      if (!shouldRecalculateScale()) {
+        isResizing = false;
+        return;
+      }
+
       const prevY = stops[current] || 0;
 
       initServicesSwiper();
@@ -525,27 +568,14 @@
       current = getClosestIndex(prevY);
       window.scrollTo({ top: stops[current], behavior: 'auto' });
       updateActiveSection();
+      isResizing = false;
     }, 120);
   });
-
-  /*  window.addEventListener('load', () => {
-    applyFitScales();
-    init();
-    updateActiveSection();
-
-    // Якщо сторінку відкрили з #hash — плавно перейдемо туди через наш API
-    if (location.hash) {
-      const h = location.hash;
-      // не прибираємо хеш у deep‑link режимі
-      window.fullpage.goToId(h);
-    }
-  }); */
 
   window.addEventListener('load', () => {
     applyFitScales();
     init();
     updateActiveSection();
-    bootToHashIfAny();
   });
 
   window.addEventListener('pageshow', e => {
@@ -572,6 +602,7 @@
     const ro = new ResizeObserver(() => {
       clearTimeout(roTmr);
       roTmr = setTimeout(() => {
+        if (!shouldRecalculateScale()) return;
         isResizing = true;
         applyFitScales();
         init();
