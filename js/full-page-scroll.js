@@ -19,6 +19,7 @@
   let keyboardWasOpen = false;
   let baselineViewportH = window.visualViewport?.height || window.innerHeight;
   const KEYBOARD_DELTA = 120;
+  const MOBILE_TABLET_MAX_W = 1140;
 
   // ---------- НАЛАШТУВАННЯ ----------
   const TOP_GAP = 24;
@@ -139,6 +140,10 @@
     history.replaceState(null, '', hash);
   }
 
+  function isMobileOrTablet() {
+    return window.innerWidth <= MOBILE_TABLET_MAX_W;
+  }
+
   // ---------- КЕШ ДОМ ЕЛЕМЕНТІВ ----------
   const sections = Array.from(document.querySelectorAll('.section'));
   const headerLinks = Array.from(
@@ -183,10 +188,12 @@
 
   function onViewportResizeForKeyboard() {
     if (IS_TELEGRAM_WEBVIEW) return;
+    if (!isMobileOrTablet()) return;
+    if (!isContactSectionActive()) return;
 
     const h = window.visualViewport?.height || window.innerHeight;
-    const openDelta = 70; // було 120, завелике для частини девайсів
-    const closeDelta = 20;
+    const openDelta = 50;
+    const closeDelta = 18;
 
     if (isFormFieldFocused() && h < baselineViewportH - openDelta) {
       keyboardWasOpen = true;
@@ -195,11 +202,10 @@
     if (keyboardWasOpen && h >= baselineViewportH - closeDelta) {
       blurFocusedFormField();
       keyboardWasOpen = false;
+      formInteractionLock = false;
+      keyboardSession = false;
+      lockedSectionIndex = null;
     }
-
-    formInteractionLock = false;
-    keyboardSession = false;
-    lockedSectionIndex = null;
 
     if (!isFormFieldFocused() && !keyboardWasOpen) {
       baselineViewportH = h;
@@ -774,4 +780,21 @@
       );
     }
   });
+
+  setInterval(() => {
+    if (IS_TELEGRAM_WEBVIEW) return;
+    if (!isMobileOrTablet()) return;
+    if (!isContactSectionActive()) return;
+    if (!isFormFieldFocused()) return;
+
+    const h = window.visualViewport?.height || window.innerHeight;
+    const keyboardOpenNow = h < baselineViewportH - 50;
+
+    if (!keyboardOpenNow) {
+      blurFocusedFormField();
+      formInteractionLock = false;
+      keyboardSession = false;
+      lockedSectionIndex = null;
+    }
+  }, 250);
 })();
