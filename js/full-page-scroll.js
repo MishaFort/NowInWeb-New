@@ -197,6 +197,10 @@
       keyboardWasOpen = false;
     }
 
+    formInteractionLock = false;
+    keyboardSession = false;
+    lockedSectionIndex = null;
+
     if (!isFormFieldFocused() && !keyboardWasOpen) {
       baselineViewportH = h;
     }
@@ -450,13 +454,6 @@
   }
 
   function onKey(e) {
-    if (e.key === 'Escape') {
-      blurFocusedFormField();
-      formInteractionLock = false;
-      lockedSectionIndex = null;
-      return;
-    }
-
     if (shouldPauseFullpage()) return;
 
     const keys = [
@@ -593,6 +590,9 @@
     'keydown',
     e => {
       if (e.key !== 'Escape') return;
+      e.preventDefault();
+      e.stopPropagation();
+
       blurFocusedFormField();
       formInteractionLock = false;
       keyboardSession = false;
@@ -737,7 +737,6 @@
 
           keyboardSession = false;
           formInteractionLock = false;
-          lockedSectionIndex = null;
 
           if (!IS_TELEGRAM_WEBVIEW) {
             stops = computeStops();
