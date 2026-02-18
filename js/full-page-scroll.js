@@ -174,7 +174,7 @@
   }
 
   function shouldPauseFullpage() {
-    return formInteractionLock || isFormFieldFocused();
+    return isFormFieldFocused();
   }
 
   function onViewportResizeForKeyboard() {
@@ -498,17 +498,21 @@
   }
 
   function wireTouch() {
-    window.addEventListener(
-      'touchstart',
-      e => {
-        if (shouldPauseFullpage()) {
-          startY = null;
-          return;
-        }
-        startY = e.touches[0].clientY;
-      },
-      { passive: true },
-    );
+    window.addEventListener('touchstart', e => {
+      // якщо lock залип, але інпут вже не в фокусі — скидаємо
+      if (formInteractionLock && !isFormFieldFocused()) {
+        formInteractionLock = false;
+        keyboardSession = false;
+        lockedSectionIndex = null;
+      }
+
+      if (shouldPauseFullpage()) {
+        startY = null;
+        return;
+      }
+
+      startY = e.touches[0].clientY;
+    });
 
     window.addEventListener(
       'touchmove',
