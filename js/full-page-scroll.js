@@ -183,6 +183,24 @@
     return isContactSectionActive() && isFormFieldFocused();
   }
 
+  function blurOnKeyboardClose() {
+    if (!isMobileOrTablet()) return;
+    if (!isContactSectionActive()) return;
+
+    const vv = window.visualViewport;
+    if (!vv) return;
+
+    const threshold = 60;
+    const keyboardOpen = vv.height < window.innerHeight - threshold;
+
+    if (!keyboardOpen && isFormFieldFocused()) {
+      blurFocusedFormField();
+      formInteractionLock = false;
+      keyboardSession = false;
+      lockedSectionIndex = null;
+    }
+  }
+
   // ---------- ДОПОМОЖНІ ----------
   function computeStops() {
     return sections.map(s => Math.max(0, Math.round(s.offsetTop)));
@@ -481,6 +499,16 @@
 
   function wireTouch() {
     window.addEventListener('touchstart', e => {
+      const formEl = document.getElementById('contact-section-form');
+      const tapInsideForm = formEl && formEl.contains(e.target);
+
+      if (isFormFieldFocused() && !tapInsideForm) {
+        blurFocusedFormField();
+        formInteractionLock = false;
+        keyboardSession = false;
+        lockedSectionIndex = null;
+      }
+
       if (shouldPauseFullpage()) {
         startY = null;
         return;
@@ -522,9 +550,6 @@
 
         // Тап по полю форми: тримаємо lock + клавіатуру
         if (field) {
-          formInteractionLock = true;
-          keyboardSession = true;
-          lockedSectionIndex = current;
           clearTimeout(resizeTimer);
           clearTimeout(scrollTmr);
           return;
@@ -666,6 +691,8 @@
     // при поверненні з кешу історії переконаємось, що хеш відпрацьовано
     if (e.persisted) bootToHashIfAny();
   });
+
+  window.visualViewport?.addEventListener('resize', blurOnKeyboardClose);
 
   document.querySelectorAll('img').forEach(img => {
     if (!img.complete) {
