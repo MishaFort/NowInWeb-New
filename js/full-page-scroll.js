@@ -183,19 +183,23 @@
 
   function onViewportResizeForKeyboard() {
     if (IS_TELEGRAM_WEBVIEW) return;
-    const h = window.visualViewport?.height || window.innerHeight;
-    const delta = baselineViewportH - h;
-    const keyboardOpenNow = delta > KEYBOARD_DELTA;
 
-    // клавіатура щойно закрилась -> знімаємо фокус
-    if (keyboardWasOpen && !keyboardOpenNow) {
-      blurFocusedFormField();
+    const h = window.visualViewport?.height || window.innerHeight;
+    const openDelta = 70; // було 120, завелике для частини девайсів
+    const closeDelta = 20;
+
+    if (isFormFieldFocused() && h < baselineViewportH - openDelta) {
+      keyboardWasOpen = true;
     }
 
-    keyboardWasOpen = keyboardOpenNow;
+    if (keyboardWasOpen && h >= baselineViewportH - closeDelta) {
+      blurFocusedFormField();
+      keyboardWasOpen = false;
+    }
 
-    // оновлюємо базу тільки коли клавіатура точно закрита
-    if (!keyboardOpenNow) baselineViewportH = h;
+    if (!isFormFieldFocused() && !keyboardWasOpen) {
+      baselineViewportH = h;
+    }
   }
 
   // ---------- ДОПОМОЖНІ ----------
@@ -585,6 +589,18 @@
     );
   }
 
+  document.addEventListener(
+    'keydown',
+    e => {
+      if (e.key !== 'Escape') return;
+      blurFocusedFormField();
+      formInteractionLock = false;
+      keyboardSession = false;
+      lockedSectionIndex = null;
+    },
+    true,
+  );
+
   // ---------- ПУБЛІЧНИЙ МІНІ-API ----------
   window.fullpage = {
     goToId(idOrHash) {
@@ -696,6 +712,9 @@
         !e.target.matches('input, textarea, select, [contenteditable="true"]')
       )
         return;
+
+      baselineViewportH = window.visualViewport?.height || window.innerHeight;
+      keyboardWasOpen = false;
 
       formInteractionLock = true;
       keyboardSession = true;
