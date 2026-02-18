@@ -16,9 +16,6 @@
   let lastHash = location.hash || '';
   let fitScaleLocked = false;
   let lockedSectionIndex = null;
-  let keyboardWasOpen = false;
-  let baselineViewportH = window.visualViewport?.height || window.innerHeight;
-  const KEYBOARD_DELTA = 120;
   const MOBILE_TABLET_MAX_W = 1140;
 
   // ---------- НАЛАШТУВАННЯ ----------
@@ -184,32 +181,6 @@
 
   function shouldPauseFullpage() {
     return isContactSectionActive() && isFormFieldFocused();
-  }
-
-  function onViewportResizeForKeyboard() {
-    if (IS_TELEGRAM_WEBVIEW) return;
-    if (!isMobileOrTablet()) return;
-    if (!isContactSectionActive()) return;
-
-    const h = window.visualViewport?.height || window.innerHeight;
-    const openDelta = 50;
-    const closeDelta = 18;
-
-    if (isFormFieldFocused() && h < baselineViewportH - openDelta) {
-      keyboardWasOpen = true;
-    }
-
-    if (keyboardWasOpen && h >= baselineViewportH - closeDelta) {
-      blurFocusedFormField();
-      keyboardWasOpen = false;
-      formInteractionLock = false;
-      keyboardSession = false;
-      lockedSectionIndex = null;
-    }
-
-    if (!isFormFieldFocused() && !keyboardWasOpen) {
-      baselineViewportH = h;
-    }
   }
 
   // ---------- ДОПОМОЖНІ ----------
@@ -510,22 +481,10 @@
 
   function wireTouch() {
     window.addEventListener('touchstart', e => {
-      const formEl = document.getElementById('contact-section-form');
-      const tapInsideForm = formEl && formEl.contains(e.target);
-
-      // якщо lock залип, але інпут вже не в фокусі — скидаємо
-      if (isFormFieldFocused() && !tapInsideForm) {
-        blurFocusedFormField();
-        formInteractionLock = false;
-        keyboardSession = false;
-        lockedSectionIndex = null;
-      }
-
       if (shouldPauseFullpage()) {
         startY = null;
         return;
       }
-
       startY = e.touches[0].clientY;
     });
 
@@ -563,8 +522,6 @@
 
         // Тап по полю форми: тримаємо lock + клавіатуру
         if (field) {
-          if (IS_TELEGRAM_WEBVIEW) startY = null;
-
           formInteractionLock = true;
           keyboardSession = true;
           lockedSectionIndex = current;
@@ -671,7 +628,6 @@
 
   window.addEventListener('resize', () => {
     if (IS_TELEGRAM_WEBVIEW) return;
-    if (formInteractionLock || keyboardSession || isFormFieldFocused()) return;
     if (shouldPauseFullpage()) return;
     // Ігноруємо resize від мобільної клавіатури/фокуса інпутів
     /* if (isTextInputFocused() || isLikelyKeyboardResize()) return; */
@@ -711,63 +667,6 @@
     if (e.persisted) bootToHashIfAny();
   });
 
-  window.addEventListener(
-    'focusin',
-    e => {
-      if (
-        !e.target.matches('input, textarea, select, [contenteditable="true"]')
-      )
-        return;
-
-      baselineViewportH = window.visualViewport?.height || window.innerHeight;
-      keyboardWasOpen = false;
-
-      formInteractionLock = true;
-      keyboardSession = true;
-      lockedSectionIndex = current;
-      clearTimeout(resizeTimer);
-      clearTimeout(scrollTmr);
-    },
-    true,
-  );
-
-  window.addEventListener(
-    'focusout',
-    () => {
-      clearTimeout(resizeTimer);
-      clearTimeout(scrollTmr);
-
-      setTimeout(
-        () => {
-          if (isFormFieldFocused()) return;
-
-          keyboardSession = false;
-          formInteractionLock = false;
-
-          if (!IS_TELEGRAM_WEBVIEW) {
-            stops = computeStops();
-            const idx = lockedSectionIndex ?? current;
-            current = Math.max(0, Math.min(idx, stops.length - 1));
-
-            window.scrollTo({ top: stops[current], behavior: 'auto' });
-            setActive(current);
-            replaceUrlForIndex(current);
-          }
-
-          lockedSectionIndex = null;
-        },
-        IS_TELEGRAM_WEBVIEW ? 320 : 220,
-      );
-    },
-    true,
-  );
-
-  window.visualViewport?.addEventListener(
-    'resize',
-    onViewportResizeForKeyboard,
-  );
-  window.addEventListener('resize', onViewportResizeForKeyboard);
-
   document.querySelectorAll('img').forEach(img => {
     if (!img.complete) {
       img.addEventListener(
@@ -780,21 +679,4 @@
       );
     }
   });
-
-  setInterval(() => {
-    if (IS_TELEGRAM_WEBVIEW) return;
-    if (!isMobileOrTablet()) return;
-    if (!isContactSectionActive()) return;
-    if (!isFormFieldFocused()) return;
-
-    const h = window.visualViewport?.height || window.innerHeight;
-    const keyboardOpenNow = h < baselineViewportH - 50;
-
-    if (!keyboardOpenNow) {
-      blurFocusedFormField();
-      formInteractionLock = false;
-      keyboardSession = false;
-      lockedSectionIndex = null;
-    }
-  }, 250);
 })();
