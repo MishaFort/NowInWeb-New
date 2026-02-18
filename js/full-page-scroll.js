@@ -166,6 +166,10 @@
     );
   }
 
+  function isContactSectionActive() {
+    return sections[current]?.id === 'contact-section';
+  }
+
   function blurFocusedFormField() {
     const el = document.activeElement;
     if (el && el.matches('input, textarea, select, [contenteditable="true"]')) {
@@ -174,7 +178,7 @@
   }
 
   function shouldPauseFullpage() {
-    return isFormFieldFocused();
+    return isContactSectionActive() && isFormFieldFocused();
   }
 
   function onViewportResizeForKeyboard() {
@@ -499,8 +503,12 @@
 
   function wireTouch() {
     window.addEventListener('touchstart', e => {
+      const formEl = document.getElementById('contact-section-form');
+      const tapInsideForm = formEl && formEl.contains(e.target);
+
       // якщо lock залип, але інпут вже не в фокусі — скидаємо
-      if (formInteractionLock && !isFormFieldFocused()) {
+      if (isFormFieldFocused() && !tapInsideForm) {
+        blurFocusedFormField();
         formInteractionLock = false;
         keyboardSession = false;
         lockedSectionIndex = null;
@@ -710,6 +718,7 @@
 
           keyboardSession = false;
           formInteractionLock = false;
+          lockedSectionIndex = null;
 
           if (!IS_TELEGRAM_WEBVIEW) {
             stops = computeStops();
