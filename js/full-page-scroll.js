@@ -20,9 +20,7 @@
   let keyboardWasOpen = false;
   let keyboardReadyAt = 0;
   let keyboardBaseH = 0;
-  let keyboardMinH = 0;
-
-  alert('Alert check!');
+  let keyboardMinH = null;
 
   // ---------- НАЛАШТУВАННЯ ----------
   const TOP_GAP = 24;
@@ -211,30 +209,29 @@
     }
 
     const h = vv.height;
-    keyboardMinH = keyboardMinH ? Math.min(keyboardMinH, h) : h;
+    keyboardMinH = Math.min(keyboardMinH ?? h, h);
 
     // Даємо клавіатурі стартувати
     if (Date.now() < keyboardReadyAt) return;
 
     // Вважаємо, що клава відкрита, якщо viewport помітно зменшився
-    if (h <= keyboardBaseH - 30 || keyboardMinH <= keyboardBaseH - 30) {
-      keyboardWasOpen = true;
-
-      alert('keyboard Was Open!');
-    }
+    const openedByDelta = keyboardBaseH - keyboardMinH >= 18;
+    if (openedByDelta) keyboardWasOpen = true;
 
     // Закрита, коли майже повернулись до базової висоти
-    if (keyboardWasOpen && h >= keyboardBaseH - 10) {
+    if (
+      keyboardWasOpen &&
+      h >= keyboardBaseH - 40 &&
+      Date.now() >= keyboardReadyAt
+    ) {
       blurFocusedFormField();
       keyboardWasOpen = false;
       keyboardReadyAt = 0;
       keyboardBaseH = 0;
-      keyboardMinH = 0;
+      keyboardMinH = null;
       formInteractionLock = false;
       keyboardSession = false;
       lockedSectionIndex = null;
-
-      alert('keyboard Was Closed!');
     }
   }
 
@@ -584,10 +581,11 @@
           clearTimeout(scrollTmr);
 
           const vv = window.visualViewport;
+
           keyboardBaseH = vv ? vv.height : window.innerHeight;
           keyboardMinH = keyboardBaseH;
           keyboardWasOpen = false;
-          keyboardReadyAt = Date.now() + 250; // затримка перед перевіркою
+          keyboardReadyAt = Date.now() + 400; // затримка перед перевіркою
 
           return;
         }
