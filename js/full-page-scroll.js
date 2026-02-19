@@ -678,7 +678,7 @@
     { passive: true },
   );
 
-  /* window.addEventListener('resize', () => {
+  window.addEventListener('resize', () => {
     if (IS_TELEGRAM_WEBVIEW) return;
     if (shouldPauseFullpage()) return;
 
@@ -705,7 +705,7 @@
       updateActiveSection();
       isResizing = false;
     }, 120);
-  }); */
+  });
 
   window.addEventListener('load', () => {
     init();
