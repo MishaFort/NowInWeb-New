@@ -19,17 +19,21 @@
     border: 1px solid rgba(255, 255, 255, 0.35);
     border-radius: 14px;
     background-color: rgba(0, 0, 0, 0.5);
-    /* backdrop-filter: blur(15.16px);
-    -webkit-backdrop-filter: blur(15.16px);
-    box-shadow:
-      -11.15px -10.39px 48px -12px rgba(0, 0, 0, 0.15),
-      -1.86px -1.73px 12px -8px rgba(0, 0, 0, 0.15),
-      inset 2.15px 2px 9.24px 0 rgba(255, 255, 255, 0.126),
-      inset 1.22px 1.13px 4.62px 0 rgba(255, 255, 255, 0.126);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
 
-    &:focus-within {
-      box-shadow: 0 6px 12px 1px #7200ff;
-    } */
+    @media screen and (min-width: $bp-laptop) {
+      backdrop-filter: blur(15.16px);
+      -webkit-backdrop-filter: blur(15.16px);
+      box-shadow:
+        -11.15px -10.39px 48px -12px rgba(0, 0, 0, 0.15),
+        -1.86px -1.73px 12px -8px rgba(0, 0, 0, 0.15),
+        inset 2.15px 2px 9.24px 0 rgba(255, 255, 255, 0.126),
+        inset 1.22px 1.13px 4.62px 0 rgba(255, 255, 255, 0.126);
+
+      &:focus-within {
+        box-shadow: 0 6px 12px 1px #7200ff;
+      }
+    }
 
     &:focus,
     &:not(:placeholder-shown) {
@@ -43,9 +47,9 @@
       caret-color: transparent;
       outline: none;
       -webkit-text-fill-color: white;
-      /* -webkit-box-shadow:
+      -webkit-box-shadow:
         0 0 0 1000px #000000 inset,
-        0 6px 12px 1px #7200ff; */
+        0 6px 12px 1px #7200ff;
     }
 
     &--message {
