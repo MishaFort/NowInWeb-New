@@ -22,6 +22,8 @@
   let keyboardBaseH = 0;
   let keyboardMinH = 0;
 
+  alert('Alert check!');
+
   // ---------- НАЛАШТУВАННЯ ----------
   const TOP_GAP = 24;
   const BOTTOM_GAP = 16;
@@ -217,6 +219,8 @@
     // Вважаємо, що клава відкрита, якщо viewport помітно зменшився
     if (h <= keyboardBaseH - 30 || keyboardMinH <= keyboardBaseH - 30) {
       keyboardWasOpen = true;
+
+      alert('keyboard Was Open!');
     }
 
     // Закрита, коли майже повернулись до базової висоти
@@ -229,6 +233,8 @@
       formInteractionLock = false;
       keyboardSession = false;
       lockedSectionIndex = null;
+
+      alert('keyboard Was Closed!');
     }
   }
 
