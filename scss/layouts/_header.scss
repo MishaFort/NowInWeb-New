@@ -1,5 +1,4 @@
 .header {
-  /*  display: none; */
   position: fixed;
   top: 0;
   left: 0;
@@ -16,7 +15,10 @@
   transition: top 0.4s ease-in-out;
 
   @media screen and (min-width: $bp-tablet) {
-    display: block;
+    padding: 12px 0;
+  }
+
+  @media screen and (min-width: $bp-desktop) {
     padding: 20px 0;
   }
 
