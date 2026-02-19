@@ -18,8 +18,7 @@
   let lockedSectionIndex = null;
   const MOBILE_TABLET_MAX_W = 1140;
   let keyboardWasOpen = false;
-  let keyboardWatchArmed = false;
-  let keyboardFocusAt = 0;
+  let keyboardReadyAt = 0;
   let keyboardBaseH = 0;
 
   // ---------- НАЛАШТУВАННЯ ----------
@@ -196,15 +195,19 @@
   }
 
   function blurOnKeyboardClose() {
-    if (!keyboardWatchArmed) return;
     if (!isMobileOrTablet()) return;
     if (!isContactSectionActive()) return;
 
     const vv = window.visualViewport;
     if (!vv) return;
 
-    // Перші 300мс після focus ігноруємо (перехідні resize при відкритті клави)
-    if (Date.now() - keyboardFocusAt < 300) return;
+    if (!isFormFieldFocused()) {
+      keyboardWasOpen = false;
+      return;
+    }
+
+    // чекаємо, поки клава гарантовано відкриється
+    if (Date.now() < keyboardReadyAt) return;
 
     const openDelta = 70;
     const closeDelta = 20;
@@ -218,10 +221,11 @@
       return;
     }
 
-    if (keyboardWasOpen && closedNow && isFormFieldFocused()) {
+    // blur тільки після циклу "відкрилась -> закрилась"
+    if (keyboardWasOpen && closedNow) {
       blurFocusedFormField();
       keyboardWasOpen = false;
-      keyboardWatchArmed = false;
+      keyboardReadyAt = 0;
       formInteractionLock = false;
       keyboardSession = false;
       lockedSectionIndex = null;
@@ -572,6 +576,12 @@
         if (field) {
           clearTimeout(resizeTimer);
           clearTimeout(scrollTmr);
+
+          const vv = window.visualViewport;
+          keyboardBaseH = vv ? vv.height : window.innerHeight;
+          keyboardWasOpen = false;
+          keyboardReadyAt = Date.now() + 500; // затримка перед перевіркою
+
           return;
         }
 
@@ -668,11 +678,9 @@
     { passive: true },
   );
 
-  window.addEventListener('resize', () => {
+  /* window.addEventListener('resize', () => {
     if (IS_TELEGRAM_WEBVIEW) return;
     if (shouldPauseFullpage()) return;
-    // Ігноруємо resize від мобільної клавіатури/фокуса інпутів
-    /* if (isTextInputFocused() || isLikelyKeyboardResize()) return; */
 
     isResizing = true;
     clearTimeout(resizeTimer);
@@ -697,7 +705,7 @@
       updateActiveSection();
       isResizing = false;
     }, 120);
-  });
+  }); */
 
   window.addEventListener('load', () => {
     init();
@@ -710,33 +718,6 @@
   });
 
   window.visualViewport?.addEventListener('resize', blurOnKeyboardClose);
-
-  document.addEventListener(
-    'focusin',
-    e => {
-      if (!isMobileOrTablet()) return;
-      if (!isContactSectionActive()) return;
-      if (!isFormField(e.target)) return;
-
-      const vv = window.visualViewport;
-      if (!vv) return;
-
-      keyboardWatchArmed = true;
-      keyboardWasOpen = false;
-      keyboardFocusAt = Date.now();
-      keyboardBaseH = vv.height;
-    },
-    true,
-  );
-
-  document.addEventListener(
-    'focusout',
-    () => {
-      keyboardWatchArmed = false;
-      keyboardWasOpen = false;
-    },
-    true,
-  );
 
   document.querySelectorAll('img').forEach(img => {
     if (!img.complete) {
