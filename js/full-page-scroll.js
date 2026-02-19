@@ -17,6 +17,7 @@
   let fitScaleLocked = false;
   let lockedSectionIndex = null;
   const MOBILE_TABLET_MAX_W = 1140;
+  let keyboardWasOpen = false;
 
   // ---------- НАЛАШТУВАННЯ ----------
   const TOP_GAP = 24;
@@ -191,13 +192,26 @@
     if (!vv) return;
 
     const threshold = 60;
-    const keyboardOpen = vv.height < window.innerHeight - threshold;
+    const keyboardOpenNow = vv.height < window.innerHeight - threshold;
 
-    if (!keyboardOpen && isFormFieldFocused()) {
+    // Спочатку фіксуємо факт, що клавіатура реально відкрилась
+    if (isFormFieldFocused() && keyboardOpenNow) {
+      keyboardWasOpen = true;
+      return;
+    }
+
+    // Blur тільки після сценарію "була відкрита -> стала закрита"
+    if (keyboardWasOpen && !keyboardOpenNow && isFormFieldFocused()) {
       blurFocusedFormField();
       formInteractionLock = false;
       keyboardSession = false;
       lockedSectionIndex = null;
+      keyboardWasOpen = false;
+      return;
+    }
+
+    if (!isFormFieldFocused()) {
+      keyboardWasOpen = false;
     }
   }
 
