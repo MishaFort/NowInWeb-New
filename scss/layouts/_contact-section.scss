@@ -1,19 +1,13 @@
 .contact-section {
-  /* padding: 30px 0 164px; */
-
   @media (max-width: 768px) {
-    /* backdrop-filter: none;
-    -webkit-backdrop-filter: none; */
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 
   &__container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* justify-content: center; */
-    /*  margin-top: 24px; */
-    /* margin: 0 -96px; */
-
     margin: 0 max(-220px, calc(-96px - max(0px, calc(650px - 100vh))));
 
     @supports (height: 100dvh) {
@@ -29,7 +23,6 @@
 
   ////////////////////////////////////////////////////////
   &__input-part__border {
-    /* margin-top: clamp(0px, 3vw, 24px); */
     position: relative;
     width: 100%;
     max-width: 700px;
@@ -38,8 +31,8 @@
     /* background:
       linear-gradient(180deg, rgba(106, 34, 234, 1), rgba(114, 0, 255, 0.2)),
       var(--color-primary-dark);
-
-    transition: box-shadow 0.2s ease-in-out; */
+ */
+    transition: box-shadow 0.2s ease-in-out;
 
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -51,14 +44,13 @@
   }
 
   &__input-part {
+    position: relative;
     padding-inline: clamp(
       48px,
       calc(48px + (100vw - 375px) * (72 - 48 / 300)),
       72px
     );
     padding-block: 18px;
-
-    position: relative;
     overflow: hidden;
   }
 
@@ -89,15 +81,15 @@
   @keyframes contact-thankyou-slide-up {
     0% {
       opacity: 0;
-      transform: translateY(30px); // нижче
+      transform: translateY(30px);
     }
     60% {
       opacity: 1;
-      transform: translateY(-8px); // трохи вище фінальної позиції
+      transform: translateY(-8px);
     }
     100% {
       opacity: 1;
-      transform: translateY(0); // повертаємось на місце
+      transform: translateY(0);
     }
   }
 
@@ -175,12 +167,12 @@
     linear-gradient(180deg, rgba(32, 32, 32, 0.2) 0%, rgba(32, 32, 32, 0) 100%),
     var(--color-primary-dark);
   backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px); */
   border-radius: 19px;
 
-  transition: background 0.2s ease;
+  /*  transition: background 0.2s ease; */
 
-  &:hover {
+  /* &:hover {
     background:
       linear-gradient(180deg, rgba(48, 42, 93, 0.2), rgba(48, 42, 93, 0)),
       linear-gradient(180deg, rgba(32, 32, 32, 0.2), rgba(32, 32, 32, 0)),
