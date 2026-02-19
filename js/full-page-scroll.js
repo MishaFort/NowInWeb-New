@@ -20,6 +20,7 @@
   let keyboardWasOpen = false;
   let keyboardReadyAt = 0;
   let keyboardBaseH = 0;
+  let keyboardMinH = 0;
 
   // ---------- НАЛАШТУВАННЯ ----------
   const TOP_GAP = 24;
@@ -203,29 +204,28 @@
 
     if (!isFormFieldFocused()) {
       keyboardWasOpen = false;
+      keyboardReadyAt = 0;
       return;
     }
 
-    // чекаємо, поки клава гарантовано відкриється
+    const h = vv.height;
+    keyboardMinH = keyboardMinH ? Math.min(keyboardMinH, h) : h;
+
+    // Даємо клавіатурі стартувати
     if (Date.now() < keyboardReadyAt) return;
 
-    const openDelta = 70;
-    const closeDelta = 20;
-    const h = vv.height;
-
-    const openedNow = h < keyboardBaseH - openDelta;
-    const closedNow = h >= keyboardBaseH - closeDelta;
-
-    if (openedNow) {
+    // Вважаємо, що клава відкрита, якщо viewport помітно зменшився
+    if (h <= keyboardBaseH - 30 || keyboardMinH <= keyboardBaseH - 30) {
       keyboardWasOpen = true;
-      return;
     }
 
-    // blur тільки після циклу "відкрилась -> закрилась"
-    if (keyboardWasOpen && closedNow) {
+    // Закрита, коли майже повернулись до базової висоти
+    if (keyboardWasOpen && h >= keyboardBaseH - 10) {
       blurFocusedFormField();
       keyboardWasOpen = false;
       keyboardReadyAt = 0;
+      keyboardBaseH = 0;
+      keyboardMinH = 0;
       formInteractionLock = false;
       keyboardSession = false;
       lockedSectionIndex = null;
@@ -579,8 +579,9 @@
 
           const vv = window.visualViewport;
           keyboardBaseH = vv ? vv.height : window.innerHeight;
+          keyboardMinH = keyboardBaseH;
           keyboardWasOpen = false;
-          keyboardReadyAt = Date.now() + 500; // затримка перед перевіркою
+          keyboardReadyAt = Date.now() + 250; // затримка перед перевіркою
 
           return;
         }
@@ -677,35 +678,6 @@
     },
     { passive: true },
   );
-
-  window.addEventListener('resize', () => {
-    if (IS_TELEGRAM_WEBVIEW) return;
-    if (shouldPauseFullpage()) return;
-
-    isResizing = true;
-    clearTimeout(resizeTimer);
-
-    resizeTimer = setTimeout(() => {
-      if (shouldPauseFullpage()) {
-        isResizing = false;
-        return;
-      }
-
-      const prevY = stops[current] || 0;
-
-      initServicesSwiper();
-      init();
-
-      buildSideNav();
-      setActiveSidebar(current);
-      setActiveHeader(current);
-
-      current = getClosestIndex(prevY);
-      window.scrollTo({ top: stops[current], behavior: 'auto' });
-      updateActiveSection();
-      isResizing = false;
-    }, 120);
-  });
 
   window.addEventListener('load', () => {
     init();
