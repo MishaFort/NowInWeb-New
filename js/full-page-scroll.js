@@ -18,6 +18,9 @@
   let lockedSectionIndex = null;
   const MOBILE_TABLET_MAX_W = 1140;
   let keyboardWasOpen = false;
+  let keyboardWatchArmed = false;
+  let keyboardFocusAt = 0;
+  let keyboardBaseH = 0;
 
   // ---------- НАЛАШТУВАННЯ ----------
   const TOP_GAP = 24;
@@ -185,33 +188,35 @@
   }
 
   function blurOnKeyboardClose() {
+    if (!keyboardWatchArmed) return;
     if (!isMobileOrTablet()) return;
     if (!isContactSectionActive()) return;
 
     const vv = window.visualViewport;
     if (!vv) return;
 
-    const threshold = 60;
-    const keyboardOpenNow = vv.height < window.innerHeight - threshold;
+    // Перші 300мс після focus ігноруємо (перехідні resize при відкритті клави)
+    if (Date.now() - keyboardFocusAt < 300) return;
 
-    // Спочатку фіксуємо факт, що клавіатура реально відкрилась
-    if (isFormFieldFocused() && keyboardOpenNow) {
+    const openDelta = 70;
+    const closeDelta = 20;
+    const h = vv.height;
+
+    const openedNow = h < keyboardBaseH - openDelta;
+    const closedNow = h >= keyboardBaseH - closeDelta;
+
+    if (openedNow) {
       keyboardWasOpen = true;
       return;
     }
 
-    // Blur тільки після сценарію "була відкрита -> стала закрита"
-    if (keyboardWasOpen && !keyboardOpenNow && isFormFieldFocused()) {
+    if (keyboardWasOpen && closedNow && isFormFieldFocused()) {
       blurFocusedFormField();
+      keyboardWasOpen = false;
+      keyboardWatchArmed = false;
       formInteractionLock = false;
       keyboardSession = false;
       lockedSectionIndex = null;
-      keyboardWasOpen = false;
-      return;
-    }
-
-    if (!isFormFieldFocused()) {
-      keyboardWasOpen = false;
     }
   }
 
@@ -707,6 +712,33 @@
   });
 
   window.visualViewport?.addEventListener('resize', blurOnKeyboardClose);
+
+  document.addEventListener(
+    'focusin',
+    e => {
+      if (!isMobileOrTablet()) return;
+      if (!isContactSectionActive()) return;
+      if (!isFormField(e.target)) return;
+
+      const vv = window.visualViewport;
+      if (!vv) return;
+
+      keyboardWatchArmed = true;
+      keyboardWasOpen = false;
+      keyboardFocusAt = Date.now();
+      keyboardBaseH = vv.height;
+    },
+    true,
+  );
+
+  document.addEventListener(
+    'focusout',
+    () => {
+      keyboardWatchArmed = false;
+      keyboardWasOpen = false;
+    },
+    true,
+  );
 
   document.querySelectorAll('img').forEach(img => {
     if (!img.complete) {
