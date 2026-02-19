@@ -172,6 +172,14 @@
     );
   }
 
+  function isFormField(el) {
+    return (
+      !!el &&
+      el.matches &&
+      el.matches('input, textarea, select, [contenteditable="true"]')
+    );
+  }
+
   function isContactSectionActive() {
     return sections[current]?.id === 'contact-section';
   }
@@ -518,16 +526,6 @@
 
   function wireTouch() {
     window.addEventListener('touchstart', e => {
-      const formEl = document.getElementById('contact-section-form');
-      const tapInsideForm = formEl && formEl.contains(e.target);
-
-      if (isFormFieldFocused() && !tapInsideForm) {
-        blurFocusedFormField();
-        formInteractionLock = false;
-        keyboardSession = false;
-        lockedSectionIndex = null;
-      }
-
       if (shouldPauseFullpage()) {
         startY = null;
         return;
@@ -562,32 +560,32 @@
     document.addEventListener(
       'pointerdown',
       e => {
+        const target = e.target instanceof Element ? e.target : null;
+        if (!target) return;
+
         const formEl = document.getElementById('contact-section-form');
-        const field = e.target.closest(
+        const field = target.closest(
           'input, textarea, select, [contenteditable="true"]',
         );
 
-        // Тап по полю форми: тримаємо lock + клавіатуру
+        // тап по полю — не blur
         if (field) {
           clearTimeout(resizeTimer);
           clearTimeout(scrollTmr);
           return;
         }
 
-        // Якщо фокус у полі і тап всередині форми (між інпутами) — НЕ blur
-        if (isFormFieldFocused() && formEl && formEl.contains(e.target)) {
-          formInteractionLock = true;
-          keyboardSession = true;
-          return;
-        }
+        // якщо фокусу в полі немає — нічого не робимо
+        if (!isFormFieldFocused()) return;
 
-        // Blur тільки при тапі поза формою
-        if (isFormFieldFocused()) {
-          blurFocusedFormField();
-          formInteractionLock = false;
-          keyboardSession = false;
-          lockedSectionIndex = null;
-        }
+        // тап всередині форми — не blur
+        if (formEl && formEl.contains(target)) return;
+
+        // тап поза формою — blur
+        blurFocusedFormField();
+        formInteractionLock = false;
+        keyboardSession = false;
+        lockedSectionIndex = null;
       },
       true,
     );
