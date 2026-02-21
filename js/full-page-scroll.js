@@ -698,19 +698,26 @@
       if (shouldPauseFullpage()) return;
 
       clearTimeout(resizeTimer);
+
       resizeTimer = setTimeout(() => {
         if (shouldPauseFullpage()) return;
 
-        const prevY = window.scrollY;
+        const fixedIndex = clamp(current, 0, sections.length - 1);
+        isResizing = true;
 
-        if (shouldRecalculateScale()) {
-          applyFitScalesOnce(true); // force only on real device-size change
+        try {
+          if (shouldRecalculateScale()) {
+            applyFitScalesOnce(true);
+          }
+
+          init(); // перерахували stops
+          current = clamp(fixedIndex, 0, stops.length - 1); // повернули саме ту ж секцію
+          window.scrollTo({ top: stops[current], behavior: 'auto' });
+          setActive(current);
+          replaceUrlForIndex(current);
+        } finally {
+          isResizing = false;
         }
-
-        init();
-        current = getClosestIndex(prevY);
-        window.scrollTo({ top: stops[current], behavior: 'auto' });
-        updateActiveSection();
       }, 120);
     },
     { passive: true },
@@ -720,12 +727,21 @@
     'orientationchange',
     () => {
       setTimeout(() => {
-        const prevY = window.scrollY;
-        applyFitScalesOnce(true);
-        init();
-        current = getClosestIndex(prevY);
-        window.scrollTo({ top: stops[current], behavior: 'auto' });
-        updateActiveSection();
+        if (shouldPauseFullpage()) return;
+
+        const fixedIndex = clamp(current, 0, sections.length - 1);
+        isResizing = true;
+
+        try {
+          applyFitScalesOnce(true);
+          init();
+          current = clamp(fixedIndex, 0, stops.length - 1);
+          window.scrollTo({ top: stops[current], behavior: 'auto' });
+          setActive(current);
+          replaceUrlForIndex(current);
+        } finally {
+          isResizing = false;
+        }
       }, 150);
     },
     { passive: true },
