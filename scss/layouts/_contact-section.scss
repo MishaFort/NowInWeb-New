@@ -1,9 +1,4 @@
 .contact-section {
-  @media (max-width: 768px) {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-
   &__container {
     display: flex;
     flex-direction: column;

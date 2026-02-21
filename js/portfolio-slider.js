@@ -1,14 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
   const host = document.querySelector(
-    '.portfolio-section__collage-nav .pagination'
+    '.portfolio-section__collage-nav .pagination',
   );
   const prevBtn = document.querySelector(
-    '.portfolio-section__collage-nav .carousel-button.prev'
+    '.portfolio-section__collage-nav .carousel-button.prev',
   );
   const nextBtn = document.querySelector(
-    '.portfolio-section__collage-nav .carousel-button.next'
+    '.portfolio-section__collage-nav .carousel-button.next',
   );
-  const swiperEl = document.querySelector('.swiper');
+  const swiperEl = document.querySelector('#portfolio-section .swiper');
 
   const DEBUG = true;
   const log = () => {};
@@ -121,6 +121,16 @@ document.addEventListener('DOMContentLoaded', () => {
     threshold: 3,
   });
 
+  const setSwiperLock = v => {
+    window.__swiperGestureLock = v;
+  };
+
+  swiper.on('touchStart', () => setSwiperLock(false));
+  swiper.on('sliderFirstMove', () => setSwiperLock(true));
+  swiper.on('sliderMove', () => setSwiperLock(true));
+  swiper.on('touchEnd', () => setTimeout(() => setSwiperLock(false), 0));
+  swiper.on('transitionEnd', () => setSwiperLock(false));
+
   log('Swiper initialized', {
     loop: swiper.params.loop,
     speed: swiper.params.speed,
@@ -129,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   //КІЛЬКІСТЬ РЕАЛЬНИХ слайдів (без дублікатів loop)
   const realSlides = Array.from(swiper.slides).filter(
-    slide => !slide.classList.contains('swiper-slide-duplicate')
+    slide => !slide.classList.contains('swiper-slide-duplicate'),
   );
   const TOTAL_SLIDES = realSlides.length || swiper.slides.length;
 
@@ -219,14 +229,14 @@ document.addEventListener('DOMContentLoaded', () => {
       typeof t.currentX === 'number'
         ? t.currentX
         : typeof t.startX === 'number'
-        ? t.startX
-        : 0;
+          ? t.startX
+          : 0;
     dragStartY =
       typeof t.currentY === 'number'
         ? t.currentY
         : typeof t.startY === 'number'
-        ? t.startY
-        : 0;
+          ? t.startY
+          : 0;
 
     //обрубаємо будь-яку попередню анімацію треку
     track.style.transition = 'none';
@@ -254,7 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
         evt.preventDefault();
       }
     },
-    { passive: false }
+    { passive: false },
   );
 
   // ---------- 9. Свайп: рух ----------
@@ -266,8 +276,8 @@ document.addEventListener('DOMContentLoaded', () => {
       typeof t.currentX === 'number'
         ? t.currentX
         : typeof t.startX === 'number'
-        ? t.startX
-        : dragStartX;
+          ? t.startX
+          : dragStartX;
 
     const diff = currentX - dragStartX;
     const size = sw.size || 1;

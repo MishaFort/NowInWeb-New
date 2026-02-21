@@ -22,6 +22,11 @@
   let keyboardBaseH = 0;
   let keyboardMinH = null;
 
+  window.__swiperGestureLock = false;
+  function isSwiperGestureLocked() {
+    return window.__swiperGestureLock === true;
+  }
+
   // ---------- НАЛАШТУВАННЯ ----------
   const TOP_GAP = 24;
   const BOTTOM_GAP = 16;
@@ -434,6 +439,8 @@
   }
 
   async function lockAndGo(nextIndex) {
+    if (isSwiperGestureLocked()) return;
+
     if (
       nextIndex < 0 ||
       nextIndex >= stops.length ||
@@ -462,6 +469,7 @@
 
   // ---------- ОБРОБКА ВВОДУ ----------
   function onWheel(e) {
+    if (isSwiperGestureLocked()) return;
     if (shouldPauseFullpage()) return;
     /*  if (isTextInputFocused()) return; */
     if (e.ctrlKey || e.metaKey) return;
@@ -483,6 +491,7 @@
   }
 
   function onKey(e) {
+    if (isSwiperGestureLocked()) return;
     if (shouldPauseFullpage()) return;
 
     const keys = [
@@ -533,6 +542,10 @@
 
   function wireTouch() {
     window.addEventListener('touchstart', e => {
+      if (isSwiperGestureLocked()) {
+        startY = null;
+        return;
+      }
       if (shouldPauseFullpage()) {
         startY = null;
         return;
@@ -543,6 +556,10 @@
     window.addEventListener(
       'touchmove',
       e => {
+        if (isSwiperGestureLocked()) {
+          startY = null;
+          return;
+        }
         if (shouldPauseFullpage()) {
           startY = null;
           return;
@@ -577,6 +594,8 @@
 
         // тап по полю — не blur
         if (field) {
+          if (!isMobileOrTablet() || !isContactSectionActive()) return; //оце я додав
+
           clearTimeout(resizeTimer);
           clearTimeout(scrollTmr);
 
@@ -656,6 +675,25 @@
   window.addEventListener('keydown', onKey);
   wireAnchors();
   wireTouch();
+
+  window.addEventListener(
+    'resize',
+    () => {
+      if (shouldPauseFullpage()) return;
+
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if (shouldPauseFullpage()) return;
+
+        const prevY = window.scrollY;
+        init();
+        current = getClosestIndex(prevY);
+        window.scrollTo({ top: stops[current], behavior: 'auto' });
+        updateActiveSection();
+      }, 120);
+    },
+    { passive: true },
+  );
 
   // Головне: усі зміни хешу веде наш скролер (без нативного стрибка)
   window.addEventListener('hashchange', () => {

@@ -15,10 +15,23 @@ function initServicesSwiper() {
       centeredSlides: false,
       watchOverflow: true,
     });
+
+    const setSwiperLock = v => {
+      window.__swiperGestureLock = v;
+    };
+
+    servicesSwiper.on('touchStart', () => setSwiperLock(false));
+    servicesSwiper.on('sliderFirstMove', () => setSwiperLock(true)); // ключове: зрушили хоч трохи
+    servicesSwiper.on('sliderMove', () => setSwiperLock(true));
+    servicesSwiper.on('touchEnd', () =>
+      setTimeout(() => setSwiperLock(false), 0),
+    );
+    servicesSwiper.on('transitionEnd', () => setSwiperLock(false));
   }
 
   if (!shouldEnable && servicesSwiper) {
     servicesSwiper.destroy(true, true); // прибрати стилі/події
+    window.__swiperGestureLock = false;
     servicesSwiper = null;
   }
 }
@@ -26,4 +39,16 @@ function initServicesSwiper() {
 // виклик при старті
 initServicesSwiper();
 
-// виклик при resize (додай у твій existing resize handler, не роби окремий)
+// виклик при resize
+let servicesResizeTmr = null;
+
+window.addEventListener(
+  'resize',
+  () => {
+    clearTimeout(servicesResizeTmr);
+    servicesResizeTmr = setTimeout(() => {
+      initServicesSwiper();
+    }, 120);
+  },
+  { passive: true },
+);
