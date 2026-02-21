@@ -150,6 +150,22 @@
     return window.innerWidth <= MOBILE_TABLET_MAX_W;
   }
 
+  function getDeviceSizeKey() {
+    const sw = window.screen?.width || 0;
+    const sh = window.screen?.height || 0;
+    const o = window.screen?.orientation?.type || '';
+    return `${Math.min(sw, sh)}x${Math.max(sw, sh)}|${o}`;
+  }
+
+  let lastDeviceSizeKey = getDeviceSizeKey();
+
+  function shouldRecalculateScale() {
+    const nextKey = getDeviceSizeKey();
+    if (nextKey === lastDeviceSizeKey) return false;
+    lastDeviceSizeKey = nextKey;
+    return true;
+  }
+
   // ---------- КЕШ ДОМ ЕЛЕМЕНТІВ ----------
   const sections = Array.from(document.querySelectorAll('.section'));
   const headerLinks = Array.from(
@@ -407,8 +423,8 @@
     });
   }
 
-  function applyFitScalesOnce() {
-    if (fitScaleLocked) return;
+  function applyFitScalesOnce(force = false) {
+    if (fitScaleLocked && !force) return;
     applyFitScales();
     fitScaleLocked = true;
   }
@@ -686,11 +702,31 @@
         if (shouldPauseFullpage()) return;
 
         const prevY = window.scrollY;
+
+        if (shouldRecalculateScale()) {
+          applyFitScalesOnce(true); // force only on real device-size change
+        }
+
         init();
         current = getClosestIndex(prevY);
         window.scrollTo({ top: stops[current], behavior: 'auto' });
         updateActiveSection();
       }, 120);
+    },
+    { passive: true },
+  );
+
+  window.addEventListener(
+    'orientationchange',
+    () => {
+      setTimeout(() => {
+        const prevY = window.scrollY;
+        applyFitScalesOnce(true);
+        init();
+        current = getClosestIndex(prevY);
+        window.scrollTo({ top: stops[current], behavior: 'auto' });
+        updateActiveSection();
+      }, 150);
     },
     { passive: true },
   );
