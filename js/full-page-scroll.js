@@ -166,6 +166,17 @@
     return true;
   }
 
+  function getFixedIndexForResize() {
+    const id = (location.hash || '').trim();
+    if (id.length > 1) {
+      const target = document.querySelector(id);
+      const sec = target?.closest('.section') || target;
+      const idx = sections.indexOf(sec);
+      if (idx >= 0) return idx;
+    }
+    return clamp(current, 0, sections.length - 1);
+  }
+
   // ---------- КЕШ ДОМ ЕЛЕМЕНТІВ ----------
   const sections = Array.from(document.querySelectorAll('.section'));
   const headerLinks = Array.from(
@@ -702,7 +713,7 @@
       resizeTimer = setTimeout(() => {
         if (shouldPauseFullpage()) return;
 
-        const fixedIndex = clamp(current, 0, sections.length - 1);
+        const fixedIndex = getFixedIndexForResize();
         isResizing = true;
 
         try {
@@ -729,7 +740,7 @@
       setTimeout(() => {
         if (shouldPauseFullpage()) return;
 
-        const fixedIndex = clamp(current, 0, sections.length - 1);
+        const fixedIndex = getFixedIndexForResize();
         isResizing = true;
 
         try {
