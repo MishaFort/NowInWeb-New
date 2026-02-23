@@ -540,7 +540,6 @@
   }
 
   async function lockAndGo(nextIndex) {
-    alert(`LOCK_AND_GO -> ${nextIndex}`);
     if (isSwiperGestureLocked()) return;
 
     if (
@@ -892,3 +891,5 @@
     }
   });
 })();
+
+alert(`BY MY SHAGGI BAAAAAAAAAAAAAAAAAAAAA`);
