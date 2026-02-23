@@ -177,6 +177,13 @@
     return clamp(current, 0, sections.length - 1);
   }
 
+  function isFormFieldFocused() {
+    const el = document.activeElement;
+    return (
+      !!el && el.matches('input, textarea, select, [contenteditable="true"]')
+    );
+  }
+
   function shouldIgnoreResizeInTelegram() {
     if (!IS_TELEGRAM_WEBVIEW) return false;
 
@@ -196,15 +203,15 @@
   }
 
   function shouldSkipFullpageSyncForTelegramInput() {
-    /* return IS_TELEGRAM_WEBVIEW && isFocusedFieldInsideContactForm(); */
-
-    const skip = IS_TELEGRAM_WEBVIEW && isFocusedFieldInsideContactForm();
-    if (skip) alert('TG guard: skip fullpage sync (focused contact field)');
-    return skip;
+    return IS_TELEGRAM_WEBVIEW && isFocusedFieldInsideContactForm();
   }
 
   function shouldPauseFullpage() {
-    return isFocusedFieldInsideContactForm();
+    /*  return isFocusedFieldInsideContactForm(); */
+
+    const v = isFocusedFieldInsideContactForm();
+    if (v) alert('PAUSE by focused contact field');
+    return v;
   }
 
   function syncToFixedSectionAfterViewportChange(forceRefit = false) {
@@ -252,13 +259,6 @@
 
   let keyboardSession = false;
 
-  function isFormFieldFocused() {
-    const el = document.activeElement;
-    return (
-      !!el && el.matches('input, textarea, select, [contenteditable="true"]')
-    );
-  }
-
   function isFormField(el) {
     return (
       !!el &&
@@ -269,6 +269,12 @@
 
   function isContactSectionActive() {
     return sections[current]?.id === 'contact-section';
+  }
+
+  function isFocusedFieldInsideContactForm() {
+    const el = document.activeElement;
+    const formEl = document.getElementById('contact-section-form');
+    return !!(el && formEl && formEl.contains(el) && isFormField(el));
   }
 
   function blurFocusedFormField() {
@@ -862,5 +868,3 @@
     }
   });
 })();
-
-alert('HELLOY D ONLY');
