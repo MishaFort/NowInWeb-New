@@ -189,10 +189,18 @@
     return false;
   }
 
+  function isFocusedFieldInsideContactForm() {
+    const el = document.activeElement;
+    const formEl = document.getElementById('contact-section-form');
+    return !!(el && formEl && formEl.contains(el) && isFormField(el));
+  }
+
   function shouldSkipFullpageSyncForTelegramInput() {
-    return (
-      IS_TELEGRAM_WEBVIEW && isContactSectionActive() && isFormFieldFocused()
-    );
+    return IS_TELEGRAM_WEBVIEW && isFocusedFieldInsideContactForm();
+  }
+
+  function shouldPauseFullpage() {
+    return isFocusedFieldInsideContactForm();
   }
 
   function syncToFixedSectionAfterViewportChange(forceRefit = false) {
@@ -264,10 +272,6 @@
     if (el && el.matches('input, textarea, select, [contenteditable="true"]')) {
       el.blur();
     }
-  }
-
-  function shouldPauseFullpage() {
-    return isContactSectionActive() && isFormFieldFocused();
   }
 
   function blurOnKeyboardClose() {
