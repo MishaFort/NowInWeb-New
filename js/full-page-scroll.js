@@ -196,7 +196,11 @@
   }
 
   function shouldSkipFullpageSyncForTelegramInput() {
-    return IS_TELEGRAM_WEBVIEW && isFocusedFieldInsideContactForm();
+    /* return IS_TELEGRAM_WEBVIEW && isFocusedFieldInsideContactForm(); */
+
+    const skip = IS_TELEGRAM_WEBVIEW && isFocusedFieldInsideContactForm();
+    if (skip) alert('TG guard: skip fullpage sync (focused contact field)');
+    return skip;
   }
 
   function shouldPauseFullpage() {
@@ -220,7 +224,6 @@
 
       init();
       current = clamp(fixedIndex, 0, stops.length - 1);
-      alert(`TG C: sync scrollTo idx=${current} hash=${location.hash}`);
       window.scrollTo({ top: stops[current], behavior: 'auto' });
       setActive(current);
       replaceUrlForIndex(current);
@@ -860,4 +863,4 @@
   });
 })();
 
-alert('HELLOY С ONLY');
+alert('HELLOY D ONLY');
