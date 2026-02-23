@@ -241,6 +241,9 @@
 
   let keyboardSession = false;
 
+  let tgContactPinTimer = null;
+  let tgContactPinUntil = 0;
+
   function isFormField(el) {
     return (
       !!el &&
@@ -429,6 +432,29 @@
       setActive(current);
       replaceUrlForIndex(current);
     }
+  }
+
+  function startTelegramContactPin(ms = 900) {
+    if (!IS_TELEGRAM_WEBVIEW) return;
+    if (!isFocusedFieldInsideContactForm()) return;
+
+    tgContactPinUntil = Math.max(tgContactPinUntil, Date.now() + ms);
+
+    if (tgContactPinTimer) return;
+
+    tgContactPinTimer = setInterval(() => {
+      const expired = Date.now() > tgContactPinUntil;
+      if (expired || !isFocusedFieldInsideContactForm()) {
+        clearInterval(tgContactPinTimer);
+        tgContactPinTimer = null;
+        tgContactPinUntil = 0;
+        return;
+      }
+
+      alert(`PIN tick | y=${Math.round(window.scrollY)}`);
+
+      keepTelegramOnContactSectionWhileInputFocused();
+    }, 50);
   }
 
   // --- Заморозка «дихання» у передостанній секції (без зміни масштабу) ---
@@ -712,6 +738,7 @@
           keyboardMinH = keyboardBaseH;
           keyboardWasOpen = false;
           keyboardReadyAt = Date.now() + 400; // затримка перед перевіркою
+          startTelegramContactPin(1200);
           return;
         }
 
@@ -888,6 +915,7 @@
   window.visualViewport?.addEventListener('resize', () => {
     blurOnKeyboardClose();
     keepTelegramOnContactSectionWhileInputFocused();
+    startTelegramContactPin(800);
   });
 
   document.querySelectorAll('img').forEach(img => {
@@ -904,4 +932,4 @@
   });
 })();
 
-alert(`BY MY SHAGGI BAAA 3`);
+alert(`BY MY SHAGGI BAAA 4`);
