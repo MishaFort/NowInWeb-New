@@ -136,6 +136,27 @@
     return el?.id ? `#${el.id}` : '';
   }
 
+  function keepTelegramOnContactSectionWhileInputFocused() {
+    if (!IS_TELEGRAM_WEBVIEW) return;
+    if (!isFocusedFieldInsideContactForm()) return;
+
+    const contactIdx = sections.findIndex(s => s.id === 'contact-section');
+    if (contactIdx < 0) return;
+
+    const contactTop = stops[contactIdx] ?? sections[contactIdx].offsetTop;
+    const nextTop =
+      contactIdx + 1 < sections.length
+        ? (stops[contactIdx + 1] ?? sections[contactIdx + 1].offsetTop)
+        : Infinity;
+
+    // Якщо Telegram викинув у footer/іншу секцію — повертаємо на contact top
+    if (window.scrollY < contactTop - 4 || window.scrollY >= nextTop - 4) {
+      window.scrollTo({ top: contactTop, behavior: 'auto' });
+      current = contactIdx;
+      setActive(current);
+    }
+  }
+
   // без створення нової історії — лише заміна поточного запису
   function replaceUrlForIndex(i) {
     if (suppressUrlSync || isResizing) return;
@@ -830,7 +851,10 @@
     () => {
       if (locked) return;
 
-      if (shouldPauseFullpage()) return;
+      if (shouldPauseFullpage()) {
+        keepTelegramOnContactSectionWhileInputFocused();
+        return;
+      }
 
       clearTimeout(scrollTmr);
       scrollTmr = setTimeout(() => {
@@ -850,7 +874,10 @@
     if (e.persisted) bootToHashIfAny();
   });
 
-  window.visualViewport?.addEventListener('resize', blurOnKeyboardClose);
+  window.visualViewport?.addEventListener('resize', () => {
+    blurOnKeyboardClose();
+    keepTelegramOnContactSectionWhileInputFocused();
+  });
 
   document.querySelectorAll('img').forEach(img => {
     if (!img.complete) {
