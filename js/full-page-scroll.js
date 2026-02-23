@@ -177,9 +177,28 @@
     return clamp(current, 0, sections.length - 1);
   }
 
+  function shouldIgnoreResizeInTelegram() {
+    if (!IS_TELEGRAM_WEBVIEW) return false;
+
+    // Поки поле активне - resize від клавіатури/автоскролу Telegram ігноруємо
+    if (isFormFieldFocused()) return true;
+
+    // Після тапу по полю ще короткий час теж ігноруємо (клава/автоскрол запускаються не миттєво)
+    if (keyboardReadyAt && Date.now() < keyboardReadyAt + 500) return true;
+
+    return false;
+  }
+
+  function shouldSkipFullpageSyncForTelegramInput() {
+    return (
+      IS_TELEGRAM_WEBVIEW && isContactSectionActive() && isFormFieldFocused()
+    );
+  }
+
   function syncToFixedSectionAfterViewportChange(forceRefit = false) {
     if (shouldPauseFullpage()) return;
     if (shouldIgnoreResizeInTelegram()) return;
+    if (shouldSkipFullpageSyncForTelegramInput()) return;
 
     const fixedIndex = getFixedIndexForResize();
     isResizing = true;
@@ -289,18 +308,6 @@
       keyboardSession = false;
       lockedSectionIndex = null;
     }
-  }
-
-  function shouldIgnoreResizeInTelegram() {
-    if (!IS_TELEGRAM_WEBVIEW) return false;
-
-    // Поки поле активне - resize від клавіатури/автоскролу Telegram ігноруємо
-    if (isFormFieldFocused()) return true;
-
-    // Після тапу по полю ще короткий час теж ігноруємо (клава/автоскрол запускаються не миттєво)
-    if (keyboardReadyAt && Date.now() < keyboardReadyAt + 700) return true;
-
-    return false;
   }
 
   // ---------- ДОПОМОЖНІ ----------
@@ -742,14 +749,16 @@
   window.addEventListener(
     'resize',
     () => {
-      if (shouldIgnoreResizeInTelegram()) return;
       if (shouldPauseFullpage()) return;
+      if (shouldIgnoreResizeInTelegram()) return;
+      if (shouldSkipFullpageSyncForTelegramInput()) return;
 
       clearTimeout(resizeTimer);
 
       resizeTimer = setTimeout(() => {
         if (shouldPauseFullpage()) return;
         if (shouldIgnoreResizeInTelegram()) return;
+        if (shouldSkipFullpageSyncForTelegramInput()) return;
 
         syncToFixedSectionAfterViewportChange(false);
       }, 120);
@@ -763,6 +772,7 @@
       setTimeout(() => {
         if (shouldPauseFullpage()) return;
         if (shouldIgnoreResizeInTelegram()) return;
+        if (shouldSkipFullpageSyncForTelegramInput()) return;
 
         syncToFixedSectionAfterViewportChange(true);
       }, 150);
@@ -777,6 +787,7 @@
       // Поки клавіатура/інпут активні — нічого не робимо
       if (shouldPauseFullpage()) return;
       if (shouldIgnoreResizeInTelegram()) return;
+      if (shouldSkipFullpageSyncForTelegramInput()) return;
 
       // Реагуємо лише на стабільний стан viewport (коли Telegram закінчив анімацію)
       const isStable = evt?.isStateStable;
@@ -786,6 +797,7 @@
       tgViewportTmr = setTimeout(() => {
         if (shouldPauseFullpage()) return;
         if (shouldIgnoreResizeInTelegram()) return;
+        if (shouldSkipFullpageSyncForTelegramInput()) return;
 
         syncToFixedSectionAfterViewportChange(true);
       }, 80);
