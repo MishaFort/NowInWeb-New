@@ -415,9 +415,9 @@
     // Якщо Telegram викинув у footer/іншу секцію — повертаємо на contact top
     if (window.scrollY < contactTop - 4 || window.scrollY >= nextTop - 4) {
       window.scrollTo({ top: contactTop, behavior: 'auto' });
-      replaceUrlForIndex(current);
       current = contactIdx;
       setActive(current);
+      replaceUrlForIndex(current);
     }
   }
 
