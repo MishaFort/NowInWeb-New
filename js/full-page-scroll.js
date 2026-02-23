@@ -207,11 +207,7 @@
   }
 
   function shouldPauseFullpage() {
-    /*  return isFocusedFieldInsideContactForm(); */
-
-    const v = isFocusedFieldInsideContactForm();
-    if (v) alert('PAUSE by focused contact field');
-    return v;
+    return isFocusedFieldInsideContactForm();
   }
 
   function syncToFixedSectionAfterViewportChange(forceRefit = false) {
