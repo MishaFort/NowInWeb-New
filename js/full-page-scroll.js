@@ -220,6 +220,7 @@
 
       init();
       current = clamp(fixedIndex, 0, stops.length - 1);
+      alert(`TG C: sync scrollTo idx=${current} hash=${location.hash}`);
       window.scrollTo({ top: stops[current], behavior: 'auto' });
       setActive(current);
       replaceUrlForIndex(current);
@@ -679,7 +680,7 @@
           keyboardMinH = keyboardBaseH;
           keyboardWasOpen = false;
           keyboardReadyAt = Date.now() + 400; // затримка перед перевіркою
-
+          alert('TG A: pointerdown field');
           return;
         }
 
