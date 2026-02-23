@@ -177,6 +177,30 @@
     return clamp(current, 0, sections.length - 1);
   }
 
+  function syncToFixedSectionAfterViewportChange(forceRefit = false) {
+    if (shouldPauseFullpage()) return;
+    if (shouldIgnoreResizeInTelegram()) return;
+
+    const fixedIndex = getFixedIndexForResize();
+    isResizing = true;
+
+    try {
+      if (forceRefit) {
+        applyFitScalesOnce(true);
+      } else if (shouldRecalculateScale()) {
+        applyFitScalesOnce(true);
+      }
+
+      init();
+      current = clamp(fixedIndex, 0, stops.length - 1);
+      window.scrollTo({ top: stops[current], behavior: 'auto' });
+      setActive(current);
+      replaceUrlForIndex(current);
+    } finally {
+      isResizing = false;
+    }
+  }
+
   // ---------- КЕШ ДОМ ЕЛЕМЕНТІВ ----------
   const sections = Array.from(document.querySelectorAll('.section'));
   const headerLinks = Array.from(
@@ -265,6 +289,18 @@
       keyboardSession = false;
       lockedSectionIndex = null;
     }
+  }
+
+  function shouldIgnoreResizeInTelegram() {
+    if (!IS_TELEGRAM_WEBVIEW) return false;
+
+    // Поки поле активне - resize від клавіатури/автоскролу Telegram ігноруємо
+    if (isFormFieldFocused()) return true;
+
+    // Після тапу по полю ще короткий час теж ігноруємо (клава/автоскрол запускаються не миттєво)
+    if (keyboardReadyAt && Date.now() < keyboardReadyAt + 700) return true;
+
+    return false;
   }
 
   // ---------- ДОПОМОЖНІ ----------
@@ -706,29 +742,16 @@
   window.addEventListener(
     'resize',
     () => {
+      if (shouldIgnoreResizeInTelegram()) return;
       if (shouldPauseFullpage()) return;
 
       clearTimeout(resizeTimer);
 
       resizeTimer = setTimeout(() => {
         if (shouldPauseFullpage()) return;
+        if (shouldIgnoreResizeInTelegram()) return;
 
-        const fixedIndex = getFixedIndexForResize();
-        isResizing = true;
-
-        try {
-          if (shouldRecalculateScale()) {
-            applyFitScalesOnce(true);
-          }
-
-          init(); // перерахували stops
-          current = clamp(fixedIndex, 0, stops.length - 1); // повернули саме ту ж секцію
-          window.scrollTo({ top: stops[current], behavior: 'auto' });
-          setActive(current);
-          replaceUrlForIndex(current);
-        } finally {
-          isResizing = false;
-        }
+        syncToFixedSectionAfterViewportChange(false);
       }, 120);
     },
     { passive: true },
@@ -739,24 +762,35 @@
     () => {
       setTimeout(() => {
         if (shouldPauseFullpage()) return;
+        if (shouldIgnoreResizeInTelegram()) return;
 
-        const fixedIndex = getFixedIndexForResize();
-        isResizing = true;
-
-        try {
-          applyFitScalesOnce(true);
-          init();
-          current = clamp(fixedIndex, 0, stops.length - 1);
-          window.scrollTo({ top: stops[current], behavior: 'auto' });
-          setActive(current);
-          replaceUrlForIndex(current);
-        } finally {
-          isResizing = false;
-        }
+        syncToFixedSectionAfterViewportChange(true);
       }, 150);
     },
     { passive: true },
   );
+
+  if (IS_TELEGRAM_WEBVIEW && window.Telegram?.WebApp?.onEvent) {
+    let tgViewportTmr = null;
+
+    window.Telegram.WebApp.onEvent('viewportChanged', evt => {
+      // Поки клавіатура/інпут активні — нічого не робимо
+      if (shouldPauseFullpage()) return;
+      if (shouldIgnoreResizeInTelegram()) return;
+
+      // Реагуємо лише на стабільний стан viewport (коли Telegram закінчив анімацію)
+      const isStable = evt?.isStateStable;
+      if (isStable === false) return;
+
+      clearTimeout(tgViewportTmr);
+      tgViewportTmr = setTimeout(() => {
+        if (shouldPauseFullpage()) return;
+        if (shouldIgnoreResizeInTelegram()) return;
+
+        syncToFixedSectionAfterViewportChange(true);
+      }, 80);
+    });
+  }
 
   // Головне: усі зміни хешу веде наш скролер (без нативного стрибка)
   window.addEventListener('hashchange', () => {
