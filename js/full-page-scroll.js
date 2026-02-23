@@ -136,27 +136,6 @@
     return el?.id ? `#${el.id}` : '';
   }
 
-  function keepTelegramOnContactSectionWhileInputFocused() {
-    if (!IS_TELEGRAM_WEBVIEW) return;
-    if (!isFocusedFieldInsideContactForm()) return;
-
-    const contactIdx = sections.findIndex(s => s.id === 'contact-section');
-    if (contactIdx < 0) return;
-
-    const contactTop = stops[contactIdx] ?? sections[contactIdx].offsetTop;
-    const nextTop =
-      contactIdx + 1 < sections.length
-        ? (stops[contactIdx + 1] ?? sections[contactIdx + 1].offsetTop)
-        : Infinity;
-
-    // Якщо Telegram викинув у footer/іншу секцію — повертаємо на contact top
-    if (window.scrollY < contactTop - 4 || window.scrollY >= nextTop - 4) {
-      window.scrollTo({ top: contactTop, behavior: 'auto' });
-      current = contactIdx;
-      setActive(current);
-    }
-  }
-
   // без створення нової історії — лише заміна поточного запису
   function replaceUrlForIndex(i) {
     if (suppressUrlSync || isResizing) return;
@@ -217,20 +196,6 @@
     return false;
   }
 
-  function isFocusedFieldInsideContactForm() {
-    const el = document.activeElement;
-    const formEl = document.getElementById('contact-section-form');
-    return !!(el && formEl && formEl.contains(el) && isFormField(el));
-  }
-
-  function shouldSkipFullpageSyncForTelegramInput() {
-    return IS_TELEGRAM_WEBVIEW && isFocusedFieldInsideContactForm();
-  }
-
-  function shouldPauseFullpage() {
-    return isFocusedFieldInsideContactForm();
-  }
-
   function syncToFixedSectionAfterViewportChange(forceRefit = false) {
     if (shouldPauseFullpage()) return;
     if (shouldIgnoreResizeInTelegram()) return;
@@ -288,12 +253,6 @@
     return sections[current]?.id === 'contact-section';
   }
 
-  function isFocusedFieldInsideContactForm() {
-    const el = document.activeElement;
-    const formEl = document.getElementById('contact-section-form');
-    return !!(el && formEl && formEl.contains(el) && isFormField(el));
-  }
-
   function blurFocusedFormField() {
     const el = document.activeElement;
     if (el && el.matches('input, textarea, select, [contenteditable="true"]')) {
@@ -303,12 +262,12 @@
 
   function blurOnKeyboardClose() {
     if (!isMobileOrTablet()) return;
-    if (!isContactSectionActive()) return;
+    if (!isFocusedFieldInsideContactForm()) return;
 
     const vv = window.visualViewport;
     if (!vv) return;
 
-    if (!isFormFieldFocused()) {
+    if (!isFocusedFieldInsideContactForm()) {
       keyboardWasOpen = false;
       keyboardReadyAt = 0;
       return;
@@ -424,6 +383,42 @@
 
   function setActiveSidebar(idx) {
     sideItems.forEach((b, i) => b.classList.toggle('is-active', i === idx));
+  }
+
+  function isFocusedFieldInsideContactForm() {
+    const el = document.activeElement;
+    const formEl = document.getElementById('contact-section-form');
+    return !!(el && formEl && formEl.contains(el) && isFormField(el));
+  }
+
+  function shouldSkipFullpageSyncForTelegramInput() {
+    return IS_TELEGRAM_WEBVIEW && isFocusedFieldInsideContactForm();
+  }
+
+  function shouldPauseFullpage() {
+    return isFocusedFieldInsideContactForm();
+  }
+
+  function keepTelegramOnContactSectionWhileInputFocused() {
+    if (!IS_TELEGRAM_WEBVIEW) return;
+    if (!isFocusedFieldInsideContactForm()) return;
+
+    const contactIdx = sections.findIndex(s => s.id === 'contact-section');
+    if (contactIdx < 0) return;
+
+    const contactTop = stops[contactIdx] ?? sections[contactIdx].offsetTop;
+    const nextTop =
+      contactIdx + 1 < sections.length
+        ? (stops[contactIdx + 1] ?? sections[contactIdx + 1].offsetTop)
+        : Infinity;
+
+    // Якщо Telegram викинув у footer/іншу секцію — повертаємо на contact top
+    if (window.scrollY < contactTop - 4 || window.scrollY >= nextTop - 4) {
+      window.scrollTo({ top: contactTop, behavior: 'auto' });
+      replaceUrlForIndex(current);
+      current = contactIdx;
+      setActive(current);
+    }
   }
 
   // --- Заморозка «дихання» у передостанній секції (без зміни масштабу) ---
@@ -695,7 +690,8 @@
 
         // тап по полю — не blur
         if (field) {
-          if (!isMobileOrTablet() || !isContactSectionActive()) return; //оце я додав
+          const formEl = document.getElementById('contact-section-form');
+          if (!isMobileOrTablet() || !formEl || !formEl.contains(field)) return;
 
           clearTimeout(resizeTimer);
           clearTimeout(scrollTmr);
@@ -892,4 +888,4 @@
   });
 })();
 
-alert(`BY MY SHAGGI BAAAAAAAAAAAAAAAAAAAAA`);
+alert(`BY MY SHAGGI BAAA 2`);
