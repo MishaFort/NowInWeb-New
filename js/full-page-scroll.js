@@ -403,6 +403,11 @@
     if (!IS_TELEGRAM_WEBVIEW) return;
     if (!isFocusedFieldInsideContactForm()) return;
 
+    const vv = window.visualViewport;
+    alert(
+      `KEEP start | scrollY=${Math.round(window.scrollY)} | vv.pageTop=${Math.round(vv?.pageTop ?? -1)} | vv.offsetTop=${Math.round(vv?.offsetTop ?? -1)}`,
+    );
+
     const contactIdx = sections.findIndex(s => s.id === 'contact-section');
     if (contactIdx < 0) return;
 
@@ -412,8 +417,13 @@
         ? (stops[contactIdx + 1] ?? sections[contactIdx + 1].offsetTop)
         : Infinity;
 
+    alert(
+      `KEEP range | contactTop=${Math.round(contactTop)} | nextTop=${Math.round(nextTop)} | scrollY=${Math.round(window.scrollY)}`,
+    );
+
     // Якщо Telegram викинув у footer/іншу секцію — повертаємо на contact top
     if (window.scrollY < contactTop - 4 || window.scrollY >= nextTop - 4) {
+      alert('KEEP fix -> scrollTo contactTop');
       window.scrollTo({ top: contactTop, behavior: 'auto' });
       current = contactIdx;
       setActive(current);
@@ -775,6 +785,10 @@
   window.addEventListener(
     'resize',
     () => {
+      alert(
+        `VV resize | h=${Math.round(window.visualViewport?.height ?? 0)} | pageTop=${Math.round(window.visualViewport?.pageTop ?? -1)} | offsetTop=${Math.round(window.visualViewport?.offsetTop ?? -1)}`,
+      );
+
       if (shouldPauseFullpage()) return;
       if (shouldIgnoreResizeInTelegram()) return;
       if (shouldSkipFullpageSyncForTelegramInput()) return;
@@ -844,6 +858,8 @@
   window.addEventListener(
     'scroll',
     () => {
+      alert(`WIN scroll | scrollY=${Math.round(window.scrollY)}`);
+
       if (locked) return;
 
       if (shouldPauseFullpage()) {
@@ -888,4 +904,4 @@
   });
 })();
 
-alert(`BY MY SHAGGI BAAA 2`);
+alert(`BY MY SHAGGI BAAA 3`);
