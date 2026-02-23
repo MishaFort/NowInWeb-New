@@ -680,7 +680,6 @@
           keyboardMinH = keyboardBaseH;
           keyboardWasOpen = false;
           keyboardReadyAt = Date.now() + 400; // затримка перед перевіркою
-          alert('TG A: pointerdown field');
           return;
         }
 
@@ -861,4 +860,4 @@
   });
 })();
 
-alert('HELLOY');
+alert('HELLOY С ONLY');
