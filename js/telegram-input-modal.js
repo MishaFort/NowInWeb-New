@@ -5,7 +5,15 @@
     (/Telegram/i.test(navigator.userAgent) ||
       (typeof tg.initData === 'string' && tg.initData.length > 0));
 
-  if (!IS_TELEGRAM_WEBVIEW) return;
+  alert(
+    `TG MODAL BOOT | hasTG=${!!tg} | uaHasTelegram=${/Telegram/i.test(navigator.userAgent)} | initDataLen=${typeof tg?.initData === 'string' ? tg.initData.length : -1} | innerW=${window.innerWidth}`,
+  );
+
+  /*  if (!IS_TELEGRAM_WEBVIEW) return; */
+  if (!IS_TELEGRAM_WEBVIEW) {
+    alert('TG MODAL EXIT: detection=false');
+    return;
+  }
 
   const TELEGRAM_MODAL_MAX_W = 1140;
 
@@ -181,6 +189,8 @@
   }
 
   function openModalForField(field) {
+    alert(`TG MODAL OPEN for: ${field?.id || field?.name || field?.tagName}`);
+
     sourceField = field;
     editorField = createEditorFor(field);
 
@@ -255,12 +265,20 @@
   document.addEventListener(
     'pointerdown',
     e => {
+      alert(`TG MODAL pointerdown | innerW=${window.innerWidth}`);
+
       const target = e.target instanceof Element ? e.target : null;
       if (!target) return;
 
       if (window.innerWidth >= TELEGRAM_MODAL_MAX_W) return;
 
+      if (window.innerWidth >= TELEGRAM_MODAL_MAX_W) {
+        alert(`TG MODAL EXIT: width guard (${window.innerWidth})`);
+        return;
+      }
+
       const field = target.closest(FIELD_SELECTOR);
+      alert(`TG MODAL field match = ${!!field}`);
       if (!field) return;
       if (field.disabled || field.readOnly) return;
 
@@ -269,6 +287,17 @@
       e.stopImmediatePropagation();
 
       openModalForField(field);
+    },
+    true,
+  );
+
+  document.addEventListener(
+    'touchstart',
+    e => {
+      const target = e.target instanceof Element ? e.target : null;
+      const field = target?.closest(FIELD_SELECTOR);
+      if (!field) return;
+      alert('TG MODAL touchstart on field');
     },
     true,
   );

@@ -270,8 +270,6 @@
       keyboardReadyAt = 0;
       keyboardBaseH = 0;
       keyboardMinH = null;
-      formInteractionLock = false;
-      keyboardSession = false;
     }
   }
 
@@ -657,8 +655,6 @@
 
         // тап поза формою — blur
         blurFocusedFormField();
-        formInteractionLock = false;
-        keyboardSession = false;
       },
       true,
     );
@@ -672,8 +668,6 @@
       e.stopPropagation();
 
       blurFocusedFormField();
-      formInteractionLock = false;
-      keyboardSession = false;
     },
     true,
   );
