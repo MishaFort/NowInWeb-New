@@ -13,9 +13,7 @@
   const INITIAL_HASH = location.hash; // збережемо стартовий хеш як був
   let suppressUrlSync = !!INITIAL_HASH; // поки true — updateActiveSection не міняє URL
   let isResizing = false;
-  let lastHash = location.hash || '';
   let fitScaleLocked = false;
-  let lockedSectionIndex = null;
   const MOBILE_TABLET_MAX_W = 1140;
   let keyboardWasOpen = false;
   let keyboardReadyAt = 0;
@@ -38,9 +36,6 @@
   );
 
   // ---------- УТИЛІТИ ----------
-  const IS_TELEGRAM_WEBVIEW =
-    /Telegram/i.test(navigator.userAgent) || !!window.Telegram?.WebApp;
-
   const BREATH_DUR_MS = readCssTimeVar('--breath-dur', 900);
 
   const HEADER_H = (() => {
@@ -187,26 +182,12 @@
     );
   }
 
-  function shouldIgnoreResizeInTelegram() {
-    if (!IS_TELEGRAM_WEBVIEW) return false;
-
-    // Поки поле активне - resize від клавіатури/автоскролу Telegram ігноруємо
-    if (isFormFieldFocused()) return true;
-
-    // Після тапу по полю ще короткий час теж ігноруємо (клава/автоскрол запускаються не миттєво)
-    if (keyboardReadyAt && Date.now() < keyboardReadyAt + 500) return true;
-
-    return false;
-  }
-
   function shouldPauseFullpage() {
     return isFocusedFieldInsideContactForm();
   }
 
   function syncToFixedSectionAfterViewportChange(forceRefit = false) {
     if (shouldPauseFullpage()) return;
-    if (shouldIgnoreResizeInTelegram()) return;
-    if (shouldSkipFullpageSyncForTelegramInput()) return;
 
     const fixedIndex = getFixedIndexForResize();
     isResizing = true;
@@ -241,9 +222,6 @@
   let resizeTimer = null;
   let scrollTmr = null;
   let startY = null;
-  let formInteractionLock = false;
-
-  let keyboardSession = false;
 
   function isFormField(el) {
     return (
@@ -251,10 +229,6 @@
       el.matches &&
       el.matches('input, textarea, select, [contenteditable="true"]')
     );
-  }
-
-  function isContactSectionActive() {
-    return sections[current]?.id === 'contact-section';
   }
 
   function blurFocusedFormField() {
@@ -294,7 +268,6 @@
       keyboardMinH = null;
       formInteractionLock = false;
       keyboardSession = false;
-      lockedSectionIndex = null;
     }
   }
 
@@ -387,23 +360,6 @@
     const el = document.activeElement;
     const formEl = document.getElementById('contact-section-form');
     return !!(el && formEl && formEl.contains(el) && isFormField(el));
-  }
-
-  function shouldSkipFullpageSyncForTelegramInput() {
-    return IS_TELEGRAM_WEBVIEW && isFocusedFieldInsideContactForm();
-  }
-
-  function shouldDisableFullpageSnapOnTelegramContact() {
-    if (!IS_TELEGRAM_WEBVIEW) return false;
-
-    // Якщо поле форми активне — точно вимикаємо snap
-    if (isFocusedFieldInsideContactForm()) return true;
-
-    // Якщо поточна секція contact — теж вимикаємо snap
-    if (sections[current]?.id === 'contact-section') return true;
-
-    // Fallback по hash (коли current ще/вже не синхронний)
-    return location.hash === '#contact-section';
   }
 
   // --- Заморозка «дихання» у передостанній секції (без зміни масштабу) ---
@@ -551,7 +507,6 @@
   // ---------- ОБРОБКА ВВОДУ ----------
   function onWheel(e) {
     if (isSwiperGestureLocked()) return;
-    if (shouldDisableFullpageSnapOnTelegramContact()) return;
     if (shouldPauseFullpage()) return;
     if (e.ctrlKey || e.metaKey) return;
     if (locked) {
@@ -573,7 +528,6 @@
 
   function onKey(e) {
     if (isSwiperGestureLocked()) return;
-    if (shouldDisableFullpageSnapOnTelegramContact()) return;
     if (shouldPauseFullpage()) return;
 
     const keys = [
@@ -628,10 +582,6 @@
         startY = null;
         return;
       }
-      if (shouldDisableFullpageSnapOnTelegramContact()) {
-        startY = null;
-        return;
-      }
       if (shouldPauseFullpage()) {
         startY = null;
         return;
@@ -644,10 +594,6 @@
       'touchmove',
       e => {
         if (isSwiperGestureLocked()) {
-          startY = null;
-          return;
-        }
-        if (shouldDisableFullpageSnapOnTelegramContact()) {
           startY = null;
           return;
         }
@@ -709,7 +655,6 @@
         blurFocusedFormField();
         formInteractionLock = false;
         keyboardSession = false;
-        lockedSectionIndex = null;
       },
       true,
     );
@@ -725,7 +670,6 @@
       blurFocusedFormField();
       formInteractionLock = false;
       keyboardSession = false;
-      lockedSectionIndex = null;
     },
     true,
   );
@@ -769,19 +713,11 @@
   window.addEventListener(
     'resize',
     () => {
-      if (shouldDisableFullpageSnapOnTelegramContact()) return;
       if (shouldPauseFullpage()) return;
-      if (shouldIgnoreResizeInTelegram()) return;
-      if (shouldSkipFullpageSyncForTelegramInput()) return;
-
       clearTimeout(resizeTimer);
 
       resizeTimer = setTimeout(() => {
-        if (shouldDisableFullpageSnapOnTelegramContact()) return;
         if (shouldPauseFullpage()) return;
-        if (shouldIgnoreResizeInTelegram()) return;
-        if (shouldSkipFullpageSyncForTelegramInput()) return;
-
         syncToFixedSectionAfterViewportChange(false);
       }, 120);
     },
@@ -792,42 +728,12 @@
     'orientationchange',
     () => {
       setTimeout(() => {
-        if (shouldDisableFullpageSnapOnTelegramContact()) return;
         if (shouldPauseFullpage()) return;
-        if (shouldIgnoreResizeInTelegram()) return;
-        if (shouldSkipFullpageSyncForTelegramInput()) return;
-
         syncToFixedSectionAfterViewportChange(true);
       }, 150);
     },
     { passive: true },
   );
-
-  if (IS_TELEGRAM_WEBVIEW && window.Telegram?.WebApp?.onEvent) {
-    let tgViewportTmr = null;
-
-    window.Telegram.WebApp.onEvent('viewportChanged', evt => {
-      // Поки клавіатура/інпут активні — нічого не робимо
-      if (shouldDisableFullpageSnapOnTelegramContact()) return;
-      if (shouldPauseFullpage()) return;
-      if (shouldIgnoreResizeInTelegram()) return;
-      if (shouldSkipFullpageSyncForTelegramInput()) return;
-
-      // Реагуємо лише на стабільний стан viewport (коли Telegram закінчив анімацію)
-      const isStable = evt?.isStateStable;
-      if (isStable === false) return;
-
-      clearTimeout(tgViewportTmr);
-      tgViewportTmr = setTimeout(() => {
-        if (shouldDisableFullpageSnapOnTelegramContact()) return;
-        if (shouldPauseFullpage()) return;
-        if (shouldIgnoreResizeInTelegram()) return;
-        if (shouldSkipFullpageSyncForTelegramInput()) return;
-
-        syncToFixedSectionAfterViewportChange(true);
-      }, 80);
-    });
-  }
 
   // Головне: усі зміни хешу веде наш скролер (без нативного стрибка)
   window.addEventListener('hashchange', () => {
@@ -883,4 +789,4 @@
   });
 })();
 
-alert(`NEW DAY - OLD PAIN 1`);
+/* alert(`NEW DAY - OLD PAIN 2`); */
