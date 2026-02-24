@@ -38,16 +38,8 @@
   );
 
   // ---------- УТИЛІТИ ----------
-  function readCssTimeVar(varName, fallbackMs) {
-    const raw = getComputedStyle(document.documentElement)
-      .getPropertyValue(varName)
-      .trim();
-    if (!raw) return fallbackMs;
-    const isSec = raw.endsWith('s') && !raw.endsWith('ms');
-    const num = parseFloat(raw);
-    if (!Number.isFinite(num)) return fallbackMs;
-    return Math.round(isSec ? num * 1000 : num);
-  }
+  const IS_TELEGRAM_WEBVIEW =
+    /Telegram/i.test(navigator.userAgent) || !!window.Telegram?.WebApp;
 
   const BREATH_DUR_MS = readCssTimeVar('--breath-dur', 900);
 
@@ -58,6 +50,17 @@
     const n = parseFloat(raw);
     return Number.isFinite(n) ? n : 88;
   })();
+
+  function readCssTimeVar(varName, fallbackMs) {
+    const raw = getComputedStyle(document.documentElement)
+      .getPropertyValue(varName)
+      .trim();
+    if (!raw) return fallbackMs;
+    const isSec = raw.endsWith('s') && !raw.endsWith('ms');
+    const num = parseFloat(raw);
+    if (!Number.isFinite(num)) return fallbackMs;
+    return Math.round(isSec ? num * 1000 : num);
+  }
 
   function easeInOutCubic(t) {
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -196,6 +199,10 @@
     return false;
   }
 
+  function shouldPauseFullpage() {
+    return isFocusedFieldInsideContactForm();
+  }
+
   function syncToFixedSectionAfterViewportChange(forceRefit = false) {
     if (shouldPauseFullpage()) return;
     if (shouldIgnoreResizeInTelegram()) return;
@@ -236,13 +243,7 @@
   let startY = null;
   let formInteractionLock = false;
 
-  const IS_TELEGRAM_WEBVIEW =
-    /Telegram/i.test(navigator.userAgent) || !!window.Telegram?.WebApp;
-
   let keyboardSession = false;
-
-  let tgContactPinTimer = null;
-  let tgContactPinUntil = 0;
 
   function isFormField(el) {
     return (
@@ -269,12 +270,6 @@
 
     const vv = window.visualViewport;
     if (!vv) return;
-
-    if (!isFocusedFieldInsideContactForm()) {
-      keyboardWasOpen = false;
-      keyboardReadyAt = 0;
-      return;
-    }
 
     const h = vv.height;
     keyboardMinH = Math.min(keyboardMinH ?? h, h);
@@ -398,53 +393,17 @@
     return IS_TELEGRAM_WEBVIEW && isFocusedFieldInsideContactForm();
   }
 
-  function shouldPauseFullpage() {
-    return isFocusedFieldInsideContactForm();
-  }
+  function shouldDisableFullpageSnapOnTelegramContact() {
+    if (!IS_TELEGRAM_WEBVIEW) return false;
 
-  function keepTelegramOnContactSectionWhileInputFocused() {
-    if (!IS_TELEGRAM_WEBVIEW) return;
-    if (!isFocusedFieldInsideContactForm()) return;
+    // Якщо поле форми активне — точно вимикаємо snap
+    if (isFocusedFieldInsideContactForm()) return true;
 
-    const vv = window.visualViewport;
+    // Якщо поточна секція contact — теж вимикаємо snap
+    if (sections[current]?.id === 'contact-section') return true;
 
-    const contactIdx = sections.findIndex(s => s.id === 'contact-section');
-    if (contactIdx < 0) return;
-
-    const contactTop = stops[contactIdx] ?? sections[contactIdx].offsetTop;
-    const nextTop =
-      contactIdx + 1 < sections.length
-        ? (stops[contactIdx + 1] ?? sections[contactIdx + 1].offsetTop)
-        : Infinity;
-
-    // Якщо Telegram викинув у footer/іншу секцію — повертаємо на contact top
-    if (window.scrollY < contactTop - 4 || window.scrollY >= nextTop - 4) {
-      window.scrollTo({ top: contactTop, behavior: 'auto' });
-      current = contactIdx;
-      setActive(current);
-      replaceUrlForIndex(current);
-    }
-  }
-
-  function startTelegramContactPin(ms = 900) {
-    if (!IS_TELEGRAM_WEBVIEW) return;
-    if (!isFocusedFieldInsideContactForm()) return;
-
-    tgContactPinUntil = Math.max(tgContactPinUntil, Date.now() + ms);
-
-    if (tgContactPinTimer) return;
-
-    tgContactPinTimer = setInterval(() => {
-      const expired = Date.now() > tgContactPinUntil;
-      if (expired || !isFocusedFieldInsideContactForm()) {
-        clearInterval(tgContactPinTimer);
-        tgContactPinTimer = null;
-        tgContactPinUntil = 0;
-        return;
-      }
-
-      keepTelegramOnContactSectionWhileInputFocused();
-    }, 50);
+    // Fallback по hash (коли current ще/вже не синхронний)
+    return location.hash === '#contact-section';
   }
 
   // --- Заморозка «дихання» у передостанній секції (без зміни масштабу) ---
@@ -592,8 +551,8 @@
   // ---------- ОБРОБКА ВВОДУ ----------
   function onWheel(e) {
     if (isSwiperGestureLocked()) return;
+    if (shouldDisableFullpageSnapOnTelegramContact()) return;
     if (shouldPauseFullpage()) return;
-    /*  if (isTextInputFocused()) return; */
     if (e.ctrlKey || e.metaKey) return;
     if (locked) {
       e.preventDefault();
@@ -614,6 +573,7 @@
 
   function onKey(e) {
     if (isSwiperGestureLocked()) return;
+    if (shouldDisableFullpageSnapOnTelegramContact()) return;
     if (shouldPauseFullpage()) return;
 
     const keys = [
@@ -668,10 +628,15 @@
         startY = null;
         return;
       }
+      if (shouldDisableFullpageSnapOnTelegramContact()) {
+        startY = null;
+        return;
+      }
       if (shouldPauseFullpage()) {
         startY = null;
         return;
       }
+
       startY = e.touches[0].clientY;
     });
 
@@ -679,6 +644,10 @@
       'touchmove',
       e => {
         if (isSwiperGestureLocked()) {
+          startY = null;
+          return;
+        }
+        if (shouldDisableFullpageSnapOnTelegramContact()) {
           startY = null;
           return;
         }
@@ -716,7 +685,6 @@
 
         // тап по полю — не blur
         if (field) {
-          const formEl = document.getElementById('contact-section-form');
           if (!isMobileOrTablet() || !formEl || !formEl.contains(field)) return;
 
           clearTimeout(resizeTimer);
@@ -728,7 +696,6 @@
           keyboardMinH = keyboardBaseH;
           keyboardWasOpen = false;
           keyboardReadyAt = Date.now() + 400; // затримка перед перевіркою
-          startTelegramContactPin(1200);
           return;
         }
 
@@ -802,6 +769,7 @@
   window.addEventListener(
     'resize',
     () => {
+      if (shouldDisableFullpageSnapOnTelegramContact()) return;
       if (shouldPauseFullpage()) return;
       if (shouldIgnoreResizeInTelegram()) return;
       if (shouldSkipFullpageSyncForTelegramInput()) return;
@@ -809,6 +777,7 @@
       clearTimeout(resizeTimer);
 
       resizeTimer = setTimeout(() => {
+        if (shouldDisableFullpageSnapOnTelegramContact()) return;
         if (shouldPauseFullpage()) return;
         if (shouldIgnoreResizeInTelegram()) return;
         if (shouldSkipFullpageSyncForTelegramInput()) return;
@@ -823,6 +792,7 @@
     'orientationchange',
     () => {
       setTimeout(() => {
+        if (shouldDisableFullpageSnapOnTelegramContact()) return;
         if (shouldPauseFullpage()) return;
         if (shouldIgnoreResizeInTelegram()) return;
         if (shouldSkipFullpageSyncForTelegramInput()) return;
@@ -838,6 +808,7 @@
 
     window.Telegram.WebApp.onEvent('viewportChanged', evt => {
       // Поки клавіатура/інпут активні — нічого не робимо
+      if (shouldDisableFullpageSnapOnTelegramContact()) return;
       if (shouldPauseFullpage()) return;
       if (shouldIgnoreResizeInTelegram()) return;
       if (shouldSkipFullpageSyncForTelegramInput()) return;
@@ -848,6 +819,7 @@
 
       clearTimeout(tgViewportTmr);
       tgViewportTmr = setTimeout(() => {
+        if (shouldDisableFullpageSnapOnTelegramContact()) return;
         if (shouldPauseFullpage()) return;
         if (shouldIgnoreResizeInTelegram()) return;
         if (shouldSkipFullpageSyncForTelegramInput()) return;
@@ -873,10 +845,7 @@
     () => {
       if (locked) return;
 
-      if (shouldPauseFullpage()) {
-        keepTelegramOnContactSectionWhileInputFocused();
-        return;
-      }
+      if (shouldPauseFullpage()) return;
 
       clearTimeout(scrollTmr);
       scrollTmr = setTimeout(() => {
@@ -898,8 +867,6 @@
 
   window.visualViewport?.addEventListener('resize', () => {
     blurOnKeyboardClose();
-    keepTelegramOnContactSectionWhileInputFocused();
-    startTelegramContactPin(800);
   });
 
   document.querySelectorAll('img').forEach(img => {
@@ -916,4 +883,4 @@
   });
 })();
 
-alert(`BY MY SHAGGI BAAA 5 no alerts`);
+alert(`NEW DAY - OLD PAIN 1`);
