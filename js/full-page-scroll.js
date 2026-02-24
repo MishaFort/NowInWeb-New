@@ -182,8 +182,12 @@
     );
   }
 
+  function isTelegramInputModalOpen() {
+    return window.__telegramInputModalOpen === true;
+  }
+
   function shouldPauseFullpage() {
-    return isFocusedFieldInsideContactForm();
+    return isTelegramInputModalOpen() || isFocusedFieldInsideContactForm();
   }
 
   function syncToFixedSectionAfterViewportChange(forceRefit = false) {
@@ -789,4 +793,4 @@
   });
 })();
 
-/* alert(`NEW DAY - OLD PAIN 2`); */
+alert(`NEW DAY - OLD PAIN new js file`);
