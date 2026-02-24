@@ -1,8 +1,13 @@
 (() => {
+  const tg = window.Telegram?.WebApp;
   const IS_TELEGRAM_WEBVIEW =
-    /Telegram/i.test(navigator.userAgent) || !!window.Telegram?.WebApp;
+    !!tg &&
+    (/Telegram/i.test(navigator.userAgent) ||
+      (typeof tg.initData === 'string' && tg.initData.length > 0));
 
   if (!IS_TELEGRAM_WEBVIEW) return;
+
+  const TELEGRAM_MODAL_MAX_W = 1140;
 
   // Глобальний прапор для full-page-scroll.js
   window.__telegramInputModalOpen = false;
@@ -48,6 +53,11 @@
       font-size: 16px;
       line-height: 1;
       padding: 8px 6px;
+      min-width: 72px;
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
     }
     .tg-input-modal__btn--ok {
@@ -88,11 +98,6 @@
       min-height: 42vh;
       resize: vertical;
     }
-    .tg-input-modal__hint {
-      margin-top: 10px;
-      font-size: 12px;
-      color: #666;
-    }
     html.tg-input-modal-open,
     html.tg-input-modal-open body {
       overflow: hidden;
@@ -114,8 +119,7 @@
       </div>
       <div class="tg-input-modal__body">
         <div data-slot="editor"></div>
-        <div class="tg-input-modal__hint">Telegram mode: text is edited in a separate window.</div>
-      </div>
+        </div>
     </div>
   `;
   document.body.appendChild(modal);
@@ -127,34 +131,6 @@
 
   let sourceField = null;
   let editorField = null;
-
-  function stopEvent(e) {
-    e.stopPropagation();
-  }
-
-  // Не даємо подіям дійти до full-page-scroll listeners
-  [
-    'pointerdown',
-    'pointerup',
-    'click',
-    'touchstart',
-    'touchmove',
-    'touchend',
-    'wheel',
-  ].forEach(type => {
-    modal.addEventListener(type, stopEvent, {
-      passive: type === 'wheel' ? false : true,
-      capture: true,
-    });
-  });
-
-  modal.addEventListener(
-    'wheel',
-    e => {
-      e.stopPropagation();
-    },
-    { passive: true },
-  );
 
   function getFieldLabel(field) {
     if (!field) return 'Edit field';
@@ -220,9 +196,11 @@
     requestAnimationFrame(() => {
       editorField.focus({ preventScroll: true });
       const len = editorField.value.length;
-      if (typeof editorField.setSelectionRange === 'function') {
-        editorField.setSelectionRange(len, len);
-      }
+      try {
+        if (typeof editorField.setSelectionRange === 'function') {
+          editorField.setSelectionRange(len, len);
+        }
+      } catch {}
     });
   }
 
@@ -279,6 +257,8 @@
     e => {
       const target = e.target instanceof Element ? e.target : null;
       if (!target) return;
+
+      if (window.innerWidth >= TELEGRAM_MODAL_MAX_W) return;
 
       const field = target.closest(FIELD_SELECTOR);
       if (!field) return;
