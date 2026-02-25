@@ -779,6 +779,23 @@
       },
       true,
     );
+
+    document.addEventListener(
+      'focusin',
+      e => {
+        const target = e.target instanceof Element ? e.target : null;
+        if (!target) return;
+
+        const formEl = document.getElementById('contact-section-form');
+        if (!formEl || !formEl.contains(target)) return;
+        if (!isMobileOrTablet()) return;
+        if (window.__contactInputModalModeEnabled === true) return;
+        if (!isFormField(target)) return;
+
+        armContactInputJumpProbe(target);
+      },
+      true,
+    );
   }
 
   document.addEventListener(
@@ -853,13 +870,19 @@
     });
   });
 
+  window.addEventListener('contact-input-modal:before-close', () => {
+    // Поки модалка ще на екрані — повертаємо fullpage на contact
+    snapToContactSectionNoAnim();
+    setTimeout(() => snapToContactSectionNoAnim(), 60);
+  });
+
   window.addEventListener('contact-input-modal:close', () => {
     // Після закриття модалки/клавіатури viewport ще може "дихати" — чекаємо трохи і доснапуємо
-    queueSnapToContactSection(120);
+    queueSnapToContactSection(40);
     setTimeout(() => {
       if (window.__contactInputModalOpen) return;
       snapToContactSectionNoAnim();
-    }, 220);
+    }, 140);
   });
 
   window.addEventListener(
@@ -930,4 +953,4 @@
   });
 })();
 
-alert(`no telega 22`);
+alert(`no telega 33`);

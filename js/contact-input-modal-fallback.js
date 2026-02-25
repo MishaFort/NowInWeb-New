@@ -3,6 +3,8 @@
   const FIELD_SELECTOR = `${FORM_SELECTOR} input, ${FORM_SELECTOR} textarea`;
 
   const INPUT_MODAL_MAX_W = 1140;
+  const INPUT_MODAL_CLOSE_PRE_DELAY_MS = 90; // <-- це ти можеш крутити
+  const INPUT_MODAL_CLOSE_ANIM_MS = 300; // має відповідати transition у CSS (.input-modal__wrap)
 
   // full-page-scroll.js читає цей прапор (чи модалка зараз відкрита)
   window.__contactInputModalOpen = false;
@@ -32,15 +34,15 @@
       color: #111;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
       transition:
-        opacity 180ms cubic-bezier(0.4, 0, 0.2, 1),
-        visibility 0s linear 180ms;
+        opacity 220ms cubic-bezier(0.4, 0, 0.2, 1),
+        visibility 0s linear 220ms;
     }
     .input-modal.is-open {
       opacity: 1;
       visibility: visible;
       pointer-events: auto;
       transition:
-      opacity 180ms cubic-bezier(0, 0, 0.2, 1),
+      opacity 220ms cubic-bezier(0, 0, 0.2, 1),
       visibility 0s linear 0s;
     }
     .input-modal__wrap {
@@ -50,7 +52,7 @@
       background: #fff;
       transform: translate3d(0, 100%, 0);
       will-change: transform;
-      transition: transform 260ms cubic-bezier(0, 0, 0.2, 1);
+      transition: transform 300ms cubic-bezier(0, 0, 0.2, 1);
     }
     .input-modal.is-open .input-modal__wrap {
       transform: translate3d(0, 0, 0);
@@ -159,6 +161,10 @@
   let sourceField = null;
   let editorField = null;
   let modalCleanupTmr = null;
+  let modalCloseStartTmr = null;
+  let modalIsClosing = false;
+  let modalHistoryArmed = false;
+  let suppressNextModalPopstate = false;
 
   function getFieldLabel(field) {
     if (!field) return 'Edit field';
@@ -211,6 +217,16 @@
   function openModalForField(field) {
     clearTimeout(modalCleanupTmr);
 
+    clearTimeout(modalCloseStartTmr);
+    modalIsClosing = false;
+
+    if (!modalHistoryArmed) {
+      try {
+        history.pushState({ __contactInputModal: true }, '', location.href);
+        modalHistoryArmed = true;
+      } catch {}
+    }
+
     sourceField = field;
     editorField = createEditorFor(field);
 
@@ -235,22 +251,40 @@
     });
   }
 
-  function closeModal() {
+  function closeModal({ skipHistoryBack = false } = {}) {
     if (!modal.classList.contains('is-open')) return;
+    if (modalIsClosing) return;
 
-    modal.classList.remove('is-open');
-    document.documentElement.classList.remove('input-modal-open');
-    window.__contactInputModalOpen = false;
+    modalIsClosing = true;
 
-    window.dispatchEvent(new CustomEvent('contact-input-modal:close'));
+    // Даємо full-page-scroll шанс зафіксувати contact під модалкою
+    window.dispatchEvent(new CustomEvent('contact-input-modal:before-close'));
 
-    clearTimeout(modalCleanupTmr);
-    modalCleanupTmr = setTimeout(() => {
-      if (window.__contactInputModalOpen) return;
-      editorSlot.innerHTML = '';
-      sourceField = null;
-      editorField = null;
-    }, 260);
+    // Підтримка кнопки/жесту "Назад"
+    if (!skipHistoryBack && modalHistoryArmed) {
+      suppressNextModalPopstate = true;
+      try {
+        history.back();
+      } catch {}
+    }
+
+    clearTimeout(modalCloseStartTmr);
+    modalCloseStartTmr = setTimeout(() => {
+      modal.classList.remove('is-open');
+      document.documentElement.classList.remove('input-modal-open');
+      window.__contactInputModalOpen = false;
+
+      window.dispatchEvent(new CustomEvent('contact-input-modal:close'));
+
+      clearTimeout(modalCleanupTmr);
+      modalCleanupTmr = setTimeout(() => {
+        if (window.__contactInputModalOpen) return;
+        editorSlot.innerHTML = '';
+        sourceField = null;
+        editorField = null;
+        modalIsClosing = false;
+      }, INPUT_MODAL_CLOSE_ANIM_MS);
+    }, INPUT_MODAL_CLOSE_PRE_DELAY_MS);
   }
 
   function commitAndClose() {
@@ -309,6 +343,19 @@
   cancelBtn.addEventListener('click', () => closeModal());
   okBtn.addEventListener('click', () => commitAndClose());
 
+  window.addEventListener('popstate', () => {
+    if (suppressNextModalPopstate) {
+      suppressNextModalPopstate = false;
+      modalHistoryArmed = false;
+      return;
+    }
+
+    if (!modal.classList.contains('is-open') && !modalIsClosing) return;
+
+    modalHistoryArmed = false;
+    closeModal({ skipHistoryBack: true });
+  });
+
   modal.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       e.preventDefault();
@@ -365,4 +412,30 @@
     capture: true,
     passive: false,
   });
+
+  document.addEventListener(
+    'focusin',
+    e => {
+      if (!isContactInputModalModeEnabled()) return;
+      if (window.__contactInputModalOpen) return;
+
+      const target = e.target instanceof Element ? e.target : null;
+      if (!target) return;
+
+      const field = target.closest(FIELD_SELECTOR);
+      if (!field) return;
+      if (field.disabled || field.readOnly) return;
+
+      // Ловимо programmatic focus (наприклад, JustValidate на submit)
+      requestAnimationFrame(() => {
+        if (!isContactInputModalModeEnabled()) return;
+        if (window.__contactInputModalOpen) return;
+        if (document.activeElement !== field) return;
+
+        field.blur();
+        openModalForField(field);
+      });
+    },
+    true,
+  );
 })();
