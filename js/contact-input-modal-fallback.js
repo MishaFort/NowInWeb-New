@@ -1,60 +1,26 @@
 (() => {
-  const tg = window.Telegram?.WebApp;
-  const params = new URLSearchParams(location.search);
-  const search = location.search || '';
-  const hash = location.hash || '';
-
-  const hasTelegramWebAppParams =
-    /tgWebApp/i.test(search) || /tgWebApp/i.test(hash);
-
-  const forceTelegramModal = params.get('tgmodal') === '1'; // optional debug override
-
-  const isTelegramMiniApp =
-    !!tg && typeof tg.initData === 'string' && tg.initData.length > 0;
-
-  const ua = navigator.userAgent || '';
-  const ref = document.referrer || '';
-
-  const hasTelegramUA = /Telegram|TgWebView/i.test(ua);
-  const hasTelegramReferrer =
-    /t\.me|telegram\.me|telegram\.dog|org\.telegram\.messenger|telegram/i.test(
-      ref,
-    );
-
-  const hasTelegramWebviewGlobals =
-    typeof window.TelegramWebviewProxy !== 'undefined' ||
-    typeof window.TelegramWebviewProxyProto !== 'undefined';
-
-  const hasTelegramExternalNotify =
-    !!window.external && typeof window.external.notify === 'function';
-
-  // Комбінована евристика для звичайного сайту в Telegram browser + Mini App
-  const IS_TELEGRAM_WEBVIEW =
-    forceTelegramModal ||
-    isTelegramMiniApp ||
-    hasTelegramWebAppParams ||
-    hasTelegramWebviewGlobals ||
-    hasTelegramUA ||
-    hasTelegramReferrer ||
-    (hasTelegramExternalNotify && /Android|iPhone|iPad|Mobile/i.test(ua));
-
-  alert(
-    `TG DETECT | mini=${isTelegramMiniApp} proxy=${hasTelegramWebviewGlobals} extNotify=${hasTelegramExternalNotify} ua=${hasTelegramUA} ref=${hasTelegramReferrer} => ${IS_TELEGRAM_WEBVIEW}`,
-  );
-
-  if (!IS_TELEGRAM_WEBVIEW) return;
-
-  const TELEGRAM_MODAL_MAX_W = 1140;
-
-  // Глобальний прапор для full-page-scroll.js
-  window.__telegramInputModalOpen = false;
-
   const FORM_SELECTOR = '#contact-section-form';
   const FIELD_SELECTOR = `${FORM_SELECTOR} input, ${FORM_SELECTOR} textarea`;
 
+  const INPUT_MODAL_MAX_W = 1140;
+
+  // full-page-scroll.js читає цей прапор (чи модалка зараз відкрита)
+  window.__contactInputModalOpen = false;
+
+  // режим fallback (зараз вимкнений; увімкнемо з full-page-scroll.js після детекції стрибка)
+  window.__contactInputModalModeEnabled =
+    sessionStorage.getItem('contactInputModalMode') === '1';
+
+  function isContactInputModalModeEnabled() {
+    return (
+      window.__contactInputModalModeEnabled === true &&
+      window.innerWidth < INPUT_MODAL_MAX_W
+    );
+  }
+
   const style = document.createElement('style');
   style.textContent = `
-    .tg-input-modal {
+    .input-modal {
       position: fixed;
       inset: 0;
       z-index: 99999;
@@ -63,15 +29,15 @@
       color: #111;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     }
-    .tg-input-modal.is-open {
+    .input-modal.is-open {
       display: block;
     }
-    .tg-input-modal__wrap {
+    .input-modal__wrap {
       height: 100%;
       display: grid;
       grid-template-rows: auto 1fr;
     }
-    .tg-input-modal__bar {
+    .input-modal__bar {
       display: grid;
       grid-template-columns: auto 1fr auto;
       gap: 12px;
@@ -82,7 +48,7 @@
       position: sticky;
       top: 0;
     }
-    .tg-input-modal__btn {
+    .input-modal__btn {
       appearance: none;
       border: 0;
       background: transparent;
@@ -97,10 +63,10 @@
       justify-content: center;
       cursor: pointer;
     }
-    .tg-input-modal__btn--ok {
+    .input-modal__btn--ok {
       font-weight: 700;
     }
-    .tg-input-modal__title {
+    .input-modal__title {
       text-align: center;
       font-size: 14px;
       font-weight: 600;
@@ -109,13 +75,13 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-    .tg-input-modal__body {
+    .input-modal__body {
       padding: 14px;
       overflow: auto;
       background: #fff;
     }
-    .tg-input-modal__editor,
-    .tg-input-modal__textarea {
+    .input-modal__editor,
+    .input-modal__textarea {
       width: 100%;
       border: 1px solid #dcdcdc;
       border-radius: 12px;
@@ -128,15 +94,15 @@
       outline: none;
       box-sizing: border-box;
     }
-    .tg-input-modal__editor {
+    .input-modal__editor {
       min-height: 48px;
     }
-    .tg-input-modal__textarea {
+    .input-modal__textarea {
       min-height: 42vh;
       resize: vertical;
     }
-    html.tg-input-modal-open,
-    html.tg-input-modal-open body {
+    html.input-modal-open,
+    html.input-modal-open body {
       overflow: hidden;
       touch-action: none;
     }
@@ -144,24 +110,24 @@
   document.head.appendChild(style);
 
   const modal = document.createElement('div');
-  modal.className = 'tg-input-modal';
+  modal.className = 'input-modal';
   modal.setAttribute('role', 'dialog');
   modal.setAttribute('aria-modal', 'true');
   modal.innerHTML = `
-    <div class="tg-input-modal__wrap">
-      <div class="tg-input-modal__bar">
-        <button type="button" class="tg-input-modal__btn" data-action="cancel">Cancel</button>
-        <div class="tg-input-modal__title">Edit field</div>
-        <button type="button" class="tg-input-modal__btn tg-input-modal__btn--ok" data-action="ok">OK</button>
+    <div class="input-modal__wrap">
+      <div class="input-modal__bar">
+        <button type="button" class="input-modal__btn" data-action="cancel">Cancel</button>
+        <div class="input-modal__title">Edit field</div>
+        <button type="button" class="input-modal__btn input-modal__btn--ok" data-action="ok">OK</button>
       </div>
-      <div class="tg-input-modal__body">
+      <div class="input-modal__body">
         <div data-slot="editor"></div>
         </div>
     </div>
   `;
   document.body.appendChild(modal);
 
-  const titleEl = modal.querySelector('.tg-input-modal__title');
+  const titleEl = modal.querySelector('.input-modal__title');
   const editorSlot = modal.querySelector('[data-slot="editor"]');
   const cancelBtn = modal.querySelector('[data-action="cancel"]');
   const okBtn = modal.querySelector('[data-action="ok"]');
@@ -186,10 +152,10 @@
     const el = document.createElement(isTextarea ? 'textarea' : 'input');
 
     if (isTextarea) {
-      el.className = 'tg-input-modal__textarea';
+      el.className = 'input-modal__textarea';
       el.rows = Math.max(4, Number(field.getAttribute('rows')) || 6);
     } else {
-      el.className = 'tg-input-modal__editor';
+      el.className = 'input-modal__editor';
 
       const allowedTypes = new Set([
         'text',
@@ -227,8 +193,8 @@
     titleEl.textContent = getFieldLabel(field);
 
     modal.classList.add('is-open');
-    document.documentElement.classList.add('tg-input-modal-open');
-    window.__telegramInputModalOpen = true;
+    document.documentElement.classList.add('input-modal-open');
+    window.__contactInputModalOpen = true;
 
     requestAnimationFrame(() => {
       editorField.focus({ preventScroll: true });
@@ -243,8 +209,8 @@
 
   function closeModal() {
     modal.classList.remove('is-open');
-    document.documentElement.classList.remove('tg-input-modal-open');
-    window.__telegramInputModalOpen = false;
+    document.documentElement.classList.remove('input-modal-open');
+    window.__contactInputModalOpen = false;
 
     editorSlot.innerHTML = '';
     sourceField = null;
@@ -268,6 +234,42 @@
     closeModal();
   }
 
+  function enableContactInputModalMode() {
+    window.__contactInputModalModeEnabled = true;
+    try {
+      sessionStorage.setItem('contactInputModalMode', '1');
+    } catch {}
+  }
+
+  function disableContactInputModalMode() {
+    window.__contactInputModalModeEnabled = false;
+    try {
+      sessionStorage.removeItem('contactInputModalMode');
+    } catch {}
+  }
+
+  function openContactInputModalForField(field) {
+    if (!(field instanceof Element)) return false;
+
+    const matchedField = field.closest(FIELD_SELECTOR);
+    if (!matchedField) return false;
+    if (matchedField.disabled || matchedField.readOnly) return false;
+    if (window.innerWidth >= INPUT_MODAL_MAX_W) return false;
+
+    enableContactInputModalMode();
+
+    if (window.__contactInputModalOpen) return true;
+    openModalForField(matchedField);
+    return true;
+  }
+
+  window.contactInputModalFallback = {
+    enableMode: enableContactInputModalMode,
+    disableMode: disableContactInputModalMode,
+    isModeEnabled: () => isContactInputModalModeEnabled(),
+    openForField: openContactInputModalForField,
+  };
+
   cancelBtn.addEventListener('click', () => closeModal());
   okBtn.addEventListener('click', () => commitAndClose());
 
@@ -288,13 +290,11 @@
     }
   });
 
-  // Перехоплюємо саме поля форми контактів у Telegram
-  // Перехоплюємо поля контактної форми в Telegram (pointer + touch fallback)
   let lastInterceptAt = 0;
 
-  function interceptTelegramFieldTap(e) {
-    if (window.innerWidth >= TELEGRAM_MODAL_MAX_W) return;
-    if (window.__telegramInputModalOpen) return;
+  function interceptContactFieldTap(e) {
+    if (!isContactInputModalModeEnabled()) return;
+    if (window.__contactInputModalOpen) return;
 
     const target = e.target instanceof Element ? e.target : null;
     if (!target) return;
@@ -303,7 +303,7 @@
     if (!field) return;
     if (field.disabled || field.readOnly) return;
 
-    // На деяких девайсах можуть прийти і touchstart, і pointerdown
+    // На деяких девайсах приходять і touchstart, і pointerdown
     const now = Date.now();
     if (now - lastInterceptAt < 250) {
       if (e.cancelable) e.preventDefault();
@@ -324,8 +324,8 @@
     openModalForField(field);
   }
 
-  document.addEventListener('pointerdown', interceptTelegramFieldTap, true);
-  document.addEventListener('touchstart', interceptTelegramFieldTap, {
+  document.addEventListener('pointerdown', interceptContactFieldTap, true);
+  document.addEventListener('touchstart', interceptContactFieldTap, {
     capture: true,
     passive: false,
   });

@@ -182,12 +182,12 @@
     );
   }
 
-  function isTelegramInputModalOpen() {
-    return window.__telegramInputModalOpen === true;
+  function isContactInputModalOpen() {
+    return window.__contactInputModalOpen === true;
   }
 
   function shouldPauseFullpage() {
-    return isTelegramInputModalOpen() || isFocusedFieldInsideContactForm();
+    return isContactInputModalOpen() || isFocusedFieldInsideContactForm();
   }
 
   function syncToFixedSectionAfterViewportChange(forceRefit = false) {
@@ -226,6 +226,7 @@
   let resizeTimer = null;
   let scrollTmr = null;
   let startY = null;
+  let contactInputJumpProbe = null;
 
   function isFormField(el) {
     return (
@@ -266,10 +267,111 @@
       Date.now() >= keyboardReadyAt
     ) {
       blurFocusedFormField();
+      clearContactInputJumpProbe();
       keyboardWasOpen = false;
       keyboardReadyAt = 0;
       keyboardBaseH = 0;
       keyboardMinH = null;
+    }
+  }
+
+  function armContactInputJumpProbe(field) {
+    if (!isMobileOrTablet()) return;
+    if (window.__contactInputModalModeEnabled === true) return;
+    if (!field || !isFormField(field)) return;
+
+    const contactIdx = sections.findIndex(s => s.id === 'contact-section');
+    if (contactIdx < 0) return;
+
+    const contactEl = sections[contactIdx];
+    const contactTop = Math.max(0, Math.round(contactEl.offsetTop));
+    const contactBottom = Math.max(
+      contactTop,
+      Math.round(contactEl.offsetTop + contactEl.offsetHeight),
+    );
+
+    contactInputJumpProbe = {
+      field,
+      contactIdx,
+      contactTop,
+      contactBottom,
+      startY: Math.round(window.scrollY),
+      startedAt: Date.now(),
+      expiresAt: Date.now() + 1600,
+    };
+  }
+
+  function clearContactInputJumpProbe() {
+    contactInputJumpProbe = null;
+  }
+
+  function enableContactInputModalFallbackForProbe(reason = '') {
+    alert(`Fallback mode enabled by ${reason}`);
+
+    const probe = contactInputJumpProbe;
+    if (!probe) return false;
+
+    const field = probe.field && probe.field.isConnected ? probe.field : null;
+    const contactIdx = probe.contactIdx;
+    const contactTop = probe.contactTop;
+
+    contactInputJumpProbe = null;
+
+    window.__contactInputModalModeEnabled = true;
+    try {
+      sessionStorage.setItem('contactInputModalMode', '1');
+    } catch {}
+
+    clearTimeout(resizeTimer);
+    clearTimeout(scrollTmr);
+
+    blurFocusedFormField();
+
+    window.scrollTo({ top: contactTop, behavior: 'auto' });
+    current = clamp(contactIdx, 0, sections.length - 1);
+    setActive(current);
+    replaceUrlForIndex(current);
+
+    if (field && window.contactInputModalFallback?.openForField) {
+      setTimeout(() => {
+        window.contactInputModalFallback.openForField(field);
+      }, 0);
+    }
+
+    return true;
+  }
+
+  function detectContactInputJumpAndEnableFallback(reason = '') {
+    const probe = contactInputJumpProbe;
+    if (!probe) return;
+
+    if (!isMobileOrTablet()) {
+      clearContactInputJumpProbe();
+      return;
+    }
+
+    if (window.__contactInputModalModeEnabled === true) {
+      clearContactInputJumpProbe();
+      return;
+    }
+
+    if (Date.now() > probe.expiresAt) {
+      clearContactInputJumpProbe();
+      return;
+    }
+
+    // Важливо: реагуємо тільки поки фокус у контактній формі
+    if (!isFocusedFieldInsideContactForm()) return;
+
+    const vvTop = Math.round(window.visualViewport?.pageTop ?? 0);
+    const y = Math.max(Math.round(window.scrollY), vvTop);
+
+    const leftContactDown = y >= probe.contactBottom - 8;
+    const leftContactUp = y < probe.contactTop - 8;
+    const jumpedFar = Math.abs(y - probe.startY) >= 80;
+
+    if ((leftContactDown || leftContactUp) && jumpedFar) {
+      enableContactInputModalFallbackForProbe(reason);
     }
   }
 
@@ -644,6 +746,7 @@
           keyboardMinH = keyboardBaseH;
           keyboardWasOpen = false;
           keyboardReadyAt = Date.now() + 400; // затримка перед перевіркою
+          armContactInputJumpProbe(field);
           return;
         }
 
@@ -655,6 +758,7 @@
 
         // тап поза формою — blur
         blurFocusedFormField();
+        clearContactInputJumpProbe();
       },
       true,
     );
@@ -668,6 +772,7 @@
       e.stopPropagation();
 
       blurFocusedFormField();
+      clearContactInputJumpProbe();
     },
     true,
   );
@@ -711,6 +816,7 @@
   window.addEventListener(
     'resize',
     () => {
+      detectContactInputJumpAndEnableFallback('win-resize');
       if (shouldPauseFullpage()) return;
       clearTimeout(resizeTimer);
 
@@ -749,6 +855,8 @@
     () => {
       if (locked) return;
 
+      detectContactInputJumpAndEnableFallback('scroll');
+
       if (shouldPauseFullpage()) return;
 
       clearTimeout(scrollTmr);
@@ -771,6 +879,7 @@
 
   window.visualViewport?.addEventListener('resize', () => {
     blurOnKeyboardClose();
+    detectContactInputJumpAndEnableFallback('vv-resize');
   });
 
   document.querySelectorAll('img').forEach(img => {
@@ -787,4 +896,4 @@
   });
 })();
 
-alert(`NEW DAY - NEW GAIN new jss file 2`);
+alert(`no telega 1`);
