@@ -1,19 +1,18 @@
 (() => {
   const tg = window.Telegram?.WebApp;
-  const IS_TELEGRAM_WEBVIEW =
-    !!tg &&
-    (/Telegram/i.test(navigator.userAgent) ||
-      (typeof tg.initData === 'string' && tg.initData.length > 0));
+  const params = new URLSearchParams(location.search);
 
+  const isTelegramMiniApp =
+    !!tg && typeof tg.initData === 'string' && tg.initData.length > 0;
+
+  const forceTelegramModal = params.get('tgmodal') === '1';
   alert(
     `TG MODAL BOOT | hasTG=${!!tg} | uaHasTelegram=${/Telegram/i.test(navigator.userAgent)} | initDataLen=${typeof tg?.initData === 'string' ? tg.initData.length : -1} | innerW=${window.innerWidth}`,
   );
 
-  /*  if (!IS_TELEGRAM_WEBVIEW) return; */
-  if (!IS_TELEGRAM_WEBVIEW) {
-    alert('TG MODAL EXIT: detection=false');
-    return;
-  }
+  const IS_TELEGRAM_WEBVIEW = isTelegramMiniApp || forceTelegramModal;
+
+  if (!IS_TELEGRAM_WEBVIEW) return;
 
   const TELEGRAM_MODAL_MAX_W = 1140;
 
