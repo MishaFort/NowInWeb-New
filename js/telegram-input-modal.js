@@ -2,15 +2,37 @@
   const tg = window.Telegram?.WebApp;
   const params = new URLSearchParams(location.search);
 
+  const forceTelegramModal = params.get('tgmodal') === '1'; // optional debug override
+
   const isTelegramMiniApp =
     !!tg && typeof tg.initData === 'string' && tg.initData.length > 0;
 
-  const forceTelegramModal = params.get('tgmodal') === '1';
-  alert(
-    `TG MODAL BOOT | hasTG=${!!tg} | uaHasTelegram=${/Telegram/i.test(navigator.userAgent)} | initDataLen=${typeof tg?.initData === 'string' ? tg.initData.length : -1} | innerW=${window.innerWidth}`,
-  );
+  const ua = navigator.userAgent || '';
+  const ref = document.referrer || '';
 
-  const IS_TELEGRAM_WEBVIEW = isTelegramMiniApp || forceTelegramModal;
+  const hasTelegramUA = /Telegram|TgWebView/i.test(ua);
+  const hasTelegramReferrer =
+    /(^|\/\/)(t\.me|telegram\.me|telegram\.dog)\//i.test(ref);
+
+  const hasTelegramWebviewGlobals =
+    typeof window.TelegramWebviewProxy !== 'undefined' ||
+    typeof window.TelegramWebviewProxyProto !== 'undefined';
+
+  const hasTelegramExternalNotify =
+    !!window.external && typeof window.external.notify === 'function';
+
+  // Комбінована евристика для звичайного сайту в Telegram browser + Mini App
+  const IS_TELEGRAM_WEBVIEW =
+    forceTelegramModal ||
+    isTelegramMiniApp ||
+    hasTelegramWebviewGlobals ||
+    hasTelegramUA ||
+    hasTelegramReferrer ||
+    (hasTelegramExternalNotify && /Android|iPhone|iPad|Mobile/i.test(ua));
+
+  alert(
+    `TG DETECT | mini=${isTelegramMiniApp} proxy=${hasTelegramWebviewGlobals} extNotify=${hasTelegramExternalNotify} ua=${hasTelegramUA} ref=${hasTelegramReferrer} => ${IS_TELEGRAM_WEBVIEW}`,
+  );
 
   if (!IS_TELEGRAM_WEBVIEW) return;
 
@@ -188,8 +210,6 @@
   }
 
   function openModalForField(field) {
-    alert(`TG MODAL OPEN for: ${field?.id || field?.name || field?.tagName}`);
-
     sourceField = field;
     editorField = createEditorFor(field);
 
@@ -261,43 +281,44 @@
   });
 
   // Перехоплюємо саме поля форми контактів у Telegram
-  document.addEventListener(
-    'pointerdown',
-    e => {
-      alert(`TG MODAL pointerdown | innerW=${window.innerWidth}`);
+  // Перехоплюємо поля контактної форми в Telegram (pointer + touch fallback)
+  let lastInterceptAt = 0;
 
-      const target = e.target instanceof Element ? e.target : null;
-      if (!target) return;
+  function interceptTelegramFieldTap(e) {
+    if (window.innerWidth >= TELEGRAM_MODAL_MAX_W) return;
+    if (window.__telegramInputModalOpen) return;
 
-      if (window.innerWidth >= TELEGRAM_MODAL_MAX_W) return;
+    const target = e.target instanceof Element ? e.target : null;
+    if (!target) return;
 
-      if (window.innerWidth >= TELEGRAM_MODAL_MAX_W) {
-        alert(`TG MODAL EXIT: width guard (${window.innerWidth})`);
-        return;
-      }
+    const field = target.closest(FIELD_SELECTOR);
+    if (!field) return;
+    if (field.disabled || field.readOnly) return;
 
-      const field = target.closest(FIELD_SELECTOR);
-      alert(`TG MODAL field match = ${!!field}`);
-      if (!field) return;
-      if (field.disabled || field.readOnly) return;
-
-      e.preventDefault();
+    // На деяких девайсах можуть прийти і touchstart, і pointerdown
+    const now = Date.now();
+    if (now - lastInterceptAt < 250) {
+      if (e.cancelable) e.preventDefault();
       e.stopPropagation();
+      if (typeof e.stopImmediatePropagation === 'function') {
+        e.stopImmediatePropagation();
+      }
+      return;
+    }
+    lastInterceptAt = now;
+
+    if (e.cancelable) e.preventDefault();
+    e.stopPropagation();
+    if (typeof e.stopImmediatePropagation === 'function') {
       e.stopImmediatePropagation();
+    }
 
-      openModalForField(field);
-    },
-    true,
-  );
+    openModalForField(field);
+  }
 
-  document.addEventListener(
-    'touchstart',
-    e => {
-      const target = e.target instanceof Element ? e.target : null;
-      const field = target?.closest(FIELD_SELECTOR);
-      if (!field) return;
-      alert('TG MODAL touchstart on field');
-    },
-    true,
-  );
+  document.addEventListener('pointerdown', interceptTelegramFieldTap, true);
+  document.addEventListener('touchstart', interceptTelegramFieldTap, {
+    capture: true,
+    passive: false,
+  });
 })();
