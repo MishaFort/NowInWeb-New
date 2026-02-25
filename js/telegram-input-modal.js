@@ -1,6 +1,11 @@
 (() => {
   const tg = window.Telegram?.WebApp;
   const params = new URLSearchParams(location.search);
+  const search = location.search || '';
+  const hash = location.hash || '';
+
+  const hasTelegramWebAppParams =
+    /tgWebApp/i.test(search) || /tgWebApp/i.test(hash);
 
   const forceTelegramModal = params.get('tgmodal') === '1'; // optional debug override
 
@@ -12,7 +17,9 @@
 
   const hasTelegramUA = /Telegram|TgWebView/i.test(ua);
   const hasTelegramReferrer =
-    /(^|\/\/)(t\.me|telegram\.me|telegram\.dog)\//i.test(ref);
+    /t\.me|telegram\.me|telegram\.dog|org\.telegram\.messenger|telegram/i.test(
+      ref,
+    );
 
   const hasTelegramWebviewGlobals =
     typeof window.TelegramWebviewProxy !== 'undefined' ||
@@ -25,6 +32,7 @@
   const IS_TELEGRAM_WEBVIEW =
     forceTelegramModal ||
     isTelegramMiniApp ||
+    hasTelegramWebAppParams ||
     hasTelegramWebviewGlobals ||
     hasTelegramUA ||
     hasTelegramReferrer ||
