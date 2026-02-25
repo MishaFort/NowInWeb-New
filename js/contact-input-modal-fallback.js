@@ -24,18 +24,36 @@
       position: fixed;
       inset: 0;
       z-index: 99999;
-      display: none;
-      background: #fff;
+      display: block;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      background: rgba(0, 0, 0, 0.12);
       color: #111;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      transition:
+        opacity 180ms cubic-bezier(0.4, 0, 0.2, 1),
+        visibility 0s linear 180ms;
     }
     .input-modal.is-open {
-      display: block;
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transition:
+      opacity 180ms cubic-bezier(0, 0, 0.2, 1),
+      visibility 0s linear 0s;
     }
     .input-modal__wrap {
       height: 100%;
       display: grid;
       grid-template-rows: auto 1fr;
+      background: #fff;
+      transform: translate3d(0, 100%, 0);
+      will-change: transform;
+      transition: transform 260ms cubic-bezier(0, 0, 0.2, 1);
+    }
+    .input-modal.is-open .input-modal__wrap {
+      transform: translate3d(0, 0, 0);
     }
     .input-modal__bar {
       display: grid;
@@ -106,7 +124,13 @@
       overflow: hidden;
       touch-action: none;
     }
-  `;
+    @media (prefers-reduced-motion: reduce) {
+      .input-modal,
+      .input-modal__wrap {
+        transition: none;
+    }
+  }`;
+
   document.head.appendChild(style);
 
   const modal = document.createElement('div');
@@ -134,6 +158,7 @@
 
   let sourceField = null;
   let editorField = null;
+  let modalCleanupTmr = null;
 
   function getFieldLabel(field) {
     if (!field) return 'Edit field';
@@ -184,6 +209,8 @@
   }
 
   function openModalForField(field) {
+    clearTimeout(modalCleanupTmr);
+
     sourceField = field;
     editorField = createEditorFor(field);
 
@@ -195,6 +222,7 @@
     modal.classList.add('is-open');
     document.documentElement.classList.add('input-modal-open');
     window.__contactInputModalOpen = true;
+    window.dispatchEvent(new CustomEvent('contact-input-modal:open'));
 
     requestAnimationFrame(() => {
       editorField.focus({ preventScroll: true });
@@ -208,13 +236,21 @@
   }
 
   function closeModal() {
+    if (!modal.classList.contains('is-open')) return;
+
     modal.classList.remove('is-open');
     document.documentElement.classList.remove('input-modal-open');
     window.__contactInputModalOpen = false;
 
-    editorSlot.innerHTML = '';
-    sourceField = null;
-    editorField = null;
+    window.dispatchEvent(new CustomEvent('contact-input-modal:close'));
+
+    clearTimeout(modalCleanupTmr);
+    modalCleanupTmr = setTimeout(() => {
+      if (window.__contactInputModalOpen) return;
+      editorSlot.innerHTML = '';
+      sourceField = null;
+      editorField = null;
+    }, 260);
   }
 
   function commitAndClose() {

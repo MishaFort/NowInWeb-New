@@ -227,6 +227,7 @@
   let scrollTmr = null;
   let startY = null;
   let contactInputJumpProbe = null;
+  let contactModalSnapTmr = null;
 
   function isFormField(el) {
     return (
@@ -275,6 +276,24 @@
     }
   }
 
+  function snapToContactSectionNoAnim() {
+    const contactIdx = sections.findIndex(s => s.id === 'contact-section');
+    if (contactIdx < 0) return;
+
+    init();
+    current = clamp(contactIdx, 0, stops.length - 1);
+    window.scrollTo({ top: stops[current], behavior: 'auto' });
+    setActive(current);
+    replaceUrlForIndex(current);
+  }
+
+  function queueSnapToContactSection(delay = 0) {
+    clearTimeout(contactModalSnapTmr);
+    contactModalSnapTmr = setTimeout(() => {
+      snapToContactSectionNoAnim();
+    }, delay);
+  }
+
   function armContactInputJumpProbe(field) {
     if (!isMobileOrTablet()) return;
     if (window.__contactInputModalModeEnabled === true) return;
@@ -306,8 +325,6 @@
   }
 
   function enableContactInputModalFallbackForProbe(reason = '') {
-    alert(`Fallback mode enabled by ${reason}`);
-
     const probe = contactInputJumpProbe;
     if (!probe) return false;
 
@@ -325,18 +342,18 @@
     clearTimeout(resizeTimer);
     clearTimeout(scrollTmr);
 
+    // Відкриваємо модалку одразу (щоб накрити екран), а вже потім тихо повертаємо contact під нею
+    if (field && window.contactInputModalFallback?.openForField) {
+      window.contactInputModalFallback.openForField(field);
+    }
+
     blurFocusedFormField();
 
-    window.scrollTo({ top: contactTop, behavior: 'auto' });
-    current = clamp(contactIdx, 0, sections.length - 1);
-    setActive(current);
-    replaceUrlForIndex(current);
-
-    if (field && window.contactInputModalFallback?.openForField) {
-      setTimeout(() => {
-        window.contactInputModalFallback.openForField(field);
-      }, 0);
-    }
+    // Повертаємо fullpage на contact вже під модалкою (користувач цього майже не побачить)
+    requestAnimationFrame(() => {
+      snapToContactSectionNoAnim();
+      setTimeout(() => snapToContactSectionNoAnim(), 90);
+    });
 
     return true;
   }
@@ -828,6 +845,23 @@
     { passive: true },
   );
 
+  window.addEventListener('contact-input-modal:open', () => {
+    // Підстрахуємо snap, коли модалка відкривається не вперше (вже в fallback mode)
+    requestAnimationFrame(() => {
+      snapToContactSectionNoAnim();
+      setTimeout(() => snapToContactSectionNoAnim(), 90);
+    });
+  });
+
+  window.addEventListener('contact-input-modal:close', () => {
+    // Після закриття модалки/клавіатури viewport ще може "дихати" — чекаємо трохи і доснапуємо
+    queueSnapToContactSection(120);
+    setTimeout(() => {
+      if (window.__contactInputModalOpen) return;
+      snapToContactSectionNoAnim();
+    }, 220);
+  });
+
   window.addEventListener(
     'orientationchange',
     () => {
@@ -896,4 +930,4 @@
   });
 })();
 
-alert(`no telega 1`);
+alert(`no telega 22`);
