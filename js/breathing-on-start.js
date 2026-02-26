@@ -2,6 +2,7 @@
   const STORAGE_KEY = 'niw_breath_once_done';
   const CLASS_NAME = 'breath-once';
   const DURATION_MS = 1000;
+  const MIN_BREATH_WIDTH = 1140;
 
   function alreadyDone() {
     if (window.__niwBreathOnceDone) return true;
@@ -17,6 +18,10 @@
     try {
       sessionStorage.setItem(STORAGE_KEY, '1');
     } catch {}
+  }
+
+  function canRunBreathByWidth() {
+    return window.innerWidth >= MIN_BREATH_WIDTH;
   }
 
   function getClosestIndex(stops, y) {
@@ -41,6 +46,7 @@
   }
 
   function runBreathOnce() {
+    if (!canRunBreathByWidth()) return;
     if (alreadyDone()) return;
 
     const sections = Array.from(document.querySelectorAll('.section'));

@@ -98,7 +98,7 @@
     .input-modal__body {
       padding: 14px;
       overflow: auto;
-      background: #fff;
+      background: #3a0080;
     }
     .input-modal__editor,
     .input-modal__textarea {
