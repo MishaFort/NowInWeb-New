@@ -29,7 +29,7 @@
   const TOP_GAP = 24;
   const BOTTOM_GAP = 16;
   const MIN_WHEEL = 15; // мінімальний нормалізований імпульс для одного кроку
-  const SECTION_MISALIGN_PX = 24;
+  const SECTION_MISALIGN_PX = 32;
 
   document.documentElement.style.setProperty(
     '--app-h',
@@ -337,7 +337,7 @@
 
     // Основна перевірка: центр .section__breath проти центру viewport
     // Лише для секцій, які приблизно вміщаються у viewport (щоб не ловити false positive)
-    if (rect && rect.height <= viewportH * 1.15) {
+    if (rect && (targetIdx === 1 || rect.height <= viewportH * 1.15)) {
       const breathCenter = rect.top + rect.height / 2;
       const viewportCenter = viewportH / 2;
       if (Math.abs(breathCenter - viewportCenter) > SECTION_MISALIGN_PX)
