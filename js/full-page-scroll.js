@@ -731,6 +731,15 @@
     replaceUrlForIndex(current);
     locked = false;
     updateActiveSection();
+
+    // Telegram/iPhone: після завершення snap події resize/scroll можуть не прийти
+    scheduleSectionPlacementRepair(0, 'lock-end');
+
+    // Друга перевірка трохи пізніше, коли viewport "дихає" після анімації
+    setTimeout(() => {
+      if (locked || shouldPauseFullpage()) return;
+      repairSectionPlacementIfBroken('lock-end-late');
+    }, 180);
   }
 
   // ---------- ОБРОБКА ВВОДУ ----------
