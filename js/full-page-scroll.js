@@ -29,7 +29,7 @@
   const TOP_GAP = 24;
   const BOTTOM_GAP = 16;
   const MIN_WHEEL = 15; // мінімальний нормалізований імпульс для одного кроку
-  const SECTION_MISALIGN_PX = 32;
+  const SECTION_MISALIGN_PX = 40;
 
   document.documentElement.style.setProperty(
     '--app-h',
@@ -166,14 +166,23 @@
   }
 
   function getFixedIndexForResize() {
+    const currentIdx = clamp(current, 0, sections.length - 1);
     const id = (location.hash || '').trim();
-    if (id.length > 1) {
-      const target = document.querySelector(id);
-      const sec = target?.closest('.section') || target;
-      const idx = sections.indexOf(sec);
-      if (idx >= 0) return idx;
-    }
-    return clamp(current, 0, sections.length - 1);
+    if (id.length <= 1) return currentIdx;
+
+    const target = document.querySelector(id);
+    const sec = target?.closest('.section') || target;
+    const hashIdx = sections.indexOf(sec);
+    if (hashIdx < 0) return currentIdx;
+
+    if (!stops.length) return hashIdx;
+
+    const y = Math.round(window.scrollY);
+    const dHash = Math.abs((stops[hashIdx] ?? 0) - y);
+    const dCurrent = Math.abs((stops[currentIdx] ?? 0) - y);
+
+    // якщо hash трохи відстає, беремо current
+    return dHash <= dCurrent + 20 ? hashIdx : currentIdx;
   }
 
   function isFormFieldFocused() {
@@ -301,10 +310,42 @@
     return Math.max(Math.round(window.scrollY), vvTop);
   }
 
+  function getEffectiveViewportHeight() {
+    return Math.max(
+      1,
+      Math.round(window.visualViewport?.height ?? window.innerHeight),
+    );
+  }
+
+  function getBreathRectForIndex(targetIdx) {
+    if (targetIdx < 0 || targetIdx >= sections.length) return null;
+    const sec = sections[targetIdx];
+    if (!sec) return null;
+
+    const breath = sec.querySelector('.section__breath') || sec;
+    const rect = breath.getBoundingClientRect();
+    if (!Number.isFinite(rect.top) || rect.height <= 0) return null;
+
+    return rect;
+  }
+
   function isSectionPlacementBroken(targetIdx) {
     if (targetIdx < 0 || targetIdx >= sections.length) return false;
-    if (!stops.length || !Number.isFinite(stops[targetIdx])) return false;
 
+    const rect = getBreathRectForIndex(targetIdx);
+    const viewportH = getEffectiveViewportHeight();
+
+    // Основна перевірка: центр .section__breath проти центру viewport
+    // Лише для секцій, які приблизно вміщаються у viewport (щоб не ловити false positive)
+    if (rect && rect.height <= viewportH * 1.15) {
+      const breathCenter = rect.top + rect.height / 2;
+      const viewportCenter = viewportH / 2;
+      if (Math.abs(breathCenter - viewportCenter) > SECTION_MISALIGN_PX)
+        return true;
+    }
+
+    // Fallback: координати скролу
+    if (!stops.length || !Number.isFinite(stops[targetIdx])) return false;
     const expectedY = Math.round(stops[targetIdx]);
     const actualY = getEffectiveViewportTop();
     return Math.abs(actualY - expectedY) > SECTION_MISALIGN_PX;
@@ -333,7 +374,12 @@
   function scheduleSectionPlacementRepair(delay = 0, reason = '') {
     clearTimeout(sectionRepairTmr);
     sectionRepairTmr = setTimeout(() => {
-      repairSectionPlacementIfBroken(reason);
+      // даємо layout стабілізуватись перед фінальною перевіркою
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          repairSectionPlacementIfBroken(reason);
+        });
+      });
     }, delay);
   }
 
@@ -999,5 +1045,3 @@
     }
   });
 })();
-
-alert(`iPhoneFix_1`);
