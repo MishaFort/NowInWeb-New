@@ -29,6 +29,7 @@
   const TOP_GAP = 24;
   const BOTTOM_GAP = 16;
   const MIN_WHEEL = 15; // мінімальний нормалізований імпульс для одного кроку
+  const SECTION_MISALIGN_PX = 32;
 
   document.documentElement.style.setProperty(
     '--app-h',
@@ -228,6 +229,7 @@
   let startY = null;
   let contactInputJumpProbe = null;
   let contactModalSnapTmr = null;
+  let sectionRepairTmr = null;
 
   function isFormField(el) {
     return (
@@ -294,6 +296,47 @@
     }, delay);
   }
 
+  function getEffectiveViewportTop() {
+    const vvTop = Math.round(window.visualViewport?.pageTop ?? 0);
+    return Math.max(Math.round(window.scrollY), vvTop);
+  }
+
+  function isSectionPlacementBroken(targetIdx) {
+    if (targetIdx < 0 || targetIdx >= sections.length) return false;
+    if (!stops.length || !Number.isFinite(stops[targetIdx])) return false;
+
+    const expectedY = Math.round(stops[targetIdx]);
+    const actualY = getEffectiveViewportTop();
+    return Math.abs(actualY - expectedY) > SECTION_MISALIGN_PX;
+  }
+
+  function repairSectionPlacementIfBroken(reason = '') {
+    if (locked || shouldPauseFullpage()) return false;
+    if (!stops.length) init();
+
+    const targetIdx = clamp(getFixedIndexForResize(), 0, sections.length - 1);
+    if (!isSectionPlacementBroken(targetIdx)) return false;
+
+    isResizing = true;
+    try {
+      current = clamp(targetIdx, 0, stops.length - 1);
+      window.scrollTo({ top: stops[current], behavior: 'auto' });
+      setActive(current);
+      replaceUrlForIndex(current);
+    } finally {
+      isResizing = false;
+    }
+
+    return true;
+  }
+
+  function scheduleSectionPlacementRepair(delay = 0, reason = '') {
+    clearTimeout(sectionRepairTmr);
+    sectionRepairTmr = setTimeout(() => {
+      repairSectionPlacementIfBroken(reason);
+    }, delay);
+  }
+
   function armContactInputJumpProbe(field) {
     if (!isMobileOrTablet()) return;
     if (window.__contactInputModalModeEnabled === true) return;
@@ -330,7 +373,6 @@
 
     const field = probe.field && probe.field.isConnected ? probe.field : null;
     const contactIdx = probe.contactIdx;
-    const contactTop = probe.contactTop;
 
     contactInputJumpProbe = null;
 
@@ -857,6 +899,7 @@
       resizeTimer = setTimeout(() => {
         if (shouldPauseFullpage()) return;
         syncToFixedSectionAfterViewportChange(false);
+        scheduleSectionPlacementRepair(60, 'resize-post-sync');
       }, 120);
     },
     { passive: true },
@@ -891,6 +934,7 @@
       setTimeout(() => {
         if (shouldPauseFullpage()) return;
         syncToFixedSectionAfterViewportChange(true);
+        scheduleSectionPlacementRepair(100, 'orientation-post-sync');
       }, 150);
     },
     { passive: true },
@@ -911,14 +955,13 @@
     'scroll',
     () => {
       if (locked) return;
-
       detectContactInputJumpAndEnableFallback('scroll');
-
       if (shouldPauseFullpage()) return;
 
       clearTimeout(scrollTmr);
       scrollTmr = setTimeout(() => {
         updateActiveSection();
+        scheduleSectionPlacementRepair(0, 'scroll-end');
       }, 60);
     },
     { passive: true },
@@ -927,16 +970,20 @@
   window.addEventListener('load', () => {
     init();
     updateActiveSection();
+    scheduleSectionPlacementRepair(120, 'load');
   });
 
   window.addEventListener('pageshow', e => {
     // при поверненні з кешу історії переконаємось, що хеш відпрацьовано
     if (e.persisted) bootToHashIfAny();
+    scheduleSectionPlacementRepair(120, 'pageshow');
   });
 
   window.visualViewport?.addEventListener('resize', () => {
     blurOnKeyboardClose();
     detectContactInputJumpAndEnableFallback('vv-resize');
+    if (!shouldPauseFullpage())
+      scheduleSectionPlacementRepair(120, 'vv-resize');
   });
 
   document.querySelectorAll('img').forEach(img => {
@@ -953,4 +1000,4 @@
   });
 })();
 
-alert(`no telega 4`);
+alert(`iPhoneFix_1`);
