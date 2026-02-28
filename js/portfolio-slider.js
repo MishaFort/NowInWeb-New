@@ -100,20 +100,81 @@ document.addEventListener('DOMContentLoaded', () => {
   resetStatic('init');
   window.addEventListener('resize', () => resetStatic('resize'));
 
+  function setupAutoplayOnlyWhenVisible(
+    sw,
+    watchEl,
+    autoplayParams,
+    { threshold = 0.2 } = {},
+  ) {
+    let visibleNow = false;
+
+    if (!('IntersectionObserver' in window)) {
+      sw.params.autoplay = autoplayParams;
+      sw.autoplay?.start?.();
+      visibleNow = true;
+      return { destroy: () => {}, isVisible: () => visibleNow };
+    }
+
+    let enabled = false;
+
+    const enable = () => {
+      if (enabled) return;
+      sw.params.autoplay = autoplayParams;
+      sw.autoplay?.start?.();
+      enabled = true;
+    };
+
+    const disable = () => {
+      if (!enabled) return;
+      sw.autoplay?.stop?.();
+      enabled = false;
+    };
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visibleNow =
+          entry.isIntersecting && entry.intersectionRatio >= threshold;
+        if (visibleNow) enable();
+        else disable();
+      },
+      { root: null, threshold: [0, threshold, 1] },
+    );
+
+    io.observe(watchEl);
+    disable();
+
+    return {
+      destroy: () => {
+        io.disconnect();
+        disable();
+      },
+      isVisible: () => visibleNow,
+    };
+  }
+
   // ---------- 3. Swiper ----------
+  const autoplayParams = {
+    delay: 2500,
+    disableOnInteraction: false,
+    pauseOnMouseEnter: true,
+    reverseDirection: false,
+    stopOnLastSlide: false,
+  };
+
   const swiper = new Swiper(swiperEl, {
+    autoplay: false,
+    speed: 1200,
     loop: true,
     slidesPerView: 1,
     centeredSlides: true,
-    speed: 800,
     effect: 'coverflow',
     coverflowEffect: {
       rotate: 30,
+      stretch: 0,
+      depth: 0,
+      modifier: 1,
       slideShadows: false,
     },
-    /*  autoplay: {
-      delay: 2500,
-    }, */
     pagination: false,
     simulateTouch: true,
     longSwipes: true,
@@ -121,14 +182,34 @@ document.addEventListener('DOMContentLoaded', () => {
     threshold: 3,
   });
 
+  const destroyVisibleAutoplay = setupAutoplayOnlyWhenVisible(
+    swiper,
+    document.querySelector('#portfolio-section'), // краще секцію, ніж сам swiper
+    autoplayParams,
+    { threshold: 0.2 },
+  );
+
   const setSwiperLock = v => {
     window.__swiperGestureLock = v;
   };
 
-  swiper.on('touchStart', () => setSwiperLock(false));
+  const vis = setupAutoplayOnlyWhenVisible(
+    swiper,
+    document.querySelector('#portfolio-section'),
+    autoplayParams,
+    { threshold: 0.2 },
+  );
+
+  swiper.on('touchStart', () => {
+    setSwiperLock(false);
+    swiper.autoplay?.stop?.();
+  });
+  swiper.on('touchEnd', () => {
+    setTimeout(() => setSwiperLock(false), 0);
+    if (vis.isVisible()) swiper.autoplay?.start?.();
+  });
   swiper.on('sliderFirstMove', () => setSwiperLock(true));
   swiper.on('sliderMove', () => setSwiperLock(true));
-  swiper.on('touchEnd', () => setTimeout(() => setSwiperLock(false), 0));
   swiper.on('transitionEnd', () => setSwiperLock(false));
 
   log('Swiper initialized', {
