@@ -335,6 +335,20 @@
     const rect = getBreathRectForIndex(targetIdx);
     const viewportH = getEffectiveViewportHeight();
 
+    if (targetIdx === 1) {
+      const breathCenter = rect ? Math.round(rect.top + rect.height / 2) : -1;
+      const viewportCenter = Math.round(viewportH / 2);
+      const deltaCenter =
+        breathCenter >= 0 ? Math.abs(breathCenter - viewportCenter) : -1;
+      const expectedY = Number.isFinite(stops[targetIdx])
+        ? Math.round(stops[targetIdx])
+        : -1;
+      const actualY = getEffectiveViewportTop();
+      alert(
+        `[sec2 check] rectH=${rect ? Math.round(rect.height) : -1}, vH=${viewportH}, centerΔ=${deltaCenter}, expectedY=${expectedY}, actualY=${actualY}`,
+      );
+    }
+
     // Основна перевірка: центр .section__breath проти центру viewport
     // Лише для секцій, які приблизно вміщаються у viewport (щоб не ловити false positive)
     if (rect && (targetIdx === 1 || rect.height <= viewportH * 1.15)) {
@@ -357,6 +371,12 @@
 
     const targetIdx = clamp(getFixedIndexForResize(), 0, sections.length - 1);
     if (!isSectionPlacementBroken(targetIdx)) return false;
+
+    if (targetIdx === 1) {
+      alert(
+        `[sec2 repair] apply scrollTo stops[1]=${Math.round(stops[targetIdx])}`,
+      );
+    }
 
     isResizing = true;
     try {
