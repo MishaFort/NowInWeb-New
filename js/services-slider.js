@@ -40,10 +40,16 @@ function setupAutoplayOnlyWhenVisible(
   );
 
   io.observe(el);
-  sw.autoplay?.stop?.();
 
-  // одразу: стоп (щоб не стартанув на мить)
-  disable();
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      const visible =
+        rect.top < vh * (1 - threshold) && rect.bottom > vh * threshold;
+      if (visible) enable();
+    });
+  });
 
   return () => {
     io.disconnect();
@@ -159,7 +165,10 @@ function initServicesSwiper() {
     // твій gesture lock
     const setSwiperLock = v => (window.__swiperGestureLock = v);
 
-    servicesSwiper.on('touchStart', () => setSwiperLock(false));
+    servicesSwiper.on('touchStart', () => {
+      setSwiperLock(false);
+      servicesSwiper.autoplay?.stop?.();
+    });
     servicesSwiper.on('sliderFirstMove', () => setSwiperLock(true));
     servicesSwiper.on('sliderMove', () => setSwiperLock(true));
     servicesSwiper.on('touchEnd', () =>

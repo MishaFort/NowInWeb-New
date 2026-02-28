@@ -182,13 +182,6 @@ document.addEventListener('DOMContentLoaded', () => {
     threshold: 3,
   });
 
-  const destroyVisibleAutoplay = setupAutoplayOnlyWhenVisible(
-    swiper,
-    document.querySelector('#portfolio-section'), // краще секцію, ніж сам swiper
-    autoplayParams,
-    { threshold: 0.2 },
-  );
-
   const setSwiperLock = v => {
     window.__swiperGestureLock = v;
   };
@@ -200,13 +193,17 @@ document.addEventListener('DOMContentLoaded', () => {
     { threshold: 0.2 },
   );
 
+  window.addEventListener('beforeunload', () => vis.destroy?.());
+
   swiper.on('touchStart', () => {
     setSwiperLock(false);
     swiper.autoplay?.stop?.();
   });
   swiper.on('touchEnd', () => {
     setTimeout(() => setSwiperLock(false), 0);
-    if (vis.isVisible()) swiper.autoplay?.start?.();
+    setTimeout(() => {
+      if (vis.isVisible()) swiper.autoplay?.start?.();
+    }, 300);
   });
   swiper.on('sliderFirstMove', () => setSwiperLock(true));
   swiper.on('sliderMove', () => setSwiperLock(true));
