@@ -30,6 +30,7 @@
   const BOTTOM_GAP = 16;
   const MIN_WHEEL = 15; // мінімальний нормалізований імпульс для одного кроку
   const SECTION_MISALIGN_PX = 32;
+  const REPAIR_SCROLL_MS = 140;
 
   document.documentElement.style.setProperty(
     '--app-h',
@@ -361,9 +362,12 @@
     isResizing = true;
     try {
       current = clamp(targetIdx, 0, stops.length - 1);
-      window.scrollTo({ top: stops[current], behavior: 'auto' });
-      setActive(current);
-      replaceUrlForIndex(current);
+      window.scrollTo({ top: stops[current], behavior: 'smooth' });
+
+      setTimeout(() => {
+        setActive(current);
+        replaceUrlForIndex(current);
+      }, REPAIR_SCROLL_MS);
     } finally {
       isResizing = false;
     }

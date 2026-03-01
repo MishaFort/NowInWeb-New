@@ -373,30 +373,26 @@
     }
   });
 
-  let lastInterceptAt = 0;
+  const TAP_MOVE_TOLERANCE_PX = 14;
+  const TAP_MAX_DURATION_MS = 320;
 
-  function interceptContactFieldTap(e) {
+  let pendingTouchField = null;
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchStartAt = 0;
+  let touchMoved = false;
+
+  function getFieldFromEventTarget(target) {
+    if (!(target instanceof Element)) return null;
+    const field = target.closest(FIELD_SELECTOR);
+    if (!field) return null;
+    if (field.disabled || field.readOnly) return null;
+    return field;
+  }
+
+  function openModalFromUserTap(e, field) {
     if (!isContactInputModalModeEnabled()) return;
     if (window.__contactInputModalOpen) return;
-
-    const target = e.target instanceof Element ? e.target : null;
-    if (!target) return;
-
-    const field = target.closest(FIELD_SELECTOR);
-    if (!field) return;
-    if (field.disabled || field.readOnly) return;
-
-    // На деяких девайсах приходять і touchstart, і pointerdown
-    const now = Date.now();
-    if (now - lastInterceptAt < 250) {
-      if (e.cancelable) e.preventDefault();
-      e.stopPropagation();
-      if (typeof e.stopImmediatePropagation === 'function') {
-        e.stopImmediatePropagation();
-      }
-      return;
-    }
-    lastInterceptAt = now;
 
     if (e.cancelable) e.preventDefault();
     e.stopPropagation();
@@ -407,11 +403,92 @@
     openModalForField(field);
   }
 
-  document.addEventListener('pointerdown', interceptContactFieldTap, true);
-  document.addEventListener('touchstart', interceptContactFieldTap, {
-    capture: true,
-    passive: false,
-  });
+  // Миша/стилус: одразу відкриваємо модалку
+  document.addEventListener(
+    'pointerdown',
+    e => {
+      if (!isContactInputModalModeEnabled()) return;
+      if (window.__contactInputModalOpen) return;
+
+      // Для touch-подій працюємо через touchstart/touchend (щоб відрізнити свайп)
+      if (e.pointerType === 'touch') return;
+
+      const field = getFieldFromEventTarget(e.target);
+      if (!field) return;
+
+      openModalFromUserTap(e, field);
+    },
+    true,
+  );
+
+  // Touch: спочатку тільки запам'ятовуємо кандидат на тап
+  document.addEventListener(
+    'touchstart',
+    e => {
+      if (!isContactInputModalModeEnabled()) return;
+      if (window.__contactInputModalOpen) return;
+
+      const field = getFieldFromEventTarget(e.target);
+      if (!field) return;
+
+      const t = e.touches && e.touches[0];
+      if (!t) return;
+
+      pendingTouchField = field;
+      touchStartX = t.clientX;
+      touchStartY = t.clientY;
+      touchStartAt = Date.now();
+      touchMoved = false;
+    },
+    { capture: true, passive: true },
+  );
+
+  // Якщо рух є — це свайп, не відкривати модалку
+  document.addEventListener(
+    'touchmove',
+    e => {
+      if (!pendingTouchField) return;
+      const t = e.touches && e.touches[0];
+      if (!t) return;
+
+      const dx = Math.abs(t.clientX - touchStartX);
+      const dy = Math.abs(t.clientY - touchStartY);
+      if (dx > TAP_MOVE_TOLERANCE_PX || dy > TAP_MOVE_TOLERANCE_PX) {
+        touchMoved = true;
+      }
+    },
+    { capture: true, passive: true },
+  );
+
+  // Відкриваємо модалку тільки якщо це був короткий тап без руху
+  document.addEventListener(
+    'touchend',
+    e => {
+      if (!pendingTouchField) return;
+
+      const field = pendingTouchField;
+      const duration = Date.now() - touchStartAt;
+      const moved = touchMoved;
+
+      pendingTouchField = null;
+      touchMoved = false;
+
+      if (moved) return;
+      if (duration > TAP_MAX_DURATION_MS) return;
+
+      openModalFromUserTap(e, field);
+    },
+    { capture: true, passive: false },
+  );
+
+  document.addEventListener(
+    'touchcancel',
+    () => {
+      pendingTouchField = null;
+      touchMoved = false;
+    },
+    { capture: true, passive: true },
+  );
 
   document.addEventListener(
     'focusin',
