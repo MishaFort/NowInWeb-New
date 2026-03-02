@@ -30,7 +30,7 @@
   const BOTTOM_GAP = 16;
   const MIN_WHEEL = 15; // мінімальний нормалізований імпульс для одного кроку
   const SECTION_MISALIGN_PX = 32;
-  const REPAIR_SCROLL_MS = 140;
+  const REPAIR_SCROLL_MS = 80;
 
   document.documentElement.style.setProperty(
     '--app-h',

@@ -7,14 +7,64 @@ document.addEventListener('DOMContentLoaded', () => {
     focusInvalidField: true,
   });
 
+  const ts = document.getElementById('form_ts');
+  if (ts) ts.value = String(Date.now());
+
+  const PHONE_LENGTHS_BY_DIAL = {
+    '+380': [9],
+    '+1': [10],
+    '+34': [9],
+    '+48': [9],
+    '+49': [10, 11],
+    '+44': [10, 11],
+    '+52': [10],
+    '+90': [10],
+    '+372': [7, 8],
+    '+371': [8],
+    '+370': [8],
+  };
+
+  const DIAL_CODES_SORTED = Object.keys(PHONE_LENGTHS_BY_DIAL).sort(
+    (a, b) => b.length - a.length,
+  ); // щоб +380 перевірялось раніше за +3 і т.д.
+
+  function validateFullE164ByDial(value) {
+    const v = (value || '').trim();
+    if (v === '') return true; // телефон необов'язковий
+
+    // залишаємо тільки + і цифри
+    const cleaned = v.replace(/[^\d+]/g, '');
+    if (!cleaned.startsWith('+')) return false;
+
+    // загальна м'яка перевірка E.164: + і 8..15 цифр
+    const totalDigits = cleaned.replace(/\D/g, '').length;
+    if (totalDigits < 8 || totalDigits > 15) return false; // м'який фільтр
+
+    // якщо dial не з нашої таблиці — пропускаємо по м'якому правилу
+    const dial = DIAL_CODES_SORTED.find(code => cleaned.startsWith(code));
+    if (!dial) return true;
+
+    // якщо dial є — тоді вже строгий контроль довжини національної частини
+    const national = cleaned.slice(dial.length).replace(/\D/g, '');
+    const allowed = PHONE_LENGTHS_BY_DIAL[dial];
+
+    // якщо в таблиці раптом пусто — fallback на м'яке правило
+    if (!allowed || allowed.length === 0) return true;
+
+    return allowed.includes(national.length);
+  }
+
   validator
-    // Name: обов'язково + латинські літери, пробіли/дефіс між частинами
+    // Name: обов'язково + любі літери, пробіли/дефіс/апострофи між частинами
     .addField('#user-name-contact', [
       { rule: 'required', errorMessage: '&#8613 Please enter your name' },
       {
-        rule: 'customRegexp',
-        value:
-          /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]{2,30}([ -][A-Za-zÁÉÍÓÚÜÑáéíóúüñ]{2,30})*$/u,
+        validator: value => {
+          const v = value.trim();
+          return /^\p{L}[\p{L}\p{M}]{1,49}(?:[ '\-’]\p{L}[\p{L}\p{M}]{1,49})*$/u.test(
+            v,
+          );
+        },
         errorMessage: '&#8613 Please enter a valid name',
       },
     ])
@@ -29,16 +79,18 @@ document.addEventListener('DOMContentLoaded', () => {
     ])
 
     // Telephone: НЕобов'язковий, але якщо заповнено — має відповідати шаблону
-    .addField('#user-tel-contact', [
-      {
-        validator: value => {
-          const v = value.trim();
-          if (v === '') return true; // дозволяємо пусте
-          return /[0-9+ ()-]{8,20}/.test(v);
+    .addField(
+      '#user-tel-full',
+      [
+        {
+          validator: value => validateFullE164ByDial(value),
+          errorMessage: '&#8613 Please enter a valid telephone number',
         },
-        errorMessage: '&#8613 Please enter a valid telephone number',
+      ],
+      {
+        errorsContainer: '.input__error--tel',
       },
-    ])
+    )
 
     // Message: мін/макс довжина
     .addField('#user-message-contact', [
@@ -86,9 +138,12 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // Можеш лишити тільки name/email, або додати й tel — не завадить
-  ['#user-name-contact', '#user-email-contact', '#user-tel-contact'].forEach(
-    autofillHackWhileFocused,
-  );
+  [
+    '#user-name-contact',
+    '#user-email-contact',
+    '#user-tel-contact',
+    '#user-tel-full',
+  ].forEach(autofillHackWhileFocused);
 
   // 3) Сабміт через fetch із прелоадером
   validator.onSuccess(event => {

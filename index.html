@@ -956,6 +956,18 @@
                     <div id="preloader" class="contact-section__preloader">
                       <div class="contact-section__preloader-image"></div>
                     </div>
+
+                    <!-- anti-spam -->
+                    <input
+                      type="text"
+                      name="website"
+                      tabindex="-1"
+                      autocomplete="off"
+                      class="hp-field"
+                      aria-hidden="true"
+                    />
+                    <input type="hidden" name="form_ts" id="form_ts" value="" />
+
                     <div class="contact-section__contact-info-container">
                       <div class="input">
                         <label class="input__label" for="user-name-contact">
@@ -989,13 +1001,66 @@
                         <label class="input__label" for="user-tel-contact">
                           Telephone
                         </label>
-                        <input
-                          class="input__control"
-                          type="tel"
-                          name="user-tel-contact"
-                          id="user-tel-contact"
-                          placeholder="Telephone"
-                        />
+
+                        <div class="phone-input-wrapper" data-default-iso="UA">
+                          <!-- Кнопка вибору країни -->
+                          <button
+                            class="phone-input-wrapper__country-btn"
+                            type="button"
+                            aria-haspopup="listbox"
+                            aria-expanded="false"
+                          >
+                            <span
+                              class="phone-input-wrapper__flag"
+                              aria-hidden="true"
+                            >
+                              🇺🇦
+                            </span>
+                            <span class="phone-input-wrapper__dial">+380</span>
+                            <span
+                              class="phone-input-wrapper__chev"
+                              aria-hidden="true"
+                            ></span>
+                          </button>
+
+                          <!-- Сам номер (без коду країни) -->
+                          <input
+                            class="input__control phone-input-wrapper__number"
+                            type="tel"
+                            name="user-tel-contact"
+                            id="user-tel-contact"
+                            placeholder="Telephone"
+                            inputmode="tel"
+                            autocomplete="tel"
+                          />
+
+                          <!-- Приховане поле: повний номер для бекенду/пошти -->
+                          <input
+                            type="hidden"
+                            name="user-tel-full"
+                            id="user-tel-full"
+                            value=""
+                          />
+
+                          <!-- Дропдаун -->
+                          <div class="phone-input-wrapper__dropdown" hidden>
+                            <div class="phone-input-wrapper__search">
+                              <input
+                                class="phone-input-wrapper__search-input"
+                                type="text"
+                                placeholder="Search country…"
+                                autocomplete="off"
+                              />
+                            </div>
+
+                            <ul
+                              class="phone-input-wrapper__list"
+                              role="listbox"
+                            ></ul>
+                          </div>
+                        </div>
+
+                        <div class="input__error input__error--tel"></div>
                       </div>
 
                       <div class="input">
@@ -1171,10 +1236,6 @@
       </footer>
     </div>
 
-    <script>
-      alert(`ВСІМ ПРИВІТ. Я ЗАПРАЦЮЮ ЧИ НЕ СЬОГОДНІ? А?`);
-    </script>
-
     <script src="./js/mobile-menu.js"></script>
 
     <script src="https://unpkg.com/just-validate@latest/dist/just-validate.production.min.js"></script>
@@ -1195,5 +1256,7 @@
     <script src="js/full-page-scroll.js"></script>
 
     <script src="js/breathing-on-start.js"></script>
+
+    <script src="js/phone-country-select.js"></script>
   </body>
 </html>

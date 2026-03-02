@@ -21,6 +21,10 @@
     background-color: rgba(0, 0, 0, 0.5);
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 
+    &:focus-within {
+      box-shadow: 0 6px 12px 1px #7200ff;
+    }
+
     @media screen and (min-width: $bp-laptop) {
       backdrop-filter: blur(15.16px);
       -webkit-backdrop-filter: blur(15.16px);
@@ -30,9 +34,9 @@
         inset 2.15px 2px 9.24px 0 rgba(255, 255, 255, 0.126),
         inset 1.22px 1.13px 4.62px 0 rgba(255, 255, 255, 0.126);
 
-      &:focus-within {
+      /*  &:focus-within {
         box-shadow: 0 6px 12px 1px #7200ff;
-      }
+      } */
     }
 
     &:focus,

@@ -52,27 +52,25 @@
     overflow: hidden;
   }
 
-  .contact-section {
-    &__thank-you-message {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px 32px;
-      text-align: center;
-      font-size: 1.5rem;
-      border-radius: 19px;
-      z-index: 2;
+  &__thank-you-message {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 32px;
+    text-align: center;
+    font-size: 1.5rem;
+    border-radius: 19px;
+    z-index: 2;
 
-      opacity: 0;
-      transform: translateY(30px);
-      pointer-events: none;
+    opacity: 0;
+    transform: translateY(30px);
+    pointer-events: none;
 
-      &--visible {
-        pointer-events: auto;
-        animation: contact-thankyou-slide-up 1s ease-out forwards;
-      }
+    &--visible {
+      pointer-events: auto;
+      animation: contact-thankyou-slide-up 1s ease-out forwards;
     }
   }
 
