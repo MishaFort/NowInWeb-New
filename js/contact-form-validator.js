@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     errorFieldCssClass: 'input__control--error',
     successFieldCssClass: 'input__control--success',
     errorLabelCssClass: 'just-validate-error-label',
-    focusInvalidField: true,
+    focusInvalidField: window.innerWidth > 1140,
   });
 
   const ts = document.getElementById('form_ts');
