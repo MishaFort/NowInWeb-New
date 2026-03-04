@@ -173,10 +173,12 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.setAttribute('aria-expanded', 'true');
     searchInput.value = '';
     renderList(COUNTRIES);
-    setTimeout(() => {
-      if (window.__contactInputModalModeEnabled === true) return;
-      searchInput.focus();
-    }, 0);
+    if (
+      window.innerWidth > 1140 &&
+      window.__contactInputModalModeEnabled !== true
+    ) {
+      setTimeout(() => searchInput.focus(), 0);
+    }
   }
 
   function closeDropdown() {
@@ -212,6 +214,14 @@ document.addEventListener('DOMContentLoaded', () => {
   syncFullPhone();
 
   btn.addEventListener('click', toggleDropdown);
+
+  list.addEventListener(
+    'touchstart',
+    () => {
+      if (document.activeElement === searchInput) searchInput.blur();
+    },
+    { passive: true },
+  );
 
   // пошук
   searchInput.addEventListener('input', () => {
