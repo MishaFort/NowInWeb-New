@@ -197,8 +197,16 @@
     return window.__contactInputModalOpen === true;
   }
 
+  function isPhoneCountryDropdownOpen() {
+    return window.__phoneCountryDropdownOpen === true;
+  }
+
   function shouldPauseFullpage() {
-    return isContactInputModalOpen() || isFocusedFieldInsideContactForm();
+    return (
+      isContactInputModalOpen() ||
+      isPhoneCountryDropdownOpen() ||
+      isFocusedFieldInsideContactForm()
+    );
   }
 
   function syncToFixedSectionAfterViewportChange(forceRefit = false) {

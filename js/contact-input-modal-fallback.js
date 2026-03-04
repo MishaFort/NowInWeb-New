@@ -166,8 +166,14 @@
   let modalHistoryArmed = false;
   let suppressNextModalPopstate = false;
 
+  function isCountrySearchField(field) {
+    return !!field?.classList?.contains('phone-input-wrapper__search-input');
+  }
+
   function getFieldLabel(field) {
     if (!field) return 'Edit field';
+    if (isCountrySearchField(field)) return 'Choose country';
+
     const label =
       (field.id &&
         document.querySelector(`label[for="${field.id}"]`)?.textContent) ||
@@ -175,6 +181,7 @@
       field.name ||
       field.placeholder ||
       'Edit field';
+
     return String(label).trim() || 'Edit field';
   }
 

@@ -119,6 +119,10 @@
     list-style: none;
     max-height: 270px;
     overflow: auto;
+
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
   }
 
   &__item {

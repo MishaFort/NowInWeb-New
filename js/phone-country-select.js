@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const numberInput = wrapper.querySelector('#user-tel-contact');
   const fullHidden = wrapper.querySelector('#user-tel-full');
 
+  window.__phoneCountryDropdownOpen = false;
+
   // 100 країн
   const COUNTRIES = [
     { iso: 'UA', name: 'Ukraine', dial: '+380', flag: '🇺🇦' },
@@ -157,14 +159,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function openDropdown() {
     dropdown.hidden = false;
+    window.__phoneCountryDropdownOpen = true;
     btn.setAttribute('aria-expanded', 'true');
     searchInput.value = '';
     renderList(COUNTRIES);
-    setTimeout(() => searchInput.focus(), 0);
+    setTimeout(() => {
+      if (window.__contactInputModalModeEnabled === true) return;
+      searchInput.focus();
+    }, 0);
   }
 
   function closeDropdown() {
     dropdown.hidden = true;
+    window.__phoneCountryDropdownOpen = false;
     btn.setAttribute('aria-expanded', 'false');
   }
 
@@ -172,6 +179,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (dropdown.hidden) openDropdown();
     else closeDropdown();
   }
+
+  function stopForFullpage(e) {
+    e.stopPropagation();
+  }
+
+  dropdown.addEventListener('touchstart', stopForFullpage, { passive: true });
+  dropdown.addEventListener('touchmove', stopForFullpage, { passive: true });
+  dropdown.addEventListener('touchend', stopForFullpage, { passive: true });
+  dropdown.addEventListener('wheel', stopForFullpage, { passive: true });
+  dropdown.addEventListener('pointerdown', stopForFullpage, true);
 
   function normalizePhoneNumber(v) {
     // лишаємо + тільки якщо користувач вставив номер з +
@@ -207,6 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // закрити по кліку зовні
   document.addEventListener('click', e => {
+    if (window.__contactInputModalOpen === true) return;
     if (!wrapper.contains(e.target)) closeDropdown();
   });
 
