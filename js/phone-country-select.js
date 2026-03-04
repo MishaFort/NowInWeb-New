@@ -143,7 +143,17 @@ document.addEventListener('DOMContentLoaded', () => {
         setCountry(c);
         closeDropdown();
         syncFullPhone();
-        numberInput.focus();
+
+        if (
+          window.__contactInputModalModeEnabled !== true &&
+          window.__contactInputModalOpen !== true
+        ) {
+          try {
+            numberInput.focus({ preventScroll: true });
+          } catch {
+            numberInput.focus();
+          }
+        }
       });
 
       list.appendChild(li);
@@ -179,16 +189,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (dropdown.hidden) openDropdown();
     else closeDropdown();
   }
-
-  function stopForFullpage(e) {
-    e.stopPropagation();
-  }
-
-  dropdown.addEventListener('touchstart', stopForFullpage, { passive: true });
-  dropdown.addEventListener('touchmove', stopForFullpage, { passive: true });
-  dropdown.addEventListener('touchend', stopForFullpage, { passive: true });
-  dropdown.addEventListener('wheel', stopForFullpage, { passive: true });
-  dropdown.addEventListener('pointerdown', stopForFullpage, true);
 
   function normalizePhoneNumber(v) {
     // лишаємо + тільки якщо користувач вставив номер з +
