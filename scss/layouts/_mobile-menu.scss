@@ -51,5 +51,10 @@
     bottom: 36px;
     left: 50%;
     transform: translateX(-50%);
+    z-index: -1;
+
+    @media screen and (max-height: 500px) {
+      display: none;
+    }
   }
 }

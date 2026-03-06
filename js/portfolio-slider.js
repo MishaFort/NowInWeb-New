@@ -10,16 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
   );
   const swiperEl = document.querySelector('#portfolio-section .swiper');
 
-  const DEBUG = true;
-  const log = () => {};
-
-  log('init DOMContentLoaded', {
-    hasHost: !!host,
-    hasSwiperEl: !!swiperEl,
-    hasPrevBtn: !!prevBtn,
-    hasNextBtn: !!nextBtn,
-  });
-
   if (!host || !swiperEl) return;
 
   // ---------- 1. Створюємо DOM пагінації ----------
@@ -40,11 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const bullets = Array.from(track.children);
 
   if (!viewport || !track || bullets.length !== 5) {
-    log('pagination DOM error', {
-      viewport: !!viewport,
-      track: !!track,
-      bullets: bullets.length,
-    });
     return;
   }
 
@@ -56,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const bullet = parseFloat(styles.getPropertyValue('--bullet')) || 12;
     const gap = parseFloat(styles.getPropertyValue('--gap')) || 16;
     const step = bullet + gap;
-    log('getStep()', { bullet, gap, step });
     return step;
   };
 
@@ -84,17 +68,14 @@ document.addEventListener('DOMContentLoaded', () => {
     baseX = -stepPx;
     setX(baseX, 'none');
     setActiveCenter();
-    log('resetStatic()', { reason, baseX, stepPx });
   };
 
   const rotateNext = () => {
     track.appendChild(track.firstElementChild);
-    log('rotateNext()');
   };
 
   const rotatePrev = () => {
     track.insertBefore(track.lastElementChild, track.firstElementChild);
-    log('rotatePrev()');
   };
 
   resetStatic('init');
@@ -180,6 +161,8 @@ document.addEventListener('DOMContentLoaded', () => {
     longSwipes: true,
     longSwipesRatio: 0.2,
     threshold: 3,
+    lazyPreloadPrevNext: 1, // 1 лівий + 1 правий
+    lazyPreloaderClass: 'swiper-lazy-preloader',
   });
 
   const setSwiperLock = v => {
@@ -209,19 +192,8 @@ document.addEventListener('DOMContentLoaded', () => {
   swiper.on('sliderMove', () => setSwiperLock(true));
   swiper.on('transitionEnd', () => setSwiperLock(false));
 
-  log('Swiper initialized', {
-    loop: swiper.params.loop,
-    speed: swiper.params.speed,
-    effect: swiper.params.effect,
-  });
-
   //КІЛЬКІСТЬ РЕАЛЬНИХ слайдів (без дублікатів loop)
-  const realSlides = Array.from(swiper.slides).filter(
-    slide => !slide.classList.contains('swiper-slide-duplicate'),
-  );
-  const TOTAL_SLIDES = realSlides.length || swiper.slides.length;
-
-  log('TOTAL_SLIDES', { TOTAL_SLIDES });
+  const TOTAL_SLIDES = swiper.slides.length;
 
   // ---------- 4. Стейт ----------
   let touching = false;
@@ -263,7 +235,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ---------- 6. Стрілки ----------
   const onArrow = dir => {
-    log('arrow click', { dir, realIndex: swiper.realIndex });
     if (dir === 1) swiper.slideNext();
     else swiper.slidePrev();
   };
@@ -291,8 +262,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (idx < center) dir = -1;
     else if (idx > center) dir = 1;
 
-    log('bullet click', { idx, dir, realIndex: swiper.realIndex });
-
     if (dir === 1) swiper.slideNext();
     else if (dir === -1) swiper.slidePrev();
   });
@@ -318,29 +287,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     //обрубаємо будь-яку попередню анімацію треку
     track.style.transition = 'none';
-
-    log('touchStart', {
-      size: sw.size,
-      realIndex: sw.realIndex,
-      dragStartX,
-      dragStartY,
-    });
   });
+
+  const preventVerticalScroll = (x, y, evt) => {
+    if (!touching) return;
+    const deltaX = Math.abs(x - dragStartX);
+    const deltaY = Math.abs(y - dragStartY);
+    if (deltaX > deltaY && evt.cancelable) evt.preventDefault();
+  };
+
+  swiperEl.addEventListener(
+    'pointermove',
+    evt => {
+      if (evt.pointerType !== 'touch') return;
+      preventVerticalScroll(evt.clientX, evt.clientY, evt);
+    },
+    { passive: false },
+  );
 
   swiperEl.addEventListener(
     'touchmove',
     evt => {
-      if (!touching) return;
       if (evt.touches.length !== 1) return;
-
-      const touch = evt.touches[0];
-      const deltaX = Math.abs(touch.clientX - dragStartX);
-      const deltaY = Math.abs(touch.clientY - dragStartY);
-
-      // Якщо рух більше горизонтальний, ніж вертикальний — блокуємо скрол сторінки
-      if (deltaX > deltaY) {
-        evt.preventDefault();
-      }
+      const t = evt.touches[0];
+      preventVerticalScroll(t.clientX, t.clientY, evt);
     },
     { passive: false },
   );
@@ -371,13 +341,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // ---------- 10. Якщо свайп відмінили (повернулись на той самий слайд) ----------
   swiper.on('slideResetTransitionStart', sw => {
     const dir = computeDirFromIndexes(prevRealIndex, sw.realIndex);
-
-    log('slideResetTransitionStart', {
-      lastP,
-      realIndex: sw.realIndex,
-      prevRealIndex,
-      dir,
-    });
 
     // Випадок 1: слайд НЕ змінився -> справжній відкат назад
     if (!dir) {
@@ -427,12 +390,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   swiper.on('slideResetTransitionEnd', sw => {
-    log('slideResetTransitionEnd', {
-      realIndex: sw.realIndex,
-      currentDir,
-      touching,
-    });
-
     if (!touching) {
       if (currentDir === 1) {
         rotateNext();
@@ -468,17 +425,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ? Math.max(120, Math.round(baseDuration * remain))
         : baseDuration;
 
-    log('slideChangeTransitionStart', {
-      prevRealIndex,
-      currRealIndex: sw.realIndex,
-      swipeDirection: sw.swipeDirection,
-      dir,
-      lastP,
-      fromX,
-      toX,
-      duration,
-    });
-
     prevRealIndex = sw.realIndex;
     touching = false;
     lastP = 0;
@@ -495,11 +441,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ---------- 12. Кінець переходу ----------
   swiper.on('slideChangeTransitionEnd', sw => {
-    log('slideChangeTransitionEnd', {
-      currentDir,
-      realIndex: sw.realIndex,
-    });
-
     if (currentDir === 1) rotateNext();
     else if (currentDir === -1) rotatePrev();
 
@@ -512,16 +453,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ---------- 13. touchEnd ----------
   swiper.on('touchEnd', sw => {
-    log('touchEnd', { lastP });
     touching = false;
-  });
-
-  // ---------- 14. Діагностика ----------
-  swiper.on('slideChange', sw => {
-    log('slideChange', {
-      activeIndex: sw.activeIndex,
-      realIndex: sw.realIndex,
-      previousIndex: sw.previousIndex,
-    });
   });
 });

@@ -3,7 +3,8 @@
   font-family: 'Europe C';
   font-style: normal;
   font-weight: 400;
-  src: url('../fonts/europe-extended-c.woff2') format('woff2'),
+  src:
+    url('../fonts/europe-extended-c.woff2') format('woff2'),
     url('../fonts/europe-extended-c.woff') format('woff');
 }
 @font-face {
@@ -11,7 +12,8 @@
   font-family: 'Europe C';
   font-style: normal;
   font-weight: 700;
-  src: url('../fonts/europe-extended-c-bold.woff2') format('woff2'),
+  src:
+    url('../fonts/europe-extended-c-bold.woff2') format('woff2'),
     url('../fonts/europe-extended-c-bold.woff') format('woff');
 }
 @font-face {
@@ -19,15 +21,26 @@
   font-family: 'Kreadon';
   font-style: normal;
   font-weight: 400;
-  src: url('../fonts/kreadon.woff2') format('woff2'),
+  src:
+    url('../fonts/kreadon.woff2') format('woff2'),
     url('../fonts/kreadon.woff') format('woff');
+}
+@font-face {
+  font-display: swap;
+  font-family: 'Kreadon';
+  font-style: normal;
+  font-weight: 700;
+  src:
+    url('../fonts/kreadon-bold.woff2') format('woff2'),
+    url('../fonts/kreadon-bold.woff') format('woff');
 }
 @font-face {
   font-display: swap;
   font-family: 'Plus Jakarta Sans';
   font-style: normal;
   font-weight: 400;
-  src: url('../fonts/plus-jakarta-sans-400.woff2') format('woff2'),
+  src:
+    url('../fonts/plus-jakarta-sans-400.woff2') format('woff2'),
     url('../fonts/plus-jakarta-sans-400.woff') format('woff');
 }
 @font-face {
@@ -35,7 +48,8 @@
   font-family: 'Plus Jakarta Sans';
   font-style: normal;
   font-weight: 700;
-  src: url('../fonts/plus-jakarta-sans-700.woff2') format('woff2'),
+  src:
+    url('../fonts/plus-jakarta-sans-700.woff2') format('woff2'),
     url('../fonts/plus-jakarta-sans-700.woff') format('woff');
 }
 @font-face {
@@ -43,6 +57,7 @@
   font-family: 'Plus Jakarta Sans';
   font-style: italic;
   font-weight: 800;
-  src: url('../fonts/plus-jakarta-sans-800italic.woff2') format('woff2'),
+  src:
+    url('../fonts/plus-jakarta-sans-800italic.woff2') format('woff2'),
     url('../fonts/plus-jakarta-sans-800italic.woff') format('woff');
 }
