@@ -94,6 +94,18 @@
     &:hover::before {
       opacity: 1;
     }
+
+    &:first-child {
+      font-weight: 700;
+
+      @media screen and (min-width: $bp-laptop) {
+        font-weight: 400;
+      }
+
+      @media screen and (min-width: $bp-desktop) {
+        font-weight: 700;
+      }
+    }
   }
 
   @keyframes borderFlow {
