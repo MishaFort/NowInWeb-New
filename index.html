@@ -2,10 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <meta name="description" content="now in web" />
     <title>NOW IN WEB</title>
@@ -101,7 +98,7 @@
 
           <nav class="mobile-menu" aria-label="Mobile menu">
             <button class="mobile-menu__btn-close menu-btn-close" type="button">
-              <p class="visually-hidden">Close burger menu</p>
+              <span class="visually-hidden">Close burger menu</span>
               <svg width="28" height="28">
                 <use href="./images/icons.svg#icon-close"></use>
               </svg>
@@ -284,6 +281,7 @@
                       class="services-card__image"
                       width="172"
                       height="172"
+                      loading="lazy"
                       srcset="
                         images/services-graphic.png    1x,
                         images/services-graphic@2x.png 2x
@@ -316,6 +314,7 @@
                       class="services-card__image"
                       width="172"
                       height="172"
+                      loading="lazy"
                       srcset="
                         images/services-web-design.png    1x,
                         images/services-web-design@2x.png 2x
@@ -349,6 +348,7 @@
                       class="services-card__image"
                       width="172"
                       height="172"
+                      loading="lazy"
                       srcset="
                         images/services-social.png    1x,
                         images/services-social@2x.png 2x
@@ -381,6 +381,7 @@
                       class="services-card__image"
                       width="172"
                       height="172"
+                      loading="lazy"
                       srcset="
                         images/services-ux.png    1x,
                         images/services-ux@2x.png 2x
@@ -414,6 +415,7 @@
                       class="services-card__image"
                       width="172"
                       height="172"
+                      loading="lazy"
                       srcset="
                         images/services-coding-programing.png    1x,
                         images/services-coding-programing@2x.png 2x
@@ -480,7 +482,7 @@
                       class="button button--portfolio"
                       href="https://financieraenventa.com/"
                       target="_blank"
-                      rel="noopener"
+                      rel="noopener noreferrer"
                     >
                       <span>View Website</span>
                       <svg
@@ -518,7 +520,7 @@
                       class="button button--portfolio"
                       href="https://phoenix-res.com"
                       target="_blank"
-                      rel="noopener"
+                      rel="noopener noreferrer"
                     >
                       <span>View Website</span>
                       <svg
@@ -556,7 +558,7 @@
                       class="button button--portfolio"
                       href="https://highfinance.app"
                       target="_blank"
-                      rel="noopener"
+                      rel="noopener noreferrer"
                     >
                       <span>View Website</span>
                       <svg
@@ -599,7 +601,7 @@
                       class="button button--portfolio"
                       href="https://hf.highfinance.app"
                       target="_blank"
-                      rel="noopener"
+                      rel="noopener noreferrer"
                     >
                       <span>View Website</span>
                       <svg
@@ -642,7 +644,7 @@
                       class="button button--portfolio"
                       href="https://hf.highfinance.app"
                       target="_blank"
-                      rel="noopener"
+                      rel="noopener noreferrer"
                     >
                       <span>View Website</span>
                       <svg
@@ -874,7 +876,7 @@
                       class="button button--portfolio"
                       href="https://www.piano.haus"
                       target="_blank"
-                      rel="noopener"
+                      rel="noopener noreferrer"
                     >
                       <span>View Website</span>
                       <svg
@@ -948,6 +950,7 @@
               <button
                 class="portfolio-section__button carousel-button prev"
                 type="button"
+                aria-label="Previous portfolio slide"
               >
                 <svg width="24" height="24">
                   <use href="./images/icons.svg#icon-arrow-carousel"></use>
@@ -959,6 +962,7 @@
               <button
                 class="portfolio-section__button carousel-button next"
                 type="button"
+                aria-label="Next portfolio slide"
               >
                 <svg width="24" height="24">
                   <use href="./images/icons.svg#icon-arrow-carousel"></use>
@@ -1090,6 +1094,7 @@
                                 class="phone-input-wrapper__search-input"
                                 type="text"
                                 placeholder="Search country…"
+                                aria-label="Search country"
                                 autocomplete="off"
                               />
                             </div>
@@ -1154,6 +1159,7 @@
                 class="footer__makeup"
                 width="150"
                 height="150"
+                loading="lazy"
                 srcset="
                   images/footer-Kate-makeup.avif    1x,
                   images/footer-Kate-makeup@2x.avif 2x
@@ -1193,6 +1199,7 @@
                 class="footer__makeup"
                 width="150"
                 height="150"
+                loading="lazy"
                 src="images/makeup-rofl-3.jpg"
                 alt="Misha-photo"
               />
@@ -1213,6 +1220,7 @@
                   class="footer__logo-image"
                   width="589"
                   height="200"
+                  loading="lazy"
                   srcset="
                     images/footer-logo-large.png    1x,
                     images/footer-logo-large@2x.png 2x
