@@ -85,3 +85,7 @@
   transform: scale(1.25);
   opacity: 1;
 }
+
+body.is-scroll-disabled .side-nav {
+  display: none;
+}

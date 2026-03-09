@@ -3,7 +3,6 @@
   min-width: 143px;
   padding: 1.2rem;
   color: var(--color-primary-light);
-  background-color: rgba(255, 255, 255, 0.068);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   font-family: 'Kreadon', sans-serif;
@@ -13,14 +12,21 @@
   cursor: pointer;
   text-decoration: none;
 
+  background-color: rgba(240, 244, 248, 0.1);
+  box-shadow:
+    -4px -4px 18px -8px rgba(0, 0, 0, 0.12),
+    inset 1px 1px 4px rgba(255, 255, 255, 0.12);
+
   @media screen and (min-width: $bp-tablet) {
     min-width: 240px;
     border-radius: 14px;
     font-size: 24px;
     line-height: 1.2;
+    background-color: rgba(255, 255, 255, 0.16);
   }
 
   @media screen and (min-width: $bp-laptop) {
+    background-color: rgba(255, 255, 255, 0.068);
     backdrop-filter: blur(15.16px);
     -webkit-backdrop-filter: blur(15.16px);
     box-shadow:
@@ -110,11 +116,6 @@
     background-color: rgba(0, 0, 0, 0.5);
     transition: box-shadow 0.1s ease;
 
-    &:hover {
-      box-shadow: 0 4px 6px 1px rgba(187, 170, 209, 0.8);
-      border-color: var(--color-primary-light);
-    }
-
     @media screen and (min-width: $bp-tablet) {
       gap: 6px;
       min-width: 210px;
@@ -127,6 +128,11 @@
       min-width: 160px;
       padding: 14px 12px;
       font-size: 12px;
+
+      &:hover {
+        box-shadow: 0 4px 6px 1px rgba(187, 170, 209, 0.8);
+        border-color: var(--color-primary-light);
+      }
     }
 
     @media screen and (min-width: $bp-desktop) {

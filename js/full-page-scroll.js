@@ -201,10 +201,15 @@
     return window.__phoneCountryDropdownOpen === true;
   }
 
+  function isMobileMenuOpen() {
+    return document.body.classList.contains('is-scroll-disabled');
+  }
+
   function shouldPauseFullpage() {
     return (
       isContactInputModalOpen() ||
       isPhoneCountryDropdownOpen() ||
+      isMobileMenuOpen() ||
       isFocusedFieldInsideContactForm()
     );
   }
