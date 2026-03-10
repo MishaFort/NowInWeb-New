@@ -1155,7 +1155,7 @@
 
           <div class="footer__about-us">
             <div class="footer__about-container">
-              <img
+              <!-- <img
                 class="footer__makeup"
                 width="150"
                 height="150"
@@ -1165,6 +1165,14 @@
                   images/footer-Kate-makeup@2x.avif 2x
                 "
                 src="images/footer-Kate-makeup.avif"
+                alt="Kate-photo"
+              /> -->
+              <img
+                class="footer__makeup"
+                width="150"
+                height="150"
+                loading="lazy"
+                src="images/footer-Kate-makeup-light.jpg"
                 alt="Kate-photo"
               />
               <p class="footer__about-maintext footer__about-maintext--left">
@@ -1200,7 +1208,11 @@
                 width="150"
                 height="150"
                 loading="lazy"
-                src="images/makeup-rofl-3.jpg"
+                srcset="
+                  images/footer-Misha-makeup.avif    1x,
+                  images/footer-Misha-makeup@2x.avif 2x
+                "
+                src="images/footer-Misha-makeup.avif"
                 alt="Misha-photo"
               />
             </div>
@@ -1285,6 +1297,12 @@
       </footer>
     </div>
 
+    <!--                  NEON CURSOR TRAIL                      -->
+    <svg class="neon-trail" aria-hidden="true">
+      <path class="neon-trail__body"></path>
+      <g class="neon-trail__spray"></g>
+    </svg>
+
     <script src="./js/mobile-menu.js"></script>
 
     <script src="https://unpkg.com/just-validate@latest/dist/just-validate.production.min.js"></script>
@@ -1307,5 +1325,7 @@
     <script src="js/breathing-on-start.js"></script>
 
     <script src="js/phone-country-select.js"></script>
+
+    <script src="js/neon-cursor.js"></script>
   </body>
 </html>
