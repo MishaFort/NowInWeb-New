@@ -1,11 +1,10 @@
 .services-card__border {
   position: relative;
-  border-radius: 20px;
   padding: 1px;
   background:
     linear-gradient(180deg, rgba(41, 41, 41, 1), rgba(41, 41, 41, 0.1)),
     var(--color-primary-dark);
-
+  border-radius: 20px;
   transition: box-shadow 0.2s ease-in-out;
 
   -webkit-font-smoothing: antialiased;
@@ -21,7 +20,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  /*  gap: 1.5625rem; */
   gap: 30px;
   padding: 12px 8px;
 
@@ -64,7 +62,6 @@
   }
 
   &__text-container--restricted {
-    /* padding: 0 2rem; */
     padding: 0 8px;
 
     @media screen and (min-width: $bp-tablet) {
@@ -82,7 +79,6 @@
 
   &__title {
     margin-bottom: 1.25rem;
-    /* padding: 0 1.25rem; */
     font-size: 16px;
     letter-spacing: 0.03em;
 

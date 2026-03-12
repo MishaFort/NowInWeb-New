@@ -162,7 +162,7 @@ function initServicesSwiper() {
       destroyEdgeObserver?.();
     });
 
-    // твій gesture lock
+    // gesture lock
     const setSwiperLock = v => (window.__swiperGestureLock = v);
 
     servicesSwiper.on('touchStart', () => {

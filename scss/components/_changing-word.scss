@@ -1,20 +1,6 @@
-/* .changing-word {
-  animation: blink 0.8s infinite;
-}
-
-@keyframes blink {
-  0%,
-  100% {
-    border-color: transparent;
-  }
-  50% {
-    border-color: #000;
-  }
-}
- */
 .changing-word {
-  animation: blink 0.8s infinite;
   display: inline-block;
+  animation: blink 0.8s infinite;
 }
 
 .static-text span {
@@ -22,10 +8,12 @@
 }
 
 .fade-char {
+  display: inline-block;
   opacity: 0;
   transform: translateY(8px);
-  display: inline-block;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
 }
 
 /* Додаємо fadeIn при друку */

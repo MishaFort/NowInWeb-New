@@ -137,7 +137,6 @@ document.addEventListener('DOMContentLoaded', () => {
     el.addEventListener('blur', stopWatching);
   };
 
-  // Можеш лишити тільки name/email, або додати й tel — не завадить
   [
     '#user-name-contact',
     '#user-email-contact',
@@ -145,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
     '#user-tel-full',
   ].forEach(autofillHackWhileFocused);
 
-  // 3) Сабміт через fetch із прелоадером
+  // Сабміт через fetch із прелоадером
   validator.onSuccess(event => {
     event.preventDefault();
 

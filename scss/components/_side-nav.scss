@@ -1,6 +1,4 @@
-/* Вертикальний індикатор праворуч */
 .side-nav {
-  /* display: none; */
   position: fixed;
   top: 50%;
   right: 20px;
@@ -24,25 +22,24 @@
   }
 
   &__btn {
-    box-sizing: border-box;
     /* Скидання нативних стилів кнопки */
+    display: block;
     appearance: none;
     -webkit-appearance: none;
     padding: 0;
     margin: 0;
-    /* border-width: 1px; */ /* ми керуємо бордером самі */
     border-width: 0px;
-    line-height: 0; /* щоб текст/шрифт не впливав */
+    line-height: 0;
     font-size: 0; /* на всякий */
     background-clip: padding-box;
 
     width: 8px;
     height: 8px;
-    border-radius: 50%;
     background: rgba(255, 255, 255, 0.35);
+    border-radius: 50%;
     border-style: solid;
     border-color: rgba(255, 255, 255, 0.6);
-    display: block;
+
     cursor: pointer;
     opacity: 0.85;
     transition:
@@ -80,8 +77,8 @@
 
 /* Активна секція */
 .side-nav__btn.is-active {
-  background: var(--color-brand, #7200ff);
-  border-color: var(--color-brand, #7200ff);
+  background: var(--color-brand);
+  border-color: var(--color-brand);
   transform: scale(1.25);
   opacity: 1;
 }

@@ -23,34 +23,6 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* border-radius: 1px; */
-    /*  object-fit: fill; */
-
-    /* &--mobile {
-      @media screen and (min-width: $bp-tablet) {
-        display: none;
-      }
-    }
-
-    &--tablet {
-      display: none;
-
-      @media screen and (min-width: $bp-tablet) {
-        display: block;
-      }
-
-      @media screen and (min-width: $bp-laptop) {
-        display: none;
-      }
-    }
-
-    &--laptop {
-      display: none;
-
-      @media screen and (min-width: $bp-laptop) {
-        display: block;
-      }
-    } */
   }
 
   &__collage-nav {
@@ -68,7 +40,6 @@
   max-width: 311px;
   aspect-ratio: 311 / 419;
   margin: 0 auto;
-  /*  scale: 1.01; */
 
   @media screen and (min-width: $bp-tablet) {
     max-width: 540px;
@@ -96,19 +67,21 @@
   box-shadow: 0 3px 0 #fff;
   position: relative;
   clip-path: inset(-40px 0 -5px);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: auto calc(50% - 17px) 0;
+    height: 50px;
+    --g: no-repeat linear-gradient(#ccc 0 0);
+    background: var(--g), var(--g), var(--g), var(--g);
+    background-size: 16px 14px;
+    animation:
+      l7-1 2s infinite linear,
+      l7-2 2s infinite linear;
+  }
 }
-.loader:before {
-  content: '';
-  position: absolute;
-  inset: auto calc(50% - 17px) 0;
-  height: 50px;
-  --g: no-repeat linear-gradient(#ccc 0 0);
-  background: var(--g), var(--g), var(--g), var(--g);
-  background-size: 16px 14px;
-  animation:
-    l7-1 2s infinite linear,
-    l7-2 2s infinite linear;
-}
+
 @keyframes l7-1 {
   0%,
   100% {

@@ -1,4 +1,5 @@
 (function () {
+  // Запускає стартову анімацію "breath" лише один раз за сесію вкладки
   const STORAGE_KEY = 'niw_breath_once_done';
   const CLASS_NAME = 'breath-once';
   const DURATION_MS = 1000;
@@ -9,6 +10,7 @@
     try {
       return sessionStorage.getItem(STORAGE_KEY) === '1';
     } catch {
+      // У деяких режимах браузера або приватності sessionStorage недоступний
       return false;
     }
   }
@@ -17,7 +19,9 @@
     window.__niwBreathOnceDone = true;
     try {
       sessionStorage.setItem(STORAGE_KEY, '1');
-    } catch {}
+    } catch {
+      // Якщо storage заблокований, зберігаємо прапорець лише в пам'яті сторінки
+    }
   }
 
   function canRunBreathByWidth() {
@@ -56,8 +60,10 @@
     const idx = getClosestIndex(stops, window.scrollY);
     const target = getTargetEl(sections[idx]);
 
+    // Спочатку прибираємо клас, щоб повторне додавання точно перезапустило CSS-анімацію
     target.classList.remove(CLASS_NAME);
 
+    // Два кадри дають браузеру зафіксувати видалення класу перед повторним додаванням
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         if (alreadyDone()) return;

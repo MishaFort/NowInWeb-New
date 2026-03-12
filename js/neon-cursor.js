@@ -23,6 +23,7 @@
   let lastMoveAt = 0;
 
   let points = [];
+  let isOverScaling = false; // True, поки курсор знаходиться всередині ".js-no-cursor-trail"
 
   const setSvgSize = () => {
     trailSvg.setAttribute(
@@ -51,6 +52,26 @@
   };
 
   const onMouseMove = event => {
+    const target = event.target;
+    const overScaling =
+      target instanceof Element && !!target.closest('.js-no-cursor-trail');
+
+    // Припинити слід та дозволити існуючому хвосту природно зникнути
+    if (overScaling) {
+      if (!isOverScaling) {
+        isOverScaling = true;
+        // Примусово увімкнути режим бездіяльності, щоб relaxTail() почав працювати на наступному кадрі
+        lastMoveAt = performance.now() - IDLE_FADE_DELAY - 1;
+      }
+      return;
+    }
+
+    // Скинути при виході, щоб уникнути довгого з’єднувального сегмента від старої точки голови
+    if (isOverScaling) {
+      isOverScaling = false;
+      points = [];
+    }
+
     mouseX = event.clientX;
     mouseY = event.clientY;
     lastMoveAt = performance.now();

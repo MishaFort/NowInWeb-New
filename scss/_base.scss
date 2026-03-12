@@ -1,15 +1,12 @@
 html {
-  /* scroll-behavior: smooth; */
   scroll-behavior: auto;
 }
 
 html,
 body {
-  /*  height: 100%; */
   overflow: hidden; /* блокуємо стандартний скрол */
 }
 
-/* Поважаємо користувачів з reduced motion */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

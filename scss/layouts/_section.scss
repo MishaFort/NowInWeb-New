@@ -2,7 +2,6 @@
 .section {
   display: flex;
   align-items: center;
-  /*  padding-top: calc((var(--base-pt) + var(--pad-comp, 0px)) / 2); */
 
   /* каскад висот для різних браузерів */
   min-height: 100vh;
@@ -20,10 +19,7 @@
 
   padding-top: 56px;
   padding-bottom: 16px;
-
   overflow: hidden;
-  /* overflow-x: hidden;
-  overflow-y: visible; */
 
   @media screen and (min-width: $bp-tablet) {
     padding-top: calc(var(--base-pt) + var(--pad-comp, 0px));
@@ -33,7 +29,6 @@
 
   &__title {
     margin: 0 auto 8px;
-    /* max-width: 1080px; */
     font-family: 'Europe C', sans-serif;
     font-size: 32px;
     line-height: 1.5;

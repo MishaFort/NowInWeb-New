@@ -6,10 +6,6 @@
     var(--color-background-light) 100%
   );
 
-  /* &__main-title {
-    padding-top: 24px;
-  } */
-
   &__about-us {
     @media screen and (min-width: $bp-laptop) {
       margin-bottom: 48px;
@@ -18,7 +14,6 @@
 
   &__about-container {
     display: flex;
-    /* flex-direction: column; */
     align-items: center;
     gap: clamp(16px, 3vw, 24px);
     min-height: 150px;
@@ -35,14 +30,9 @@
       flex-direction: row;
       padding: 0 80px;
     }
-
-    /* @media screen and (min-width: $bp-desktop) {
-    } */
   }
 
   &__about-maintext {
-    /*  text-align: center; */
-
     &--left {
       @media screen and (min-width: $bp-laptop) {
         padding-right: 240px;
@@ -54,7 +44,6 @@
       text-align: end;
       @media screen and (min-width: $bp-laptop) {
         padding-left: 240px;
-        /* text-align: end; */
       }
     }
 

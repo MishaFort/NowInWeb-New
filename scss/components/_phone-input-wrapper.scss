@@ -11,24 +11,22 @@
     align-items: center;
     gap: 8px;
 
-    width: 112px; // <-- підібери 96-112 як тобі красивіше
+    width: 112px;
     flex: 0 0 112px; // щоб не стискалась/не росла
     white-space: nowrap;
-
-    height: 60px; // підстрой під висоту твоїх input
+    height: 60px;
     margin-top: 4px;
     padding: 0 12px;
-
+    color: var(--color-primary-light);
+    background-color: rgba(0, 0, 0, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.35);
     border-radius: 8px;
-    background-color: rgba(0, 0, 0, 0.5);
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-    color: var(--color-primary-light);
 
     cursor: pointer;
     user-select: none;
 
-    // ✅ кнопка "горить" поки dropdown відкритий
+    // кнопка "горить" поки dropdown відкритий
     &[aria-expanded='true'] {
       box-shadow: 0 6px 12px 1px #7200ff;
     }
@@ -45,10 +43,9 @@
   }
 
   &__flag {
+    width: 22px;
     font-size: 18px;
     line-height: 1;
-
-    width: 22px;
     text-align: center;
   }
 
@@ -60,9 +57,9 @@
   }
 
   &__chev {
+    display: inline-block;
     width: 8px;
     height: 8px;
-    display: inline-block;
     margin-left: 2px;
     margin-bottom: 4px;
     border-right: 2px solid currentColor;
@@ -83,17 +80,17 @@
 
   &__dropdown {
     position: absolute;
-    z-index: 50;
     top: calc(100% + 8px);
     left: 0;
+    z-index: 50;
 
     width: min(420px, 100%);
     max-height: 320px;
     overflow: hidden;
 
+    background: rgba(10, 10, 10, 0.92);
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.18);
-    background: rgba(10, 10, 10, 0.92);
     backdrop-filter: blur(8px);
   }
 
@@ -106,10 +103,10 @@
     width: 100%;
     height: 40px;
     padding: 0 10px;
+    color: var(--color-primary-light);
+    background: rgba(255, 255, 255, 0.06);
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.16);
-    background: rgba(255, 255, 255, 0.06);
-    color: var(--color-primary-light);
     outline: none;
   }
 
@@ -132,13 +129,12 @@
     align-items: center;
 
     padding: 10px 10px;
+    color: var(--color-primary-light);
     border-radius: 10px;
     cursor: pointer;
 
-    color: var(--color-primary-light);
-
     &:not(:last-child) {
-      border-bottom: 1px solid rgba(255, 255, 255, 0.4); // темно-темно сірий
+      border-bottom: 1px solid rgba(255, 255, 255, 0.4);
       border-bottom-left-radius: 0;
       border-bottom-right-radius: 0;
       border-radius: 0;

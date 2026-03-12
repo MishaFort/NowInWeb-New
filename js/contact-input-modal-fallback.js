@@ -3,8 +3,8 @@
   const FIELD_SELECTOR = `${FORM_SELECTOR} input, ${FORM_SELECTOR} textarea`;
 
   const INPUT_MODAL_MAX_W = 1140;
-  const INPUT_MODAL_CLOSE_PRE_DELAY_MS = 90; // <-- це ти можеш крутити
-  const INPUT_MODAL_CLOSE_ANIM_MS = 300; // має відповідати transition у CSS (.input-modal__wrap)
+  const INPUT_MODAL_CLOSE_PRE_DELAY_MS = 90;
+  const INPUT_MODAL_CLOSE_ANIM_MS = 300;
 
   // full-page-scroll.js читає цей прапор (чи модалка зараз відкрита)
   window.__contactInputModalOpen = false;

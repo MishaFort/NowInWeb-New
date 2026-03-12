@@ -1,5 +1,4 @@
 .services-section {
-  /* padding-bottom: 1.5rem; */
   display: flex;
   align-items: center;
   background-image: linear-gradient(
@@ -9,9 +8,6 @@
   );
 
   &__list {
-    /* justify-content: center;
-    gap: 30px; */
-
     @media screen and (min-width: $bp-laptop) {
       justify-content: center;
       gap: 30px;
