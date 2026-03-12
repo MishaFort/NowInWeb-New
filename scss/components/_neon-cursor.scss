@@ -1,3 +1,5 @@
+@use '../utils/variables' as *;
+
 @media (min-width: $bp-laptop) and (pointer: fine) {
   .neon-trail {
     position: fixed;
@@ -28,3 +30,4 @@
     filter: blur(1.5px);
   }
 }
+

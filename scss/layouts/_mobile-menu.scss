@@ -1,3 +1,5 @@
+@use '../utils/variables' as *;
+
 .mobile-menu {
   position: fixed;
   top: 0;
@@ -58,3 +60,4 @@
     }
   }
 }
+

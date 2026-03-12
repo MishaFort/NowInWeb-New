@@ -1,3 +1,5 @@
+@use '../utils/variables' as *;
+
 .changing-word {
   display: inline-block;
   animation: blink 0.8s infinite;
@@ -38,3 +40,4 @@
     border-color: #000;
   }
 }
+

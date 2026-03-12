@@ -1,3 +1,5 @@
+@use '../utils/variables' as *;
+
 .side-nav {
   position: fixed;
   top: 50%;
@@ -86,3 +88,4 @@
 body.is-scroll-disabled .side-nav {
   display: none;
 }
+

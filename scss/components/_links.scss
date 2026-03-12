@@ -1,3 +1,5 @@
+@use '../utils/variables' as *;
+
 .link {
   padding: 12px 16px;
   color: var(--color-primary-light);
@@ -56,3 +58,4 @@
     }
   }
 }
+

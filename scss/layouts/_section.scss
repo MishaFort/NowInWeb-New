@@ -1,3 +1,5 @@
+@use '../utils/variables' as *;
+
 /* ===== 1) Базова секція ===== */
 .section {
   display: flex;
@@ -117,3 +119,4 @@
     animation: none !important;
   }
 }
+

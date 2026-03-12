@@ -1,3 +1,5 @@
+@use '../utils/variables' as *;
+
 .contact-section {
   &__container {
     display: flex;
@@ -183,3 +185,4 @@
     }
   }
 }
+

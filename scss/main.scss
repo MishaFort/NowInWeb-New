@@ -1,28 +1,4 @@
-@import './utils/fonts';
-@import './utils/typography';
-@import './utils/utils';
-@import './utils/variables';
-@import './base';
-
-@import './components/buttons';
-@import './components/carousel-button';
-@import './components/changing-word';
-@import './components/contact-validation';
-@import './components/floating-button';
-@import './components/input';
-@import './components/links';
-@import './components/neon-cursor';
-@import './components/pagination';
-@import './components/phone-input-wrapper';
-@import './components/services-card';
-@import './components/side-nav';
-
-@import './layouts/contact-section';
-@import './layouts/container';
-@import './layouts/footer';
-@import './layouts/header';
-@import './layouts/hero-section';
-@import './layouts/mobile-menu';
-@import './layouts/portfolio-section';
-@import './layouts/section';
-@import './layouts/services-section';
+@use './utils';
+@use './base';
+@use './components';
+@use './layouts';

@@ -1,3 +1,5 @@
+@use '../utils/variables' as *;
+
 .input {
   margin-bottom: 25px;
 
@@ -58,3 +60,4 @@
     }
   }
 }
+

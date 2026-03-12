@@ -1,3 +1,5 @@
+@use '../utils/variables' as *;
+
 .phone-input-wrapper {
   position: relative;
   display: grid;
@@ -154,3 +156,4 @@
     white-space: nowrap;
   }
 }
+

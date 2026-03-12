@@ -1,3 +1,5 @@
+@use '../utils/variables' as *;
+
 .pagination {
   --bullet: 12px;
   --gap: 16px;
@@ -68,3 +70,4 @@
   transform: none;
   margin: 0;
 }
+

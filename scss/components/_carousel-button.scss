@@ -1,3 +1,5 @@
+@use '../utils/variables' as *;
+
 .carousel-button {
   display: flex;
   align-items: center;
@@ -31,3 +33,4 @@
     fill: var(--color-disabled); // щоб hover не міняв колір
   }
 }
+

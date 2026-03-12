@@ -1,3 +1,5 @@
+@use '../utils/variables' as *;
+
 .hero-section {
   position: relative;
   display: flex;
@@ -228,3 +230,4 @@
     }
   }
 }
+

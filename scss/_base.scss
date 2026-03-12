@@ -1,3 +1,5 @@
+@use './utils/variables' as *;
+
 html {
   scroll-behavior: auto;
 }
@@ -82,3 +84,4 @@ textarea,
 select {
   font-size: 16px;
 }
+

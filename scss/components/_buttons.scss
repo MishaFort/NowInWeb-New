@@ -1,3 +1,5 @@
+@use '../utils/variables' as *;
+
 .button {
   position: relative;
   min-width: 143px;
@@ -262,3 +264,4 @@
 .services-card__border:hover .button--arrow {
   background-color: rgba(255, 255, 255, 0.1);
 }
+
