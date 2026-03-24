@@ -213,6 +213,15 @@
   let contactInputJumpProbe = null;
   let contactModalSnapTmr = null;
   let sectionRepairTmr = null;
+  let imageLoadUpdateRaf = 0;
+  function scheduleImageLoadRecalc() {
+    if (imageLoadUpdateRaf) return;
+    imageLoadUpdateRaf = requestAnimationFrame(() => {
+      imageLoadUpdateRaf = 0;
+      init();
+      updateActiveSection();
+    });
+  }
   function isFormField(el) {
     return !!el && el.matches && el.matches('input, textarea, select, [contenteditable="true"]');
   }
@@ -499,18 +508,14 @@
   function updateActiveSection() {
     if (shouldPauseFullpage()) return;
     if (locked) return;
-    let activeIdx = 0,
-      minDiff = Infinity;
-    sections.forEach((s, i) => {
-      const diff = Math.abs(s.getBoundingClientRect().top);
-      if (diff < minDiff) {
-        minDiff = diff;
-        activeIdx = i;
-      }
-    });
-    setActive(activeIdx);
-    current = activeIdx; // ← синхронізуємо індекс
-    if (!suppressUrlSync) replaceUrlForIndex(current); // ← зміна
+    if (!stops.length) return;
+    const y = getEffectiveViewportTop();
+    const activeIdx = getClosestIndex(y);
+    if (activeIdx !== current) {
+      setActive(activeIdx);
+      current = activeIdx; // sync active index
+    }
+    if (!suppressUrlSync) replaceUrlForIndex(current);
   }
 
   // ---------- FIT‑SCALE + компенсація падінга ----------
@@ -525,27 +530,40 @@
     return Math.max(s, 0.4);
   }
   function applyFitScales() {
-    sections.forEach(sec => {
-      //  тільки services: до 1140 — не скейлимо
-      if (sec.id === 'services-section' && window.innerWidth < 1140) {
-        // якщо ти скейлиш через .section__scaling — скидаємо
-        const target = sec.querySelector('.section__scaling') || sec;
-        target.style.setProperty('--fit-scale', '1.000');
-        sec.style.setProperty('--pad-comp', '0px');
-        return;
-      }
+    const updates = sections.map(sec => {
       const target = sec.querySelector('.section__scaling') || sec;
-      const s = computeFitScaleFor(target);
-      target.style.setProperty('--fit-scale', s.toFixed(3));
+      if (sec.id === 'services-section' && window.innerWidth < 1140) {
+        return {
+          sec,
+          target,
+          scale: 1,
+          padComp: 0
+        };
+      }
+      const scale = computeFitScaleFor(target);
       const cs = getComputedStyle(sec);
       const basePtVar = parseFloat(cs.getPropertyValue('--base-pt'));
       const basePt = Number.isFinite(basePtVar) ? basePtVar : parseFloat(cs.paddingTop) || 44;
       let padComp;
-      if (s < 1 && sec.classList.contains('hero-section')) {
+      if (scale < 1 && sec.classList.contains('hero-section')) {
         padComp = basePt;
       } else {
-        padComp = s < 1 ? basePt * (1 - s) : 0;
+        padComp = scale < 1 ? basePt * (1 - scale) : 0;
       }
+      return {
+        sec,
+        target,
+        scale,
+        padComp
+      };
+    });
+    updates.forEach(({
+      sec,
+      target,
+      scale,
+      padComp
+    }) => {
+      target.style.setProperty('--fit-scale', scale.toFixed(3));
       sec.style.setProperty('--pad-comp', `${padComp.toFixed(2)}px`);
     });
   }
@@ -860,10 +878,7 @@
   });
   document.querySelectorAll('img').forEach(img => {
     if (!img.complete) {
-      img.addEventListener('load', () => {
-        init();
-        updateActiveSection();
-      }, {
+      img.addEventListener('load', () => scheduleImageLoadRecalc(), {
         once: true
       });
     }

@@ -12,10 +12,23 @@
     <link rel="stylesheet" href="./css/main.min.css" />
 
     <link rel="icon" href="images/favicon.svg" type="image/svg+xml" />
+
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link
-      rel="stylesheet"
+      rel="preload"
+      as="style"
       href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+      onload="
+        this.onload = null;
+        this.rel = 'stylesheet';
+      "
     />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+      />
+    </noscript>
 
     <style>
       html.fp-preboot body {
@@ -1295,29 +1308,35 @@
       <g class="neon-trail__spray"></g>
     </svg>
 
-    <script src="./js/mobile-menu.js"></script>
+    <script defer src="js-compat/mobile-menu.js"></script>
 
-    <script src="https://unpkg.com/just-validate@latest/dist/just-validate.production.min.js"></script>
-    <script src="./js/contact-form-validator.js"></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/just-validate@4.3.0/dist/just-validate.production.min.js"
+    ></script>
+    <script defer src="js-compat/contact-form-validator.js"></script>
 
     <script>
       document.getElementById('year').textContent = new Date().getFullYear();
     </script>
 
-    <script src="js/changing-word.js"></script>
-    <script src="js/services-buttons.js"></script>
+    <script defer src="js-compat/changing-word.js"></script>
+    <script defer src="js-compat/services-buttons.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script src="./js/services-slider.js"></script>
-    <script src="./js/portfolio-slider.js"></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"
+    ></script>
+    <script defer src="js-compat/services-slider.js"></script>
+    <script defer src="js-compat/portfolio-slider.js"></script>
 
-    <script src="js/contact-input-modal-fallback.js"></script>
-    <script src="js/full-page-scroll.js"></script>
+    <script defer src="js-compat/contact-input-modal-fallback.js"></script>
+    <script defer src="js-compat/full-page-scroll.js"></script>
 
-    <script src="js/breathing-on-start.js"></script>
+    <script defer src="js-compat/breathing-on-start.js"></script>
 
-    <script src="js/phone-country-select.js"></script>
+    <script defer src="js-compat/phone-country-select.js"></script>
 
-    <script src="js/neon-cursor.js"></script>
+    <script defer src="js-compat/neon-cursor.js"></script>
   </body>
 </html>
